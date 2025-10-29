@@ -1,0 +1,121 @@
+{% extends 'home.html' %}
+
+{% block body %}
+
+<div id="header" class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom" xmlns="http://www.w3.org/1999/html">
+  <a href="javascript:void(0)" class="closebtn" onclick="openNav()" style="text-decoration: none">
+        <span data-feather="maximize-2" class="align-text-bottom"></span></a>
+    <h1 class="h2"><a style="text-decoration: none" href="{{ url_for('credenciais', status='ativo') }}">Credenciais</a></h1>
+  {% if current_user.is_authenticated and current_user.access >= 1 %}
+  <form class="input-group w-50 mb-md-1">
+    <input name="Search" class="form-control form-control-dark w-50 rounded-0 border-1" type="text" placeholder="Busca Cliente e Ambiente">
+  </form>
+  {% endif %}
+  {% if current_user.is_authenticated and current_user.access >= 2 %}
+  <div class="btn-toolbar mb-2 mb-md-0">
+    <div class="btn-group me-2" style="display:flex; gap:10px; align-items:center">
+        <a href="{{ url_for('credenciais', status='ativo')  }}"> <button type="button" class="btn btn-sm btn-outline-secondary">ATIVOS</button></a>
+        <a href="{{ url_for('credenciais', status='inativo')  }}"> <button type="button" class="btn btn-sm btn-outline-secondary">INATIVOS</button></a>
+    </div>
+    <div class="btn-group me-2">
+      <form action="{{ url_for('credencadd') }}">
+       <button type="submit" class="btn btn-sm btn-outline-primary">Nova credencial</button>
+      </form>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<div id="main" class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-1 pb-1 mt-1 mb-1">
+    {% if current_user.access >= 1 %}
+    <div class="row px-0 py-0 fs-6" style="line-height:0.8 padding:25px">
+        {% if credencial.items[0] %}
+            <h3 class="h3"> <small>Status:</small> {{  credencial.items[0].CredencialDB.statenv }}s </h3>
+        {% else %}
+            <h3 class="h3"> Nenhuma credencial com Status: {{ status }} </h3>
+        {% endif %}
+      <table class="table table-striped">
+         <thead>
+            <tr>
+              <th scope="col">Cliente</th>
+              <th scope="col">Ambiente</th>
+              <th scope="col">Versão</th>
+              <th scope="col">Serviço</th>
+              <th scope="col">Senha</th>
+              <th scope="col">DocControl</th>
+              <th scope="col">Senha</th>
+              <th scope="col">URL</th>
+            </tr>
+         </thead>
+      {% if credencial %}
+        <tbody>
+
+        {% for credenc in credencial.items %}
+        <tr>
+            <!--  INCLUIR href="" no a para destacar o cliente quando o modal estiver funcionando  -->
+          <th scope="row"><a style="text-decoration: none" data-id={{ loop.index0 }} data-bs-toggle="modal" data-bs-target="#ShowCredenc{{ loop.index0 }}"> {{ credenc.CredencialDB.nomecliente }}</a>
+           <a style="text-decoration: none" href="{{ url_for('credencedit', credenc_id=credenc.CredencialDB.idcredenc) }}"><span data-feather="edit" class="align-text-bottom"></span></a></th>
+          <td>{{ credenc.CredencialDB.ambiente }}</td>
+          {% if versBug(credenc.CredencialDB.version) %}
+            <td title="Versão com Bug" style="color:#ff0000">{{ credenc.CredencialDB.version }}</td>
+          {% else %}
+            <td>{{ credenc.CredencialDB.version }}</td>
+          {% endif %}
+          <td>{{ credenc.CredencialDB.loginserv }}</td>
+          <td>{{ credenc.CredencialDB.passwdserv }}</td>
+          <td>{{ credenc.CredencialDB.logindocc }}</td>
+          <td>{{ credenc.CredencialDB.passwddocc }}</td>
+          <td><a style="text-decoration: none" href="{{ url_for('apicall', credenc_id=credenc.CredencialDB.idcredenc) }}"><span data-feather="external-link" class="align-text-bottom"></span></a>
+              <a href="{{ credenc.CredencialDB.urlweb }}" target="_blank">{{ credenc.CredencialDB.urlweb }}</a></td>
+          <!-- td>{{ credenc.CredencialDB.urlweb }}</td -->
+        </tr>
+
+        <!-- Modal -->
+        <div class="modal fade" id="ShowCredenc{{ loop.index0 }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable"><div class="modal-content"><div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">[{{ credenc.CredencialDB.idcredenc }}] {{ credenc.CredencialDB.nomecliente }}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <div class="col col-16">
+                <h5>{{credenc.CredencialDB.nomecliente}} <small> | {{credenc.CredencialDB.statenv}} {{credenc.CredencialDB.accesslevel}}</small></h5>
+                <div class="row">Ambiente: {{credenc.CredencialDB.ambiente}} | Versão: {{credenc.CredencialDB.version}} | Server: {{credenc.CredencialDB.cloudloc}}</div>
+                <div class="row">URL: {{credenc.CredencialDB.urlweb}} | Resp.: {{credenc.CredencialDB.responsav}}</div>
+                <div class="row">Usuário de Serviço: {{credenc.CredencialDB.loginserv}} | Senha: {{credenc.CredencialDB.passwdserv}}</div>
+                <div class="row">Usuário DocControl: {{credenc.CredencialDB.logindocc}} | Senha: {{credenc.CredencialDB.passwddocc}}</div>
+                <div class="row">Usuário da API: {{credenc.CredencialDB.loginapi}} | Senha: {{credenc.CredencialDB.passwdapi}}</div>
+                <div class="row">Notas: {{ credenc.CredencialDB.notas }} </div>
+                <div class="row">Implantação: {{ '{:02d}/{:02d}/{:02d}'.format(credenc.CredencialDB.dtimplantac.day, credenc.CredencialDB.dtimplantac.month, credenc.CredencialDB.dtimplantac.year) }}  </div>
+                <br>
+                <div class="row"><small>Registro {{ credenc.CredencialDB.idcredenc }} alterado em {{ '{:02d}/{:02d}/{:02d}'.format(credenc.CredencialDB.dtalter.day, credenc.CredencialDB.dtalter.month, credenc.CredencialDB.dtalter.year) }} por {{ credenc.usuario.username }}</small></div>
+              </div>
+          </div>
+          <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Ok</button></div></div></div></div>
+        {% endfor %}
+        </tbody>
+      </table>
+      <div class="row">
+          <div class="btn-toolbar">
+              <div class="btn-group mt-2 me-1">
+              {% for page_num in credencial.iter_pages(left_edge=3, right_edge=3, left_current=3, right_current=3) %}
+                {% if page_num %}
+                 {% if credencial.page == page_num %}
+                  <a class = "btn btn-sm btn-info-secondary fw-bold" href="{{ url_for('credenciais', status=status, page=page_num)  }}">{{ page_num }}</a>
+                 {% else %}
+                  <a class ="btn btn-sm btn-outline-secondary" href="{{ url_for('credenciais', status=status, page=page_num)  }}">{{ page_num }}</a>
+                 {% endif %}
+                {% else %}
+                  ...
+                {% endif %}
+              {%endfor %}
+              </div>
+          </div>
+      </div>
+      {% endif %}
+    </div>
+    {% else %}
+        <p>Insuficient Access Level!</p>
+    {% endif %}
+</div>
+
+{% endblock %}

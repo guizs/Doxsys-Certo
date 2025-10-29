@@ -1,0 +1,41 @@
+{% extends 'home.html' %}
+
+{% block body %}
+
+<div id="main" class="d-flex align-items-center pt-3 pb-2 mb-1 border-bottom" style="height: 80px">
+  <h1 class="h2"><a style="text-decoration: none" href="{{ url_for('relatorios', mesatl=mesatl) }}">Relatórios</a></h1>
+  {% if current_user.is_authenticated and current_user.access >= 4 %}
+  <form method="POST" action="" class="mt-2 p-3" style="width: 100%; margin-left: 10px">
+    {{ form_scope.csrf_token }}
+    <fieldset>
+      <div class="form-group row">
+      <div class="row  align-items-left">
+       <div class="row px-0 py-0 fs-6">
+          <div class="row">
+           <div class="col-10 mt-2 mb-2 ml-0 mr-0" style="width: 40px">
+            {{ form_scope.select_mes.label(class="form-control-label") }}
+           </div>
+           <div class="col-10 mt-1 mb-1 ml-0 mr-0" style="width: 150px">
+             {% if form_scope.select_mes.errors %}
+              {{ form_scope.select_mes(class="form-control is-invalid") }}
+             <div class="invalid-feedback">
+             {% for erro in form_scope.select_mes.errors %}
+                 {{ erro }}
+             {% endfor %}
+             </div>
+            {% else %}
+                {{ form_scope.select_mes(class="form-control") }}
+            {% endif %}
+           </div>
+           <div class="col-1 mt-2 mb-2 ml-0 mr-0">
+            {{ form_scope.botao_submit_financscope(class="link-secondary", target="_blank") }}
+           </div>
+       </div>
+      </div>
+      </div>
+    </fieldset>
+  </form>
+  {% endif %}
+</div>
+
+{% endblock %}

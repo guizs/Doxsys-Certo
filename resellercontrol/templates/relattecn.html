@@ -1,0 +1,244 @@
+{% extends 'home.html' %}
+
+{% block body %}
+<div id="main" class="d-flex align-items-center pt-3 pb-2 mb-1 border-bottom" style="height: 80px">
+  <h1 class="h2"><a style="text-decoration: none" href="{{ url_for('relatorios', mesatl=mesatl) }}">Relatórios</a></h1>
+  {% if current_user.is_authenticated and current_user.access >= 2 %}
+  <form method="POST" action="" class="mt-2 p-3" style="width: 100%; margin-left: 10px">
+    {{ form_scope.csrf_token }}
+    <fieldset>
+      <div class="form-group row">
+      <div class="row  align-items-left">
+       <div class="row px-0 py-0 fs-6">
+          <div class="row">
+           <div class="col-10 mt-2 mb-2 ml-0 mr-0" style="width: 35px; padding: 0">
+            {{ form_scope.select_mes.label(class="form-control-label") }}
+           </div>
+           <div class="col-10 mt-1 mb-1 ml-0 mr-0" style="width: 110px; padding: 0 5px 0 0">
+             {% if form_scope.select_mes.errors %}
+              {{ form_scope.select_mes(class="form-control is-invalid") }}
+             <div class="invalid-feedback">
+             {% for erro in form_scope.select_mes.errors %}
+                 {{ erro }}
+             {% endfor %}
+             </div>
+            {% else %}
+                {{ form_scope.select_mes(class="form-control") }}
+            {% endif %}
+           </div>
+           <div class="col-1 mt-2 mb-2 ml-0 mr-0">
+            {{ form_scope.botao_submit_scopetecn(class="link-secondary", target="_blank") }}
+           </div>
+       </div>
+      </div>
+      </div>
+    </fieldset>
+  </form>
+
+</div>
+
+<BR>
+<div class="row">
+   {% if projaceitos or projatestados %}
+   <span>__Data:<strong>{{ '{:02d}/{:02d}/{:02d}'.format(hoje.day, hoje.month, hoje.year) }}</strong> | Mês:<strong>{{ mesatl }}</strong> Bônus: <strong>{{ currency }}{{ btAceitos +  btAtestados }}</strong> | [<strong>{{ total_itens }}</strong> projetos = <strong>{{ total_horas }} horas</strong>]</span>
+   {% else %}
+   <span>__Data:<strong>{{ '{:02d}/{:02d}/{:02d}'.format(hoje.day, hoje.month, hoje.year) }}</strong> | [<strong>{{ total_itens }}</strong> projetos = <strong>{{ total_horas }} horas</strong>]</span>
+   {% endif %}
+</div>
+{% if projaceitos %}
+<HR>
+<div class="row"> <h3 style="color:blue">Projetos Aceitos</h3>
+    <table class="table">
+         <thead>
+            <tr>
+              <th scope="col">Cliente</th>
+              <th scope="col">Nome do Projeto</th>
+              <th scope="col">OS</th>
+              <th scope="col">Início</th>
+              <th scope="col">Final</th>
+              <th scope="col">Data Aceite</th>
+            </tr>
+         </thead>
+        <tbody>
+        {% for proj in projaceitos %}
+         <tr>
+          <td>{{ proj.ClientesDB.nomecliente }}({{ proj.ClientesDB.estado }})</td>
+          <td>{{ proj.ProjetosDB.projetonome }}</td>
+          <td>{{ proj.ProjetosDB.oscodigo }}</td>
+          {% if proj.ProjetosDB.prjinicreal %}
+          <td>{{ '{:02d}/{:02d}/{:02d}'.format(proj.ProjetosDB.prjinicreal.day, proj.ProjetosDB.prjinicreal.month, proj.ProjetosDB.prjinicreal.year) }}</td>
+          {% else %}
+             <td>sem data</td>
+          {% endif %}
+          {% if proj.ProjetosDB.prjfimreal %}
+          <td>{{ '{:02d}/{:02d}/{:02d}'.format(proj.ProjetosDB.prjfimreal.day, proj.ProjetosDB.prjfimreal.month, proj.ProjetosDB.prjfimreal.year) }}</td>
+          {% else %}
+             <td>sem data</td>
+          {% endif %}
+          {% if proj.ProjetosDB.aceitedata %}
+          <td>{{ '{:02d}/{:02d}/{:02d}'.format(proj.ProjetosDB.aceitedata.day, proj.ProjetosDB.aceitedata.month, proj.ProjetosDB.aceitedata.year) }}</td>
+          {% else %}
+             <td>sem data</td>
+          {% endif %}
+         </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <!-- spam>Bônus = {{ currency }}{{ btAceitos }}</spam -->
+</div>
+{% endif %}
+{% if projatestados %}
+<HR>
+<div class="row"> <h3 style="color:blue">Projetos com Atestados</h3>
+    <table class="table">
+         <thead>
+            <tr>
+              <th scope="col">Cliente</th>
+              <th scope="col">Nome do Projeto</th>
+              <th scope="col">OS</th>
+              <th scope="col">Início</th>
+              <th scope="col">Final</th>
+              <th scope="col">Data Atestado</th>
+            </tr>
+         </thead>
+        <tbody>
+        {% for proj in projatestados %}
+         <tr>
+          <td>{{ proj.ClientesDB.nomecliente }}({{ proj.ClientesDB.estado }})</td>
+          <td>{{ proj.ProjetosDB.projetonome }}</td>
+          <td>{{ proj.ProjetosDB.oscodigo }}</td>
+          {% if proj.ProjetosDB.prjinicreal %}
+          <td>{{ '{:02d}/{:02d}/{:02d}'.format(proj.ProjetosDB.prjinicreal.day, proj.ProjetosDB.prjinicreal.month, proj.ProjetosDB.prjinicreal.year) }}</td>
+          {% else %}
+             <td>sem data</td>
+          {% endif %}
+          {% if proj.ProjetosDB.prjfimreal %}
+          <td>{{ '{:02d}/{:02d}/{:02d}'.format(proj.ProjetosDB.prjfimreal.day, proj.ProjetosDB.prjfimreal.month, proj.ProjetosDB.prjfimreal.year) }}</td>
+          {% else %}
+             <td>sem data</td>
+          {% endif %}
+          {% if proj.ProjetosDB.atestadodat %}
+          <td>{{ '{:02d}/{:02d}/{:02d}'.format(proj.ProjetosDB.atestadodat.day, proj.ProjetosDB.atestadodat.month, proj.ProjetosDB.atestadodat.year) }}</td>
+          {% else %}
+             <td>sem data</td>
+          {% endif %}
+         </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <!-- span>Bônus = {{ currency }}{{ btAtestados }}</span -->
+</div>
+{% endif %}
+<HR>
+<div>
+    <canvas id="barChart" width="900" height="400"></canvas>
+</div>
+<BR>
+  <div>
+
+     <hr>
+     {% if total_itens > 0 %}
+     <table class="table">
+         <thead>
+            <tr>
+              <th scope="col">Cliente</th>
+              <th scope="col">Projeto</th>
+              <th scope="col">Inicio</th>
+              <th scope="col">OS</th>
+              <th scope="col">Responsável</th>
+              <th scope="col">Kickoff</th>
+              <th scope="col">Horas</th>
+              <th scope="col">Avanço</th>
+              <th scope="col">Fatur</th>
+            </tr>
+         </thead>
+        <tbody>
+        {% for proj in projetos %}
+        <tr>
+          <td>{{ proj.ClientesDB.nomecliente }}({{ proj.ClientesDB.estado }})</td>
+          <td>{{ proj.ProjetosDB.projetonome }}</td>
+          {% if proj.ProjetosDB.prjinicplan %}
+          <td>{{ '{:02d}/{:02d}/{:02d}'.format(proj.ProjetosDB.prjinicplan.day, proj.ProjetosDB.prjinicplan.month, proj.ProjetosDB.prjinicplan.year) }}</td>
+          {% else %}
+             <td>sem data</td>
+          {% endif %}
+          <td>{{ '{:02d}/{:02d}/{:02d}'.format(proj.ProjetosDB.osdata.day, proj.ProjetosDB.osdata.month, proj.ProjetosDB.osdata.year) }} {{ proj.ProjetosDB.oscodigo }}</td>
+          <td>{{ proj.ProjetosDB.responsnome }}</td>
+          {% if proj.ProjetosDB.kickoffdata %}
+           <td>{{ proj.ProjetosDB.kickoff }}[{{ '{:02d}/{:02d}/{:02d}'.format(proj.ProjetosDB.kickoffdata.day, proj.ProjetosDB.kickoffdata.month, proj.ProjetosDB.kickoffdata.year) }}]</td>
+          {% else %}
+           <td>{{ proj.ProjetosDB.kickoff }}</td>
+          {% endif %}
+          <td>{{ '{:04d}'.format((proj.ProjetosDB.horasusds or 0) | int) }}/{{ '{:04d}'.format((proj.ProjetosDB.horasprev or 0) | int) }}</td>
+            {% set usds = (proj.ProjetosDB.horasusds or 0) | float %} {% set prev = (proj.ProjetosDB.horasprev or 1) | float %} {% set perc = (usds / prev * 100) if prev > 0 else 0 %}
+          <td>{{ '{:03.0f}'.format(perc) }}%</td>
+          <td>{{ proj.ProjetosDB.faturado }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+       <!-- div class="row">
+        <span>Work in progress: <strong>Esse relatório é só um draft, está sendo montado, dê sua opnião!</strong></span>
+       </div -->
+  </div>
+      {% else %}
+         Sem dados para gerar o relatório!
+      {% endif %}
+{% else %}
+    <p>Insuficient Access Level!</p>
+{% endif %}
+
+<script>
+  var ctx = document.getElementById("barChart").getContext("2d");
+
+  var labels = {{ labelvalues | safe }};
+  var hsprevistas = {{ valorvaluesprev | safe }};
+  var hsutilizadas = {{ valorvaluesused | safe }};
+
+  // Cores para cada dataset, baseadas em seus próprios valores
+  var coresPrevistas = hsprevistas.map(valor => valor >= 0 ? "rgb(0,0,255)" : "rgb(139,69,19)");
+  var coresUtilizadas = hsutilizadas.map(valor => valor >= 0 ? "rgb(0,128,0)" : "rgb(255,0,0)");
+
+  var barChart = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: "Previstas",
+          data: hsprevistas,
+          backgroundColor: coresPrevistas,
+          borderColor: coresPrevistas.map(cor => cor.replace("rgb", "rgba").replace(")", ", 0.8)")),
+          borderWidth: 1
+        },
+        {
+          label: "Utilizadas",
+          data: hsutilizadas,
+          backgroundColor: coresUtilizadas,
+          borderColor: coresUtilizadas.map(cor => cor.replace("rgb", "rgba").replace(")", ", 0.8)")),
+          borderWidth: 1
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      },
+      plugins: {
+        title: {
+          display: true,
+          align: "center",
+          color: "rgb(0,0,255)",
+          font: { weight: "bold" },
+          text: "Projetos em Andamento"
+        }
+      }
+    }
+  });
+</script>
+
+
+{% endblock %}

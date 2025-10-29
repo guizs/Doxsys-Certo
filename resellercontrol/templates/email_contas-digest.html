@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8">
+        <title>DOXSYS - Digest semanal de contas vencidas e a vencer</title>
+    </head>
+    <body>
+        <p>Olá {{ username }},</p>
+        <p>Segue abaixo a lista das contas vencidas:<br>
+        Não esqueça de dar baixa no sistema quando fizer os pagamentos.</p>
+
+        <!-- Inserir a tabela de contas vencidas -->
+        {{ contas_list_vencidas|safe }}
+
+        <p>Abaixo estão os recebimentos vencidos:<br>
+        Não esqueça de dar baixa no sistema quando receber os valores.</p>
+
+        <!-- Inserir a tabela de recebimentos vencidos -->
+        {{ receb_list_vencidos|safe }}
+
+        <p>Lista de contas a serem pagas nessa semana:</p>
+
+        <!-- Inserir a tabela de contas a vencer -->
+        {{ contas_list_vencer|safe }}
+
+        <p>Lista de contas a receber nessa semana:</p>
+
+        <!-- Inserir a tabela de recebimentos a vencer -->
+        {{ receb_list_vencer|safe }}
+
+        <p>Bom dia.<br>
+        <b>DOXSYS</b></p>
+        <br>
+        <img src="cid:logo_dox" alt="DOX Logo">
+    </body>
+</html>

@@ -1,0 +1,94 @@
+{% extends 'home.html' %}
+
+{% block body %}
+<h3>Conversas WhatsApp com {{ instancia }} {% if admin %} Admin {% endif %}</h3>
+
+<table class="table table-hover table-bordered align-middle">
+  <thead class="table-light">
+    <tr>
+      <th>Contato</th>
+      <th>Data</th>
+      <th>Cliente</th>
+      <th>Unidade</th>
+      <th>Status</th>
+      {% if 'AD' in current_user.role %}
+        <th>Instância</th>
+      {% endif %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for msg, nome_contato, nome_cliente, unidade, contrato_ativo in contatos %}
+    <tr>
+      <td>
+        <a href="{{ url_for('whatsapp_conversa', telefone=msg.telefone) }}"
+           class="{{ 'fw-bold' if not msg.lida and msg.tipo == 'recebida' else '' }}">
+           {{ nome_contato or msg.telefone }}
+        </a>
+      </td>
+      <td class="text-muted">{{ msg.data.strftime("%d/%m/%Y %H:%M") }}</td>
+      <td>{{ nome_cliente or "Desconhecido" }}</td>
+      <td>{{ unidade or "N/A" }}</td>
+      <td>
+        {% if contrato_ativo %}
+          <span class="badge bg-success">Contrato Ativo</span>
+        {% else %}
+          <span class="badge bg-secondary">Inativo</span>
+        {% endif %}
+      </td>
+      {% if 'AD' in current_user.role %}
+        <td>{{ msg.instancia }}</td>
+      {% endif %}
+    </tr>
+    {% else %}
+    <tr>
+      <td colspan="6" class="text-center">Nenhuma conversa encontrada.</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<!-- ul class="list-group">
+    {% for msg, nome_contato, nome_cliente, unidade, contrato_ativo in contatos %}
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+        <a href="{{ url_for('whatsapp_conversa', telefone=msg.telefone) }}" 
+           class="{{ 'fw-bold' if not msg.lida and msg.tipo == 'recebida' else '' }}">
+            {{ nome_contato or msg.telefone }}
+        </a>
+        <span class="text-muted">{{ msg.data.strftime("%d/%m/%Y %H:%M") }}</span>
+        <br>
+        <span> {{ nome_cliente or "Desconhecido" }}-{{ unidade or "N/A" }}</span>
+        {% if contrato_ativo %}
+                <span class="badge bg-success">Contrato Ativo</span>
+            {% else %}
+                <span class="badge bg-secondary">Inativo - sem contrato</span>
+        {% endif %}
+        {% if 'AD' in current_user.role %}
+            {{ msg.instancia }}
+        {% endif %}
+    </li>
+    {% else %}
+    <li class="list-group-item">Nenhuma conversa encontrada.</li>
+    {% endfor %}
+</ul -->
+
+{% if mensagens_paginadas.pages > 1 %}
+<div class="row">
+  <div class="btn-toolbar justify-content-center">
+    <div class="btn-group mt-2 me-1">
+      {% for page_num in mensagens_paginadas.iter_pages(left_edge=3, right_edge=3, left_current=3, right_current=3) %}
+        {% if page_num %}
+          {% if mensagens_paginadas.page == page_num %}
+            <a class="btn btn-sm btn-info-secondary fw-bold" href="{{ url_for('whatsapp', page=page_num) }}">{{ page_num }}</a>
+          {% else %}
+            <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('whatsapp', page=page_num) }}">{{ page_num }}</a>
+          {% endif %}
+        {% else %}
+          <span class="btn btn-sm btn-light disabled">…</span>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,165 @@
+{% extends 'home.html' %}
+
+{% block body %}
+
+<div  id="header" class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom" xmlns="http://www.w3.org/1999/html">
+  <a href="javascript:void(0)" class="closebtn" onclick="openNav()" style="text-decoration: none">
+        <span data-feather="maximize-2" class="align-text-bottom"></span></a>
+    <h1 class="h2"><a style="text-decoration: none" href="{{ url_for('contratos', status='ativo', orderby='c')}}">CONTRATOS</a></h1>
+  {% if current_user.is_authenticated and current_user.access >= 1 %}
+  <form class="input-group w-50 mb-md-1">
+    <input name="Search" class="form-control form-control-dark w-50 rounded-0 border-1" type="text" placeholder="Busca em Cliente, Unidade, Produto, Vendedor e Suporte">
+  </form>
+  {% endif %}
+  {% if current_user.is_authenticated and current_user.access >= 3 %}
+  <div class="btn-toolbar mb-2 mb-md-0">
+    <div class="btn-group me-2" style="display:flex; gap:10px; align-items:center">
+        <a href="{{ url_for('contratos', status='ativo', orderby='c')  }}"> <button type="button" class="btn btn-sm btn-outline-secondary">ATIVOS</button></a>
+        <a href="{{ url_for('contratos', status='inativo', orderby='c')  }}"> <button type="button" class="btn btn-sm btn-outline-secondary">INATIVOS</button></a>
+    </div>
+    <div class="btn-group me-2">
+      <form method="POST" action="{{ url_for('contractadd') }}">
+       <button type="submit" class="btn btn-sm btn-outline-primary">Novo Contrato</button>
+      </form>
+    </div>
+  </div>
+  {% endif %}
+</div>
+<div id="main" class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-1 pb-1 mt-1 mb-1">
+    {% if current_user.access >= 1 %}
+    <div class="row px-0 py-0 fs-6" style="line-height:0.8 padding:25px">
+        {% if contratos.items[0] %}
+            <h3 class="h3"> <small>Status:</small> {{  contratos.items[0].ContratosDB.status }}s </h3>
+        {% else %}
+            <h3 class="h3"> Nenhum contrato com Status: {{ status }} </h3>
+        {% endif %}
+      <table class="table table-striped">
+         <thead>
+            <tr>
+              {% if status == 'ativo' %}
+                <th scope="col">Cliente<a style="text-decoration: none" href="{{ url_for('contratos', status='ativo', orderby='c') }}"><span data-feather="chevron-up" class="align-text-bottom"></span></a></th>
+              {% else %}
+                <th scope="col">Cliente</th>
+              {% endif %}
+              <th scope="col">Unidade</th>
+              <th scope="col">Produto</th>
+              <th scope="col">Vendedor</th>
+              <th scope="col">Usrs</th>
+              <th scope="col">GB</th>
+              <th scope="col">Pedido</th>
+              {% if status == 'ativo' %}
+                <th scope="col">Validade<a style="text-decoration: none" href="{{ url_for('contratos', status='ativo', orderby='v') }}"><span data-feather="chevron-up" class="align-text-bottom"></span></a></th>
+              {% else %}
+                <th scope="col">Validade</th>
+              {% endif %}
+              <th scope="col">Duração</th>
+              <th scope="col">PBI</th>
+              <th scope="col">API</th>
+              <th scope="col">Supp</th>
+              <th scope="col">Hrs</th>
+            </tr>
+         </thead>
+      {% if contratos %}
+        <tbody>
+
+        {% for contrato in contratos.items %}
+        <tr>
+            <!--  INCLUIR href="" no a para destacar o cliente quando o modal estiver funcionando  -->
+          <th scope="row"><a style="text-decoration: none" data-id={{ loop.index0 }} data-bs-toggle="modal" data-bs-target="#ShowContract{{ loop.index0 }}"> {{ contrato.ContratosDB.nomecliente }}</a>
+            <a style="text-decoration: none" href="{{ url_for('contractedit', contract_id=contrato.ContratosDB.idcontrato) }}"><span data-feather="edit" class="align-text-bottom"></span></a></th>
+          <td>{{ contrato.ContratosDB.unidade }}</td>
+          <td>{{ contrato.ContratosDB.produto }}</td>
+          <td>{{ contrato.ContratosDB.vendedor }}</td>
+          <td>{{ contrato.ContratosDB.usersavancados + contrato.ContratosDB.usersregulares }}</td>
+          <td>{{ contrato.ContratosDB.gbstorage }}</td>
+          <td>{{ '{:02d}/{:02d}/{:02d}'.format(contrato.ContratosDB.dtpedido.day, contrato.ContratosDB.dtpedido.month, contrato.ContratosDB.dtpedido.year) }}</td>
+          {% if contrato.ContratosDB.validadecontrato <= hoje30 %}
+            <td style="color: #F00">{{ '{:02d}/{:02d}/{:02d}'.format(contrato.ContratosDB.validadecontrato.day, contrato.ContratosDB.validadecontrato.month, contrato.ContratosDB.validadecontrato.year) }}</td>
+          {% else %}
+            <td>{{ '{:02d}/{:02d}/{:02d}'.format(contrato.ContratosDB.validadecontrato.day, contrato.ContratosDB.validadecontrato.month, contrato.ContratosDB.validadecontrato.year) }}</td>
+          {% endif %}
+          <td>{{ contrato.ContratosDB.duracaocontrato }}</td>
+          <td>{{ contrato.ContratosDB.powerbi }}</td>
+          <td>{{ contrato.ContratosDB.apisistema }}</td>
+          <td>{{ contrato.ContratosDB.suporte }}</td>
+          {% if contrato.ContratosDB.horascontratadas > 0 %}
+              {% if contrato.ContratosDB.horasentregues >= contrato.ContratosDB.horascontratadas %}
+                <td style="color: #F00"><strike>Sim</strike></td>
+              {% else %}
+                <td>Sim</td>
+              {% endif %}
+          {% else %}
+              <td>Não</td>
+          {% endif %}
+        </tr>
+
+        <!-- Modal -->
+        <div class="modal fade" id="ShowContract{{ loop.index0 }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable"><div class="modal-content"><div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">ID:{{contrato.ContratosDB.idcliente}} - {{ contrato.ContratosDB.nomecliente }} - {{ contrato.ContratosDB.unidade }}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <div class="col col-16">
+                <h5>{{ contrato.ContratosDB.produto }}({{ contrato.ContratosDB.aplicacaotype }}) <small> - [{{ contrato.ContratosDB.faturamento }}] fatura [{{ contrato.ContratosDB.fatfrequencia}}] </small> </h5>
+                <div class="row">PROPOSTA:{{ contrato.ContratosDB.proposta }} - {{ '{}/{}/{}'.format(contrato.ContratosDB.dtproposta.day, contrato.ContratosDB.dtproposta.month, contrato.ContratosDB.dtproposta.year) }}</div>
+                <div class="row">PEDIDO:{{ contrato.ContratosDB.pedido }} - {{ '{}/{}/{}'.format(contrato.ContratosDB.dtpedido.day, contrato.ContratosDB.dtpedido.month, contrato.ContratosDB.dtpedido.year) }} | VALIDADE: {{ '{}/{}/{}'.format(contrato.ContratosDB.validadecontrato.day, contrato.ContratosDB.validadecontrato.month, contrato.ContratosDB.validadecontrato.year) }}</div>
+                <div class="row">CONTRATO:{{ contrato.ContratosDB.codcontrato }} | DURAÇÃO: {{ contrato.ContratosDB.duracaocontrato }} meses</div>
+                <div class="row">USERS: {{ contrato.ContratosDB.usersregulares + contrato.ContratosDB.usersavancados}} ({{ contrato.ContratosDB.usersregulares }} Reg./{{contrato.ContratosDB.usersavancados}} Avan.)/ {{ contrato.ContratosDB.milregistros }}k docs/ {{ contrato.ContratosDB.gbstorage }}Gb</div>
+                <div class="row">INSTÂNCIA: {{ contrato.ContratosDB.instanciatype }} | INFRA: {{ contrato.ContratosDB.infratype }}</div>
+                <div class="row">HORAS: {{ contrato.ContratosDB.horasentregues }} de {{ contrato.ContratosDB.horascontratadas }} - {{ contrato.ContratosDB.horasstatus }}</div>
+                <div class="row">BM:{{ contrato.ContratosDB.bminstruc }}</div>
+                <div class="row">NF:{{ contrato.ContratosDB.nfinstruc }}</div>
+                <div class="row">OBS:{{ contrato.ContratosDB.observacao }}</div>
+                <div class="row" style="color: #00F">Vendedor: {{ contrato.ContratosDB.vendedor }}</div>
+                <br>
+                <div class="row"><small>Registro {{ contrato.ContratosDB.idcontrato }} alterado em {{ '{}/{}/{}'.format(contrato.ContratosDB.dtalter.day, contrato.ContratosDB.dtalter.month, contrato.ContratosDB.dtalter.year) }} por {{ contrato.usuario.username }}</small></div>
+              </div>
+          </div>
+             <div class="modal-footer">
+                 <div>
+                    <button type="button" class="btn btn-secondary" >
+                        <a style="text-decoration: none; color: white" href="{{ url_for('cliente', cli_id=contrato.ContratosDB.idcliente) }}">Ir para cliente</a>
+                    </button>
+                 </div>
+                  <div ><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Ok</button></div></div></div></div>
+             </div>
+        {% endfor %}
+        </tbody>
+      </table>
+      <div class="row">
+          <div class="btn-toolbar">
+              <div class="btn-group mt-2 me-1">
+              {% for page_num in contratos.iter_pages(left_edge=3, right_edge=3, left_current=3, right_current=3) %}
+                {% if page_num %}
+                 {% if contratos.page == page_num %}
+                  <a class = "btn btn-sm btn-info-secondary fw-bold" href="{{ url_for('contratos', status=status, orderby=orderby, page=page_num)  }}">{{ page_num }}</a>
+                 {% else %}
+                  <a class ="btn btn-sm btn-outline-secondary" href="{{ url_for('contratos', status=status, orderby=orderby, page=page_num)  }}">{{ page_num }}</a>
+                 {% endif %}
+                {% else %}
+                  ...
+                {% endif %}
+              {%endfor %}
+              </div>
+          </div>
+      </div>
+      {% endif %}
+    </div>
+    {% else %}
+        <p>Insuficient Access Level!</p>
+    {% endif %}
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="ShowContract" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+ <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable"><div class="modal-content"><div class="modal-header">
+  <h5 class="modal-title" id="exampleModalLabel">Dados do cliente</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+  </div>
+  <div class="modal-body">
+    Essa janela foi criada para exibir os dados desse cliente!
+  </div>
+  <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Ok</button></div></div></div></div>
+
+{% endblock %}

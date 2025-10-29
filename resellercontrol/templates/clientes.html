@@ -1,0 +1,109 @@
+{% extends 'home.html' %}
+
+{% block body %}
+
+<div  id="header" class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom" xmlns="http://www.w3.org/1999/html">
+  <a href="javascript:void(0)" class="closebtn" onclick="openNav()" style="text-decoration: none">
+        <span data-feather="maximize-2" class="align-text-bottom"></span></a>
+    <h1 class="h2"><a style="text-decoration: none" href="{{ url_for('clientes')}}">CLIENTES</a></h1>
+  {% if current_user.is_authenticated and current_user.access >= 1 %}
+  <form class="input-group w-50 mb-md-1">
+    <input name="Search" class="form-control form-control-dark w-50 rounded-0 border-1" type="text" placeholder="Busca em Cliente, Unidade, Cidade e CNPJ">
+  </form>
+  {% endif %}
+  {% if current_user.is_authenticated and current_user.access >= 2 %}
+  <div class="btn-toolbar mb-2 mb-md-0">
+    <div class="btn-group me-2" style="display:flex; align-items:center; gap:20px">
+      <form method="POST" action="{{ url_for('advsearch') }}">
+       <button type="submit" class="btn btn-sm btn-outline-primary">Busca Avançada</button>
+      </form>
+      <form method="POST" action="{{ url_for('cliadd') }}">
+       <button type="submit" class="btn btn-sm btn-outline-primary">Novo Cliente</button>
+      </form>
+    </div>
+  </div>
+  {% endif %}
+</div>
+<div id="main" class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-1 pb-1 mt-1 mb-1">
+{% if current_user.access >= 1 %}
+<div class="row container-fluid">
+    <table class="table table-striped">
+     <thead>
+        <tr>
+          <th scope="col">CLIENTE</th>
+          <th scope="col">Unidade</th>
+          <th scope="col">Cidade</th>
+          <th scope="col">UF</th>
+          <th scope="col">CNPJ</th>
+        </tr>
+     </thead>
+    {% if clientes %}
+        <tbody>
+        {% for cliente in clientes.items %}
+        <tr>
+            <!--  INCLUIR href="" no a para destacar o cliente quando o modal estiver funcionando  -->
+          <th scope="row">
+            <a style="text-decoration: none" data-id={{ loop.index0 }} data-bs-toggle="modal" data-bs-target="#ShowClient{{ loop.index0 }}"> {{ cliente.nomecliente }}</a>
+            <a style="text-decoration: none" href="{{ url_for('cliedit', cli_id=cliente.idcliente) }}"><span data-feather="edit" class="align-text-bottom"></span></a>
+            <a style="text-decoration: none" href="{{ url_for('cliente', cli_id=cliente.idcliente) }}"><span data-feather="users" class="align-text-bottom"></span></a>
+          </th>
+          <td>{{ cliente.unidade }}</td>
+          <td>{{ cliente.municipio }}</td>
+          <td>{{ cliente.estado }}</td>
+          <td>{{ cliente.cnpj }}</td>
+        </tr>
+
+        <!-- Modal -->
+        <div class="modal fade" id="ShowClient{{ loop.index0 }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable"><div class="modal-content"><div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">ID:{{cliente.idcliente}} - {{ cliente.nomecliente }} <small>- {{ cliente.unidade }}</small></h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <div class="col col-16">
+                <h5>{{ cliente.razaosocial }}</h5>
+                <div class="row">CIDADE: {{ cliente.municipio }} | UF: {{ cliente.estado }} | PAÍS: {{ cliente.pais }}</div>
+                <div class="row">CNPJ:{{ cliente.cnpj }} | IM: {{ cliente.inscrmunicipal }} | IE: {{ cliente.inscrestadual }}</div>
+                <div class="row">Fone:{{ cliente.telefone }} | NFe:{{ cliente.emailnfe }}</div>
+                <div class="row">CEP:{{ cliente.cep }} | End.:{{ cliente.endereco }}</div>
+                <div class="row">Complemento:{{ cliente.complemento }}</div>
+                <div class="row">WEB:{{ cliente.website }}</div>
+                <div class="row">OBS:{{ cliente.observacao }}</div>
+              </div>
+          </div>
+          <div class="modal-footer">
+              <a align="left" style="text-decoration:none" href="{{ url_for('cliente', cli_id=cliente.idcliente) }}">
+                <button type="submit" class="btn btn-primary">Ver Cliente</button></a>
+              <a align="left" style="text-decoration:none" href="{{ url_for('pipelineadd', cli_id=cliente.idcliente) }}">
+                <button type="submit" class="btn btn-primary">Nova Oportunidade</button></a>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Ok</button></div></div></div>
+          </div>
+        {% endfor %}
+        </tbody>
+      </table>
+
+      <div class="row">
+      <div class="btn-toolbar">
+      <div class="btn-group mt-2 me-1">
+      {% for page_num in clientes.iter_pages(left_edge=3, right_edge=3, left_current=3, right_current=3) %}
+        {% if page_num %}
+         {% if clientes.page == page_num %}
+          <a class = "btn btn-sm btn-info-secondary fw-bold" href="{{ url_for('clientes', page=page_num, Search=Search)  }}">{{ page_num }}</a>
+         {% else %}
+          <a class ="btn btn-sm btn-outline-secondary" href="{{ url_for('clientes', page=page_num, Search=Search)  }}">{{ page_num }}</a>
+         {% endif %}
+        {% else %}
+          ...
+        {% endif %}
+      {%endfor %}
+      </div>
+      </div>
+      </div>
+    {% endif %}
+</div>
+{% else %}
+    <p>Insuficient Access Level!</p>
+{% endif %}
+</div>
+
+{% endblock %}

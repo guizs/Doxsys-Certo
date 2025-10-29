@@ -1,0 +1,94 @@
+{% extends 'home.html' %}
+
+{% block body %}
+
+<div id="main" class="row">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+     <a href="javascript:void(0)" class="closebtn" onclick="openNav()" style="text-decoration: none; margin-right:10px">
+        <span data-feather="maximize-2" class="align-text-bottom"></span></a>
+        <div class="container text-left">
+        <img src="{{ url_for('static', filename='logo300x58.gif') }}" class="img-fluid">
+    </div>
+    </div>
+
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <div class="container text-left">
+    <H3>DOX Soluções de Gerenciamento e Informática Ltda</H3>
+    CNPJ: 14.727.318/0001-83 / IE:  ISENTO / IM: 338.428-4<br>
+    Banco Itaú (341) - Agência 1669 / Conta 39014-6 - PIX = CNPJ<br>
+    <HR>
+    <H3>SALA 3410 - Edifício Elbor Trilogy Offices</H3>
+    Av. Pereira Barreto, 1479 - Sala 1609 - São Bernardo do Campo - SP - 09751-000<br>
+    comercial@doxsg.com.br – www.doxsg.com - suporte@doxsg.com - (011) 4330-1293
+    </div>
+    </div>
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+<div class="container text-left">
+  <div class="row">
+    <div class="col">
+      <h2>Nossa História</h2>
+            A DOX foi criada em 16/11/2011 por profissionais com décadas de experiência em implementação de
+			grandes projetos de gerenciamento de documentos técnicos e administrativos, físicos e eletrônicos, incluindo
+			todos os processos inerentes à documentação como workflow, digitalização e gestão do conteúdo documental, para
+			os maiores grupos empresariais da América Latina.<br>
+    </div>
+  </div>
+  <hr>
+  <div class="row">
+    <div class="col">
+      <h2>Missão</h2>
+            <p>
+              Aperfeiçoar nossa equipe visando o domínio de tecnologia de ponta na gestão de projetos, documentos
+			  técnicos digitais e informações críticas para o negócio das empresas, oferecendo aos nossos clientes
+			  soluções adequadas às suas necessidades, proporcionando-lhes vantagens competitivas no mercado,
+			  possibilitando à nossa empresa prosperar com lucro e sabedoria.
+            </p>
+    </div>
+    <div class="col">
+      <h2>Visão de futuro</h2>
+            <p>
+              Ser valorizado e reconhecido nacionalmente com qualidade técnica.
+			  A nossa empresa tem por objetivo estabelecer parcerias comerciais baseadas em confiança,
+			  fidelidade e satisfação mútuas, com empresas que necessitem de soluções para gerenciamento
+			  e tratamento de documentação técnica ou administrativa e gestão de portifólio de projetos.
+            </p>
+    </div>
+    <div class="col">
+      <h2>Valores</h2>
+            <p>
+            <ul>
+            <li>Respeitar o ser humano;</li>
+            <li>Atuar com transparência e ética;</li>
+            <li>Incentivar a criatividade e a inovação;</li>
+            <li>Trabalhar na busca da satisfação dos nossos clientes;</li>
+            <li>Prezar pela integridade e confiança nas relações interpessoais;</li>
+            <li>Respeitar o código de ética e procedimentos internos com a liberdade de propor mudanças;</li>
+            <li>Valorizar o relacionamento de forma a garantir um ambiente de trabalho saudável e prazeroso;</li>
+            <li>Honrar a nossa história contribuindo para o fortalecimento da nossa imagem.</li>
+            </ul>
+            </p>
+    </div>
+  </div>
+</div>
+</div>
+    </div>
+
+<script>
+        function openNav() {
+            document.getElementById(
+                "sidebarMenu").style.width = "200px";
+            document.getElementById(
+                "main").style.marginLeft = "200px";
+        }
+        /* Set the width of the sidebar to 0
+        and the left margin of the page content to 0 */
+        function closeNav() {
+            document.getElementById(
+                "sidebarMenu").style.width = "0";
+            document.getElementById(
+                "main").style.marginLeft = "0";
+        }
+</script>
+
+{% endblock %}

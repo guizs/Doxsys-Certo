@@ -1,0 +1,340 @@
+{% extends 'home.html' %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <form method="POST" action="" class="mt-2" >
+                    {{ form_financedit.csrf_token }}
+                    <legend>Registro do financeiro</legend>
+                    <fieldset>
+                      {% if financeiro == "NEW" %} <!-- INCLUSÃO DE NOVO REGISTRO -->
+                        {% if current_user.access < 4 %}
+                            <HR> Você não pode editar esse registro! <BR>
+                        {% else %}
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom:15px;">
+                                <div style="width:35%; display:flex; align-items:center; gap:5px">
+                                    {{ form_financedit.valor.label(class="form-control-label") }}
+                                    {% if form_financedit.valor.errors %}
+                                        {{ form_financedit.valor(class="form-control is-invalid") }}
+                                        <div class="invalid-feedback">
+                                            {% for erro in form_financedit.valor.errors %}
+                                                {{ erro }}
+                                                {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        {{ form_financedit.valor(class="form-control") }}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom:15px;">
+                                <div style="width:35%; display:flex; align-items:center; gap:5px">
+                                    {{ form_financedit.dt_data.label(class="form-control-label") }}
+                                        {% if form_financedit.dt_data.errors %}
+                                            {{ form_financedit.dt_data(class="form-control is-invalid") }}
+                                            <div class="invalid-feedback">
+                                                {% for erro in form_financedit.dt_data.errors %}
+                                                    {{ erro }}
+                                                {% endfor %}
+                                            </div>
+                                        {% else %}
+                                            {{ form_financedit.dt_data(class="form-control") }}
+                                        {% endif %}
+                                </div>
+                                <div style="width:65%; display:flex; align-items:right; gap:5px">
+                                    {{ form_financedit.benefic.label(class="form-control-label") }}
+                                    {% if form_financedit.benefic.errors %}
+                                        {{ form_financedit.benefic(class="form-control is-invalid") }}
+                                            <div class="invalid-feedback">
+                                                {% for erro in form_financedit.benefic.errors %}
+                                                    {{ erro }}
+                                                {% endfor %}
+                                            </div>
+                                    {% else %}
+                                        {{ form_financedit.benefic(class="form-control") }}
+                                    {% endif %}
+                                </div>
+
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom:15px">
+                                    <div style="width:20%; display:flex; align-items:center; gap:5px">
+                                        {{ form_financedit.parcelas.label(class="form-control-label") }}
+                                        {% if form_financedit.parcelas.errors %}
+                                            {{ form_financedit.parcelas(class="form-control is-invalid") }}
+                                            <div class="invalid-feedback">
+                                                {% for erro in form_financedit.parcelas.errors %}
+                                                    {{ erro }}
+                                                {% endfor %}
+                                            </div>
+                                        {% else %}
+                                            {{ form_financedit.parcelas(class="form-control") }}
+                                        {% endif %}
+                                    </div>
+                                    <div style="width:25%; display:flex; align-items:center; gap:5px">
+                                        {{ form_financedit.frequencia.label(class="form-control-label") }}
+                                        {% if form_financedit.frequencia.errors %}
+                                            {{ form_financedit.frequencia(class="form-control is-invalid") }}
+                                            <div class="invalid-feedback">
+                                                {% for erro in form_financedit.frequencia.errors %}
+                                                    {{ erro }}
+                                                {% endfor %}
+                                            </div>
+                                        {% else %}
+                                            {{ form_financedit.frequencia(class="form-control") }}
+                                        {% endif %}
+                                    </div>
+                                    <div style="width:25%; display:flex; align-items:center; gap:5px">
+                                        {{ form_financedit.categoria.label(class="form-control-label") }}
+                                        {% if form_financedit.categoria.errors %}
+                                            {{ form_financedit.categoria(class="form-control is-invalid") }}
+                                            <div class="invalid-feedback">
+                                                {% for erro in form_financedit.categoria.errors %}
+                                                    {{ erro }}
+                                                {% endfor %}
+                                            </div>
+                                        {% else %}
+                                            {{ form_financedit.categoria(class="form-control") }}
+                                        {% endif %}
+                                    </div>
+                                    <div style="width:30%; display:flex; align-items:center; gap:5px">
+                                        <div style="width:160px">
+                                            {{ form_financedit.subcategor.label(class="form-control-label") }}
+                                        </div>
+                                        {% if form_financedit.subcategor.errors %}
+                                            {{ form_financedit.subcategor(class="form-control is-invalid") }}
+                                            <div class="invalid-feedback">
+                                                {% for erro in form_financedit.subcategor.errors %}
+                                                    {{ erro }}
+                                                {% endfor %}
+                                            </div>
+                                        {% else %}
+                                            {{ form_financedit.subcategor(class="form-control") }}
+                                        {% endif %}
+                                    </div>
+                        {% endif %}
+                        </div>
+                      {% else %} <!-- EDIÇÃO DE REGISTRO EXISTENTE -->
+                        {% if current_user.access < 4 %}
+                            <HR> Você não pode editar esse registro! <BR>
+                        {% else %}
+                            <div  style="display: flex; align-items: center; gap: 10px; margin-bottom:15px">
+                                <div class="col" style="max-width:max-content; display:flex; align-items:center;text-align: left">
+                                    <h3> {{ financeiro.benefic }} <small> {{ 'R${:0,.2f}'.format(financeiro.valor).replace('R$-','-R$') }} </small></h3>
+                                </div>
+                                <div style="width:30%; display:flex; align-items:center; gap:5px">
+                                    {{ form_financedit.valor.label(class="form-control-label") }}
+                                    {% if form_financedit.valor.errors %}
+                                        {{ form_financedit.valor(class="form-control is-invalid") }}
+                                        <div class="invalid-feedback">
+                                        {% for erro in form_financedit.valor.errors %}
+                                            {{ erro }}
+                                        {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        {{ form_financedit.valor(class="form-control") }}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom:15px">
+                                <div style="width:35%; display:flex; align-items:center; gap:5px">
+                                    {{ form_financedit.dt_data.label(class="form-control-label") }}
+                                    {% if form_financedit.dt_data.errors %}
+                                        {{ form_financedit.dt_data(class="form-control is-invalid") }}
+                                        <div class="invalid-feedback">
+                                            {% for erro in form_financedit.dt_data.errors %}
+                                                {{ erro }}
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        {{ form_financedit.dt_data(class="form-control") }}
+                                    {% endif %}
+                                </div>
+                                <div style="width:75%; display:flex; align-items:right; gap:5px">
+                                    {{ form_financedit.benefic.label(class="form-control-label") }}
+                                    {% if form_financedit.benefic.errors %}
+                                        {{ form_financedit.benefic(class="form-control is-invalid") }}
+                                        <div class="invalid-feedback">
+                                            {% for erro in form_financedit.benefic.errors %}
+                                                {{ erro }}
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        {{ form_financedit.benefic(class="form-control") }}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom:15px">
+                                <div style="width:35%; display:flex; align-items:center; gap:5px">
+                                    {{ form_financedit.dtfatur.label(class="form-control-label") }}
+                                    {% if form_financedit.dtfatur.errors %}
+                                        {{ form_financedit.dtfatur(class="form-control is-invalid") }}
+                                        <div class="invalid-feedback">
+                                            {% for erro in form_financedit.dtfatur.errors %}
+                                                {{ erro }}
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        {{ form_financedit.dtfatur(class="form-control") }}
+                                    {% endif %}
+                                </div>
+                                <div style="width:75%; display:flex; align-items:right; gap:5px">
+                                    {{ form_financedit.categoria.label(class="form-control-label") }}
+                                    {% if form_financedit.categoria.errors %}
+                                        {{ form_financedit.categoria(class="form-control is-invalid") }}
+                                        <div class="invalid-feedback">
+                                            {% for erro in form_financedit.categoria.errors %}
+                                                {{ erro }}
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        {{ form_financedit.categoria(class="form-control") }}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom:15px">
+                                <div style="width:35%; display:flex; align-items:center; gap:5px">
+                                    {{ form_financedit.dtpagto.label(class="form-control-label") }}
+                                    {% if form_financedit.dtpagto.errors %}
+                                        {{ form_financedit.dtpagto(class="form-control is-invalid") }}
+                                        <div class="invalid-feedback">
+                                            {% for erro in form_financedit.dtpagto.errors %}
+                                                {{ erro }}
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        {{ form_financedit.dtpagto(class="form-control") }}
+                                    {% endif %}
+                                </div>
+                                <div style="width:75%; display:flex; align-items:right; gap:5px">
+                                    <div style="width:130px">
+                                        {{ form_financedit.subcategor.label(class="form-control-label") }}
+                                    </div>
+                                    {% if form_financedit.subcategor.errors %}
+                                        {{ form_financedit.subcategor(class="form-control is-invalid") }}
+                                        <div class="invalid-feedback">
+                                            {% for erro in form_financedit.subcategor.errors %}
+                                                {{ erro }}
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        {{ form_financedit.subcategor(class="form-control") }}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endif %}
+                      {% endif %}
+                      <div style="width:100%; display:flex; align-items:center; gap:5px; margin-bottom:15px">
+                            {{ form_financedit.descricao.label(class="form-control-label") }}
+                            {% if form_financedit.descricao.errors %}
+                             {{ form_financedit.descricao(class="form-control is-invalid") }}
+                             <div class="invalid-feedback">
+                             {% for erro in form_financedit.descricao.errors %}
+                                 {{ erro }}
+                             {% endfor %}
+                             </div>
+                            {% else %}
+                                {{ form_financedit.descricao(class="form-control") }}
+                            {% endif %}
+                      </div>
+                      <div style="width:100%; display:flex; align-items:center; gap:5px; margin-bottom:15px">
+                            {{ form_financedit.observacao.label(class="form-control-label") }}
+                            {% if form_financedit.observacao.errors %}
+                             {{ form_financedit.observacao(class="form-control is-invalid") }}
+                             <div class="invalid-feedback">
+                             {% for erro in form_financedit.observacao.errors %}
+                                 {{ erro }}
+                             {% endfor %}
+                             </div>
+                            {% else %}
+                                {{ form_financedit.observacao(class="form-control") }}
+                            {% endif %}
+                      </div>
+                    </fieldset>
+                    <div style="display:flex; align-items:center; gap: 30px; margin-bottom:15px">
+                    {% if current_user.is_authenticated and current_user.access >= 4 %}
+                        {{ form_financedit.botao_submit_financedit(class="btn btn-primary mt-2") }}
+                        {% if financeiro != "NEW" %}
+                            <!-- {% if financeiro.pago == 1 %}
+                              <a href="" data-bs-toggle="modal" data-bs-target="#OpenFinanc">
+                                <button type="submit" class="btn btn-primary mt-2">ABRIR - Não pago</button>
+                              </a>
+                            {% else %}
+                              <a href="" data-bs-toggle="modal" data-bs-target="#CloseFinanc">
+                                <button type="submit" class="btn btn-primary mt-2">BAIXAR(Pagar)</button></a>
+                            {% endif %} -->
+                            <a href="" data-bs-toggle="modal" data-bs-target="#DelFinanc">
+                                <button type="button" class="btn btn-danger mt-2">APAGAR</button>
+                            </a>
+                        {% endif %}
+                        <a href="" data-bs-toggle="modal" data-bs-target="#">
+                            <button onclick="history.back()" type="button" class="btn btn-secondary mt-2">Cancelar</button>
+                        </a>
+                    {% endif %}
+                    </div>
+                </form>
+            </div>
+    </div>
+
+        <!-- Modal DelFinanc-->
+        <div class="modal fade" id="DelFinanc" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content"><div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Apagar registro {{financeiro.idfinanc}}?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              {% if financeiro != "NEW" %}
+                <div class="modal-body">Você tem certeza de que deseja excluir este registro?<br>
+                    <strong>{{financeiro.benefic}} {{ 'R${:0,.2f}'.format(financeiro.valor).replace('R$-','-R$') }}</strong></div>
+                <div class="modal-footer">
+              {% endif %}
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <a href="{{ url_for('excluir_financ', financ_id=financeiro.idfinanc, status=status, tipo=tipo, mesatl=mesatl) }}"><button type="submit" class="btn btn-danger">Excluir Registro</button></a>
+                </div></div></div></div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="OpenFinanc" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Abrir registro {{ financeiro.idfinanc }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              {% if financeiro != "NEW" %}
+               <div class="modal-body">
+                Você tem certeza de que deseja abrir {{ financeiro.benefic }} {{ 'R${:0,.2f}'.format(financeiro.valor).replace('R$-','-R$') }}?<br>
+               </div>
+              {% endif %}
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form method="POST" action="{{ url_for('financ_change', financ_id=financeiro.idfinanc, financ_pg=0, status=status, tipo=tipo, mesatl=mesatl, dtpg=hoje) }}">
+                 <button type="submit" class="btn btn-primary">Abrir</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="CloseFinanc" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">BAIXAR o registro {{ financeiro.idfinanc }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              {% if financeiro != "NEW" %}
+               <div class="modal-body">
+                Você tem certeza de que deseja marcar como pago {{ financeiro.benefic }} {{ 'R${:0,.2f}'.format(financeiro.valor).replace('R$-','-R$') }}?<br>
+               </div>
+              {% endif %}
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form method="POST" action="{{ url_for('financ_change', financ_id=financeiro.idfinanc, financ_pg=1, status=status, tipo=tipo, mesatl=mesatl, dtpg=hoje) }}">
+                 <button type="submit" class="btn btn-primary">Baixar</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+{% endblock %}

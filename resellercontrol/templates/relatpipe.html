@@ -1,0 +1,168 @@
+{% extends 'home.html' %}
+
+{% block body %}
+<div id="main" class="d-flex align-items-center pt-3 pb-2 mb-1 border-bottom" style="height: 80px">
+  <h1 class="h2"><a style="text-decoration: none" href="{{ url_for('relatorios', mesatl=mesatl) }}">Relatórios</a></h1>
+  {% if current_user.is_authenticated and current_user.access >= 2 %}
+  <form method="POST" action="" class="mt-2 p-3" style="width: 100%; margin-left: 10px">
+    {{ form_scope.csrf_token }}
+    <fieldset>
+      <div class="form-group row">
+      <div class="row  align-items-left">
+       <div class="row px-0 py-0 fs-6">
+          <div class="row">
+           <div class="col-10 mt-2 mb-2 ml-0 mr-0" style="width: 35px; padding: 0">
+            {{ form_scope.select_mes.label(class="form-control-label") }}
+           </div>
+           <div class="col-10 mt-1 mb-1 ml-0 mr-0" style="width: 110px; padding: 0 5px 0 0">
+             {% if form_scope.select_mes.errors %}
+              {{ form_scope.select_mes(class="form-control is-invalid") }}
+             <div class="invalid-feedback">
+             {% for erro in form_scope.select_mes.errors %}
+                 {{ erro }}
+             {% endfor %}
+             </div>
+            {% else %}
+                {{ form_scope.select_mes(class="form-control") }}
+            {% endif %}
+           </div>
+           <div class="col-1 mt-2 mb-2 ml-0 mr-0">
+            {{ form_scope.botao_submit_scopetecn(class="link-secondary", target="_blank") }}
+           </div>
+       </div>
+      </div>
+      </div>
+    </fieldset>
+  </form>
+</div>
+{% if current_user.access >= 4 %}
+<BR>
+<div class="row">
+   <span>__Data:<strong>{{ '{:02d}/{:02d}/{:02d}'.format(hoje.day, hoje.month, hoje.year) }}</strong> | [Ano:<strong> {{ ano }} - <strong>{{ totApresent }} Apresentaçoes</strong> e <strong>{{ totPedidos }} Pedido(s)</strong> em {{ mesatl }}] = <strong>{{ currency }}{{ bcApresent + bcPedidos }}</strong></span>
+</div>
+{% endif %}
+{% if apresentacoes %}
+<HR>
+<div class="row"> <h3 style="color:blue">Apresentações</h3>
+    <table class="table">
+         <thead>
+            <tr>
+              <th scope="col">Cliente</th>
+              <th scope="col">Produto</th>
+              <th scope="col">Vendedor</th>
+              <th scope="col">Data</th>
+
+            </tr>
+         </thead>
+        <tbody>
+        {% for apres in apresentacoes %}
+         <tr>
+          <td>{{ apres.ClientesDB.nomecliente }}({{ apres.ClientesDB.estado }})</td>
+          <td>{{ apres.PipelineDB.produto }}</td>
+          <td>{{ apres.usuario.username }}</td>
+          <td>{{ '{:02d}/{:02d}/{:02d}'.format(apres.PipelineDB.dtapres.day, apres.PipelineDB.dtapres.month, apres.PipelineDB.dtapres.year) }}</td>
+         </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <!-- spam>Bônus = {{ currency }}{{ btAceitos }}</spam -->
+</div>
+{% endif %}
+{% if pedidos %}
+<HR>
+<div class="row"> <h3 style="color:blue">Pedidos</h3>
+    <table class="table">
+         <thead>
+            <tr>
+              <th scope="col">Cliente</th>
+              <th scope="col">Produto</th>
+              <th scope="col">Vendedor</th>
+              <th scope="col">Data</th>
+
+            </tr>
+         </thead>
+        <tbody>
+        {% for order in pedidos %}
+         <tr>
+          <td>{{ order.ClientesDB.nomecliente }}({{ order.ClientesDB.estado }})</td>
+          <td>{{ order.ContratosDB.produto }}</td>
+          <td>{{ order.ContratosDB.vendedor }}</td>
+          <td>{{ '{:02d}/{:02d}/{:02d}'.format(order.ContratosDB.dtpedido.day, order.ContratosDB.dtpedido.month, order.ContratosDB.dtpedido.year) }}</td>
+         </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <!-- spam>Bônus = {{ currency }}{{ btAceitos }}</spam -->
+</div>
+{% endif %}
+<HR>
+<div>
+    <canvas id="barChart" width="900" height="400"></canvas>
+</div>
+{% else %}
+    <p>Insuficient Access Level!</p>
+{% endif %}
+
+<script>
+  var ctx = document.getElementById("barChart").getContext("2d");
+
+  var labels = {{ labels_apresent | safe }};
+  var valoresApresent = {{ valores_apresent | safe }};
+  var valoresPedidos = {{ valores_pedidos | safe }};
+
+  var barChart = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: "Apresentações por Mês",
+          data: valoresApresent,
+          backgroundColor: "rgba(0, 0, 255, 0.8)",
+          borderColor: "rgba(0, 123, 255, 1)",
+          borderWidth: 1
+        },
+        {
+          label: "Pedidos por Mês",
+          data: valoresPedidos,
+          backgroundColor: "rgba(0, 128, 0, 0.8)",
+          borderColor: "rgba(40, 167, 69, 1)",
+          borderWidth: 1
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: "Quantidade"
+          }
+        },
+        x: {
+          title: {
+            display: true,
+            text: "Mês/Ano"
+          }
+        }
+      },
+      plugins: {
+        title: {
+          display: true,
+          align: "center",
+          color: "rgb(0,123,255)",
+          font: { weight: "bold", size: 18 },
+          text: "Apresentações e Pedidos por Mês"
+        },
+        tooltip: {
+          mode: 'index',
+          intersect: false
+        }
+      }
+    }
+  });
+</script>
+
+{% endblock %}

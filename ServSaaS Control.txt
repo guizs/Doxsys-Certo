@@ -1,0 +1,39 @@
+dbpwd = 'DOX*admin22'
+
+gunicorn --bind 0.0.0.0:8000 resellercontrol:app
+
+[Equiptos]
+idhard
+active
+dtdesativ
+idusuario
+dtcriac
+dtalter
+tipo   (Notebook/Celular/Estapar)
+nomehard 
+usuario
+senhapin
+dtentrega
+dtdevolve
+marca
+modelo
+serie
+imei1
+imei2
+numlinha
+dtcompra
+nfcompra
+fornecedor
+descricao
+valor
+observacao
+
+.replace('R$-','-R$')
+.replace(currency+'-','-'+currency)
+DOXSYS - doxsys.doxsg.com.br
+193.123.124.159 - Oracle OCI
+54.92.229.63 - Amazon AWS
+
+# SRV DOXSYS
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:DOX*admin22@localhost:3306/resellercontrol'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://doxsys:DOX*doxsys2023@localhost:3306/resellercontrol'

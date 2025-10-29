@@ -1,0 +1,292 @@
+{% extends 'home.html' %}
+
+{% block body %}
+
+<div id="main" class="d-flex align-items-center pt-3 pb-2 mb-1 border-bottom" style="height: 80px">
+  <h1 class="h2"><a style="text-decoration: none" href="{{ url_for('relatorios', mesatl=mesatl) }}">Relatórios</a></h1>
+  {% if current_user.is_authenticated and current_user.access >= 4 %}
+  <form method="POST" action="" class="mt-2 p-3" style="width: 100%; margin-left: 10px">
+    {{ form_result.csrf_token }}
+    <fieldset>
+      <div class="form-group row">
+      <div class="row  align-items-left">
+       <div class="row px-0 py-0 fs-6">
+          <div class="row">
+           <div class="col-5 mt-2 mb-2 ml-0 mr-0" style="width: 40px">
+            {{ form_result.select_mes.label(class="form-control-label") }}
+           </div>
+           <div class="col-5 mt-1 mb-1 ml-0 mr-0" style="width: 120px">
+             {% if form_result.select_mes.errors %}
+              {{ form_result.select_mes(class="form-control is-invalid") }}
+             <div class="invalid-feedback">
+             {% for erro in form_result.select_mes.errors %}
+                 {{ erro }}
+             {% endfor %}
+             </div>
+            {% else %}
+                {{ form_result.select_mes(class="form-control") }}
+            {% endif %}
+           </div>
+           <div class="col-5 mt-2 mb-2 ml-0 mr-0" style="width: 40px">
+            {{ form_result.select_mesfim.label(class="form-control-label") }}
+           </div>
+           <div class="col-5 mt-1 mb-1 ml-0 mr-0" style="width: 120px">
+             {% if form_result.select_mesfim.errors %}
+              {{ form_result.select_mesfim(class="form-control is-invalid") }}
+             <div class="invalid-feedback">
+             {% for erro in form_result.select_mesfim.errors %}
+                 {{ erro }}
+             {% endfor %}
+             </div>
+            {% else %}
+                {{ form_result.select_mesfim(class="form-control") }}
+            {% endif %}
+           </div>
+           <div class="col-1 mt-2 mb-2 ml-0 mr-0">
+            {{ form_result.botao_submit_financresult(class="link-secondary", target="_blank") }}
+           </div>
+
+       </div>
+      </div>
+      </div>
+    </fieldset>
+  </form>
+  {% endif %}
+</div>
+
+{% if current_user.is_authenticated and current_user.access >= 4 %}
+  <div id="main" class="pt-3">
+     <div class="row">
+       <span>Data:<strong>{{ '{:02d}/{:02d}/{:02d}'.format(hoje.day, hoje.month, hoje.year) }}</strong> | </strong>Filtro: de <strong>{{ mesatl }}</strong> até <strong>{{ mesfim }}</strong> </span>
+     </div>
+     <table class="table">
+         <thead>
+            <tr>
+              <th scope="col"><strong>RESULTADO REALIZADO</strong></th>
+              <th scope="col">Descrição</th>
+              <th scope="col"></th>
+              <th scope="col">Valores</th>
+            </tr>
+         </thead>
+        <tbody>
+        {% if financresreal %}
+        <tr>
+          <th scope="row"></th>
+          <td>Receitas no período:</td>
+          <td></td>
+          {% if currency %}
+            <td>{{ currency+'{:0,.2f}'.format(financreceitr).replace('R$-','-R$') }}</td>
+          {% else %}
+            <td>{{ '{:0,.2f}'.format(financreceitr).replace(',','').replace('.',',') }}</td>
+          {% endif %}
+        </tr>
+        <tr>
+          <th scope="row"></th>
+          <td>Despesas no período:</td>
+          <td></td>
+          {% if currency %}
+            <td>{{ currency+'{:0,.2f}'.format(financdespsr).replace('R$-','-R$') }}</td>
+          {% else %}
+            <td>{{ '{:0,.2f}'.format(financdespsr).replace(',','').replace('.',',') }}</td>
+          {% endif %}
+        </tr>
+        <tr>
+          <th scope="row"></th>
+          <td></td>
+          <td>Resultado entre {{ mesatl }} e {{ mesfim }}</td>
+          {% if currency %}
+            <td style="color: #000"><strong>{{ currency+'{:0,.2f}'.format(financresreal).replace('R$-','-R$') }}</strong></td>
+          {% else %}
+            <td style="color: #000"><strong>{{ '{:0,.2f}'.format(financresreal).replace(',','').replace('.',',') }}</strong></td>
+          {% endif %}
+        </tr>
+
+        <tr>
+          <th scope="row"><strong>EBIT (LAJI)</strong></th>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <th scope="row"></th>
+          <td>Receitas Operacionais:</td>
+          <td></td>
+          {% if currency %}
+            <td>{{ currency+'{:0,.2f}'.format(financreceitr).replace('R$-','-R$') }}</td>
+          {% else %}
+            <td>{{ '{:0,.2f}'.format(financreceitr).replace(',','').replace('.',',') }}</td>
+          {% endif %}
+        </tr>
+        <tr>
+          <th scope="row"></th>
+          <td>Despesas (antes de Impostos e Lucros):</td>
+          <td></td>
+          {% if currency %}
+            <td>{{ currency+'{:0,.2f}'.format(despaielr).replace('R$-','-R$') }}</td>
+          {% else %}
+            <td>{{ '{:0,.2f}'.format(despaielr).replace(',','').replace('.',',') }}</td>
+          {% endif %}
+        </tr>
+        <tr>
+          <th scope="row"></th>
+          <td>EBIT (LAJI) entre {{ mesatl }} e {{ mesfim }}</td>
+          {% if financreceitr != 0 %}
+             <td>Margem EBIT = {{'{:0,.3f}'.format(ebitdar / financreceitr)}} </td>
+          {% else %}
+             <td>Margem EBIT = Indeterminada </td>
+          {% endif %}
+          {% if currency %}
+            <td style="color: #000"><strong>{{ currency+'{:0,.2f}'.format(ebitdar).replace('R$-','-R$') }}</strong></td>
+          {% else %}
+            <td style="color: #000"><strong>{{ '{:0,.2f}'.format(ebitdar).replace(',','').replace('.',',') }}</strong></td>
+          {% endif %}
+        </tr>
+        <tr>
+          <th scope="row">Destaques:</th>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <th scope="row"></th>
+          <td>Lucros distribuídos no período:</td>
+          <td></td>
+          {% if currency %}
+            <td>{{ currency+'{:0,.2f}'.format(financlucrosr).replace('R$-','-R$') }}</td>
+          {% else %}
+            <td>{{ '{:0,.2f}'.format(financlucrosr).replace(',','').replace('.',',') }}</td>
+          {% endif %}
+        </tr>
+        <tr>
+          <th scope="row"></th>
+          <td>Impostos no período:</td>
+          <td></td>
+          {% if currency %}
+            <td>{{ currency+'{:0,.2f}'.format(financimposr).replace('R$-','-R$') }}</td>
+          {% else %}
+            <td>{{ '{:0,.2f}'.format(financimposr).replace(',','').replace('.',',') }}</td>
+          {% endif %}
+        </tr>
+        {% endif %}
+        </tbody>
+      </table>
+      <span><strong>Notas:</strong></span>
+      <span>(1) EBIT que é seu Lucro Operacional Líquido. A DOX não tem empréstimos (portanto sem amortizações) ou aplicações financeiras significativas, também não tem ativos produtivos para depreciar.  </span>
+      <span>(2) A Margem EBIT representa a razão entre o EBIT e o total das Receitas Operacionais.</span><hr>
+      <table class="table">
+         <thead>
+            <tr>
+              <th scope="col"><strong>REALIZADO + PREVISTO</strong></th>
+              <th scope="col">Descrição</th>
+              <th scope="col"></th>
+              <th scope="col">Valores</th>
+            </tr>
+         </thead>
+        <tbody>
+        {% if financresprev %}
+        <tr>
+          <th scope="row"></th>
+          <td>Receitas previstas:</td>
+          <td></td>
+          {% if currency %}
+            <td>{{ currency+'{:0,.2f}'.format(financreceitp).replace('R$-','-R$') }}</td>
+          {% else %}
+            <td>{{ '{:0,.2f}'.format(financreceitp).replace(',','').replace('.',',') }}</td>
+          {% endif %}
+        </tr>
+        <tr>
+          <th scope="row"></th>
+          <td>Despesas previstas:</td>
+          <td></td>
+          {% if currency %}
+            <td>{{ currency+'{:0,.2f}'.format(financdespsp).replace('R$-','-R$') }}</td>
+          {% else %}
+            <td>{{ '{:0,.2f}'.format(financdespsp).replace(',','').replace('.',',') }}</td>
+          {% endif %}
+        </tr>
+        <tr>
+          <th scope="row"></th>
+          <td></td>
+          <td>Resultado previsto entre {{ mesatl }} e {{ mesfim }}</td>
+          {% if currency %}
+            <td style="color: #000"><strong>{{ currency+'{:0,.2f}'.format(financresprev).replace('R$-','-R$') }}</strong></td>
+          {% else %}
+            <td style="color: #000"><strong>{{ '{:0,.2f}'.format(financresprev).replace(',','').replace('.',',') }}</strong></td>
+          {% endif %}
+        </tr>
+
+        <tr>
+          <th scope="row"><strong>EBIT (LAJI)</strong></th>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <th scope="row"></th>
+          <td>Receitas Operacionais:</td>
+          <td></td>
+          {% if currency %}
+            <td>{{ currency+'{:0,.2f}'.format(financreceitp).replace('R$-','-R$') }}</td>
+          {% else %}
+            <td>{{ '{:0,.2f}'.format(financreceitp).replace(',','').replace('.',',') }}</td>
+          {% endif %}
+        </tr>
+        <tr>
+          <th scope="row"></th>
+          <td>Despesas (antes de Impostos e Lucros):</td>
+          <td></td>
+          {% if currency %}
+            <td>{{ currency+'{:0,.2f}'.format(despaielp).replace('R$-','-R$') }}</td>
+          {% else %}
+            <td>{{ '{:0,.2f}'.format(despaielp).replace(',','').replace('.',',') }}</td>
+          {% endif %}
+        </tr>
+        <tr>
+          <th scope="row"></th>
+          <td>EBIT (LAJI) entre {{ mesatl }} e {{ mesfim }}</td>
+          {% if financreceitp != 0 %}
+             <td>Margem EBIT = {{'{:0,.3f}'.format(ebitdap / financreceitp)}} </td>
+          {% else %}
+             <td>Margem EBIT = Indeterminada </td>
+          {% endif %}
+          {% if currency %}
+            <td style="color: #000"><strong>{{ currency+'{:0,.2f}'.format(ebitdap).replace('R$-','-R$') }}</strong></td>
+          {% else %}
+            <td style="color: #000"><strong>{{ '{:0,.2f}'.format(ebitdap).replace(',','').replace('.',',') }}</strong></td>
+          {% endif %}
+        </tr>
+        <tr>
+          <th scope="row">Destaques:</th>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <th scope="row"></th>
+          <td>Lucros distribuídos no período:</td>
+          <td></td>
+          {% if currency %}
+            <td>{{ currency+'{:0,.2f}'.format(financlucrosp).replace('R$-','-R$') }}</td>
+          {% else %}
+            <td>{{ '{:0,.2f}'.format(financlucrosp).replace(',','').replace('.',',') }}</td>
+          {% endif %}
+        </tr>
+        <tr>
+          <th scope="row"></th>
+          <td>Impostos no período:</td>
+          <td></td>
+          {% if currency %}
+            <td>{{ currency+'{:0,.2f}'.format(financimposp).replace('R$-','-R$') }}</td>
+          {% else %}
+            <td>{{ '{:0,.2f}'.format(financimposp).replace(',','').replace('.',',') }}</td>
+          {% endif %}
+        </tr>
+        {% endif %}
+        </tbody>
+      </table>
+  </div>
+{% else %}
+    <p style="color: #F00">WRONG REPORT DATA!</p>
+{% endif %}
+
+{% endblock %}

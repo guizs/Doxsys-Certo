@@ -1,0 +1,499 @@
+{% extends 'home.html' %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <form method="POST" action="" class="border mt-2 p-3 border-secondary" >
+                    {{ form_editarprojeto.csrf_token }}
+                    <legend>Dados do projeto</legend>
+                    <fieldset>
+                        {% if projeto == "NEW" %}
+                        <div class="form-group">
+                         <div class="col" style="text-align: left">
+                                <h3> Novo projeto </small></h3>
+                         </div>
+                        </div>
+                        {% else %}
+                        <div class="form-group">
+                            <div class="col" style="text-align: left">
+                                <h3> {{ cliente.nomecliente }} - <small> {{ cliente.unidade }} </small></h3>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% if current_user.access < 2 %}
+                            <HR> Você não pode editar esse projeto! <BR>
+                        {% else %}
+                            {% if projeto == "NEW" %}
+                            <div class="form-group">
+                                {{ form_editarprojeto.select_cliente.label(class="form-control-label") }}
+                                {% if form_editarprojeto.select_cliente.errors %}
+                                 {{ form_editarprojeto.select_cliente(class="form-control is-invalid") }}
+                                 <div class="invalid-feedback">
+                                 {% for erro in form_editarprojeto.select_cliente.errors %}
+                                     {{ erro }}
+                                 {% endfor %}
+                                 </div>
+                                {% else %}
+                                    {{ form_editarprojeto.select_cliente(class="form-control") }}
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                        <div style="display:flex;  align-items: center; gap: 10px">
+                            {% if projeto != "NEW" %}
+                                <div class="form-group" style="width:21%;">
+                            {% else %}
+                                <div class="form-group" style="width:61%;">
+                            {% endif %}
+                             {{ form_editarprojeto.select_status.label(class="form-control-label") }}
+                             {% if form_editarprojeto.select_status.errors %}
+                                 {{ form_editarprojeto.select_status(class="form-control is-invalid") }}
+                                 <div class="invalid-feedback">
+                                 {% for erro in form_editarprojeto.select_status.errors %}
+                                     {{ erro }}
+                                 {% endfor %}
+                                 </div>
+                             {% else %}
+                                 {{ form_editarprojeto.select_status(class="form-control") }}
+                             {% endif %}
+                            </div>
+                            <div class="form-group" style="width:16%">
+                             {{ form_editarprojeto.prjinicplan.label(class="form-control-label") }}
+                             {% if form_editarprojeto.prjinicplan.errors %}
+                                 {{ form_editarprojeto.prjinicplan(class="form-control is-invalid") }}
+                                 <div class="invalid-feedback">
+                                 {% for erro in form_editarprojeto.prjinicplan.errors %}
+                                     {{ erro }}
+                                 {% endfor %}
+                                 </div>
+                             {% else %}
+                                 {{ form_editarprojeto.prjinicplan(class="form-control") }}
+                             {% endif %}
+                            </div>
+                            <div class="form-group" style="width:23%">
+                             {{ form_editarprojeto.prjfimplan.label(class="form-control-label") }}
+                             {% if form_editarprojeto.prjfimplan.errors %}
+                                 {{ form_editarprojeto.prjfimplan(class="form-control is-invalid") }}
+                                 <div class="invalid-feedback">
+                                 {% for erro in form_editarprojeto.prjfimplan.errors %}
+                                     {{ erro }}
+                                 {% endfor %}
+                                 </div>
+                             {% else %}
+                                 {{ form_editarprojeto.prjfimplan(class="form-control") }}
+                             {% endif %}
+                            </div>
+                            {% if projeto != "NEW" %}
+                                <div class="form-group" style="width:20%">
+                                 {{ form_editarprojeto.prjinicreal.label(class="form-control-label") }}
+                                 {% if form_editarprojeto.prjinicreal.errors %}
+                                     {{ form_editarprojeto.prjinicreal(class="form-control is-invalid") }}
+                                     <div class="invalid-feedback">
+                                     {% for erro in form_editarprojeto.prjinicreal.errors %}
+                                         {{ erro }}
+                                     {% endfor %}
+                                     </div>
+                                 {% else %}
+                                     {{ form_editarprojeto.prjinicreal(class="form-control") }}
+                                 {% endif %}
+                                </div>
+                                <div class="form-group" style="width:20%">
+                                 {{ form_editarprojeto.prjfimreal.label(class="form-control-label") }}
+                                 {% if form_editarprojeto.prjfimreal.errors %}
+                                     {{ form_editarprojeto.prjfimreal(class="form-control is-invalid") }}
+                                     <div class="invalid-feedback">
+                                     {% for erro in form_editarprojeto.prjfimreal.errors %}
+                                         {{ erro }}
+                                     {% endfor %}
+                                     </div>
+                                 {% else %}
+                                     {{ form_editarprojeto.prjfimreal(class="form-control") }}
+                                 {% endif %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px   ">
+                         <div class="form-group" style="width:43.45%">
+                             {{ form_editarprojeto.projetonome.label(class="form-control-label") }}
+                             {% if form_editarprojeto.projetonome.errors %}
+                                 {{ form_editarprojeto.projetonome(class="form-control is-invalid") }}
+                                 <div class="invalid-feedback">
+                                 {% for erro in form_editarprojeto.projetonome.errors %}
+                                     {{ erro }}
+                                 {% endfor %}
+                                 </div>
+                             {% else %}
+                                 {{ form_editarprojeto.projetonome(class="form-control") }}
+                             {% endif %}
+                            </div>
+                            <div class="form-group" style="width:43.45%">
+                             {{ form_editarprojeto.propcodigo.label(class="form-control-label") }}
+                             {% if form_editarprojeto.propcodigo.errors %}
+                                 {{ form_editarprojeto.propcodigo(class="form-control is-invalid") }}
+                                 <div class="invalid-feedback">
+                                 {% for erro in form_editarprojeto.propcodigo.errors %}
+                                     {{ erro }}
+                                 {% endfor %}
+                                 </div>
+                             {% else %}
+                                 {{ form_editarprojeto.propcodigo(class="form-control") }}
+                             {% endif %}
+                            </div>
+                            <div class="form-group" style="width:13%">
+                             {{ form_editarprojeto.propdata.label(class="form-control-label") }}
+                             {% if form_editarprojeto.propdata.errors %}
+                                 {{ form_editarprojeto.propdata(class="form-control is-invalid") }}
+                                 <div class="invalid-feedback">
+                                 {% for erro in form_editarprojeto.propdata.errors %}
+                                     {{ erro }}
+                                 {% endfor %}
+                                 </div>
+                             {% else %}
+                                 {{ form_editarprojeto.propdata(class="form-control") }}
+                             {% endif %}
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div class="form-group" style="width:37%">
+                             {{ form_editarprojeto.pedidocodig.label(class="form-control-label") }}
+                             {% if form_editarprojeto.pedidocodig.errors %}
+                                 {{ form_editarprojeto.pedidocodig(class="form-control is-invalid") }}
+                                 <div class="invalid-feedback">
+                                 {% for erro in form_editarprojeto.pedidocodig.errors %}
+                                     {{ erro }}
+                                 {% endfor %}
+                                 </div>
+                             {% else %}
+                                 {{ form_editarprojeto.pedidocodig(class="form-control") }}
+                             {% endif %}
+                            </div>
+                            <div class="form-group" style="width:13%">
+                             {{ form_editarprojeto.pedidodata.label(class="form-control-label") }}
+                             {% if form_editarprojeto.pedidodata.errors %}
+                                 {{ form_editarprojeto.pedidodata(class="form-control is-invalid") }}
+                                 <div class="invalid-feedback">
+                                 {% for erro in form_editarprojeto.pedidodata.errors %}
+                                     {{ erro }}
+                                 {% endfor %}
+                                 </div>
+                             {% else %}
+                                 {{ form_editarprojeto.pedidodata(class="form-control") }}
+                             {% endif %}
+                            </div>
+                            <div class="form-group" style="width:37%">
+                             {{ form_editarprojeto.oscodigo.label(class="form-control-label") }}
+                             {% if form_editarprojeto.oscodigo.errors %}
+                                 {{ form_editarprojeto.oscodigo(class="form-control is-invalid") }}
+                                 <div class="invalid-feedback">
+                                 {% for erro in form_editarprojeto.oscodigo.errors %}
+                                     {{ erro }}
+                                 {% endfor %}
+                                 </div>
+                             {% else %}
+                                 {{ form_editarprojeto.oscodigo(class="form-control") }}
+                             {% endif %}
+                            </div>
+                            <div class="form-group" style="width:13%">
+                             {{ form_editarprojeto.osdata.label(class="form-control-label") }}
+                             {% if form_editarprojeto.osdata.errors %}
+                                 {{ form_editarprojeto.osdata(class="form-control is-invalid") }}
+                                 <div class="invalid-feedback">
+                                 {% for erro in form_editarprojeto.osdata.errors %}
+                                     {{ erro }}
+                                 {% endfor %}
+                                 </div>
+                             {% else %}
+                                 {{ form_editarprojeto.osdata(class="form-control") }}
+                             {% endif %}
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            {% if projeto != "NEW" %}
+                                <div class="form-group" style="width:25%">
+                                 {{ form_editarprojeto.horasusds.label(class="form-control-label") }}
+                                 {% if form_editarprojeto.horasusds.errors %}
+                                     {{ form_editarprojeto.horasusds(class="form-control is-invalid") }}
+                                     <div class="invalid-feedback">
+                                     {% for erro in form_editarprojeto.horasusds.errors %}
+                                         {{ erro }}
+                                     {% endfor %}
+                                     </div>
+                                 {% else %}
+                                     {{ form_editarprojeto.horasusds(class="form-control") }}
+                                 {% endif %}
+                                </div>
+                            {% endif %}
+                            {% if projeto != "NEW" %}
+                                <div class="form-group" style="width:25%">
+                            {% else %}
+                                    <div class="form-group" style="width:33.3%">
+                            {% endif %}
+                             {{ form_editarprojeto.horasprev.label(class="form-control-label") }}
+                             {% if form_editarprojeto.horasprev.errors %}
+                                 {{ form_editarprojeto.horasprev(class="form-control is-invalid") }}
+                                 <div class="invalid-feedback">
+                                 {% for erro in form_editarprojeto.horasprev.errors %}
+                                     {{ erro }}
+                                 {% endfor %}
+                                 </div>
+                             {% else %}
+                                 {{ form_editarprojeto.horasprev(class="form-control") }}
+                             {% endif %}
+                            </div>
+                             {% if projeto != "NEW" %}
+                                <div class="form-group" style="width:25%">
+                            {% else %}
+                                    <div class="form-group" style="width:33.3%">
+                            {% endif %}
+                             {{ form_editarprojeto.responsnome.label(class="form-control-label") }}
+                             {% if form_editarprojeto.responsnome.errors %}
+                                 {{ form_editarprojeto.responsnome(class="form-control is-invalid") }}
+                                 <div class="invalid-feedback">
+                                 {% for erro in form_editarprojeto.responsnome.errors %}
+                                     {{ erro }}
+                                 {% endfor %}
+                                 </div>
+                             {% else %}
+                                 {{ form_editarprojeto.responsnome(class="form-control") }}
+                             {% endif %}
+                            </div>
+                             {% if projeto != "NEW" %}
+                                <div class="form-group" style="width:25%">
+                            {% else %}
+                                    <div class="form-group" style="width:33.3%">
+                            {% endif %}
+                             {{ form_editarprojeto.tecniconome.label(class="form-control-label") }}
+                             {% if form_editarprojeto.tecniconome.errors %}
+                                 {{ form_editarprojeto.tecniconome(class="form-control is-invalid") }}
+                                 <div class="invalid-feedback">
+                                 {% for erro in form_editarprojeto.tecniconome.errors %}
+                                     {{ erro }}
+                                 {% endfor %}
+                                 </div>
+                             {% else %}
+                                 {{ form_editarprojeto.tecniconome(class="form-control") }}
+                             {% endif %}
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            {% if projeto != "NEW" %}
+                                <div class="form-group" style="width:16.6%">
+                                 {{ form_editarprojeto.kickoff.label(class="form-control-label") }}
+                                 {{ form_editarprojeto.kickoff(class="form-control") }}
+                                </div>
+                                <div class="form-group" style="width:16.6%">
+                                 {{ form_editarprojeto.kickoffdata.label(class="form-control-label") }}
+                                 {% if form_editarprojeto.kickoffdata.errors %}
+                                     {{ form_editarprojeto.kickoffdata(class="form-control is-invalid") }}
+                                     <div class="invalid-feedback">
+                                     {% for erro in form_editarprojeto.kickoffdata.errors %}
+                                         {{ erro }}
+                                     {% endfor %}
+                                     </div>
+                                 {% else %}
+                                     {{ form_editarprojeto.kickoffdata(class="form-control") }}
+                                 {% endif %}
+                                </div>
+                                <div class="form-group" style="width:16.6%">
+                                 {{ form_editarprojeto.testes.label(class="form-control-label") }}
+                                 {{ form_editarprojeto.testes(class="form-control") }}
+                                </div>
+                                <div class="form-group" style="width:16.6%">
+                                 {{ form_editarprojeto.testesdata.label(class="form-control-label") }}
+                                 {% if form_editarprojeto.testesdata.errors %}
+                                     {{ form_editarprojeto.testesdata(class="form-control is-invalid") }}
+                                     <div class="invalid-feedback">
+                                     {% for erro in form_editarprojeto.testesdata.errors %}
+                                         {{ erro }}
+                                     {% endfor %}
+                                     </div>
+                                 {% else %}
+                                     {{ form_editarprojeto.testesdata(class="form-control") }}
+                                 {% endif %}
+                                </div>
+                                <div class="form-group" style="width:16.6%">
+                                 {{ form_editarprojeto.homologacao.label(class="form-control-label") }}
+                                 {{ form_editarprojeto.homologacao(class="form-control") }}
+                                </div>
+                                <div class="form-group" style="width:16.6%">
+                                 {{ form_editarprojeto.homologdata.label(class="form-control-label") }}
+                                 {% if form_editarprojeto.homologdata.errors %}
+                                     {{ form_editarprojeto.homologdata(class="form-control is-invalid") }}
+                                     <div class="invalid-feedback">
+                                     {% for erro in form_editarprojeto.homologdata.errors %}
+                                         {{ erro }}
+                                     {% endfor %}
+                                     </div>
+                                 {% else %}
+                                     {{ form_editarprojeto.homologdata(class="form-control") }}
+                                 {% endif %}
+                                </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div class="form-group" style="width:25%">
+                                 {{ form_editarprojeto.treinamento.label(class="form-control-label") }}
+                                 {{ form_editarprojeto.treinamento(class="form-control") }}
+                                </div>
+                                <div class="form-group" style="width:25%">
+                                 {{ form_editarprojeto.treinamdata.label(class="form-control-label") }}
+                                 {% if form_editarprojeto.treinamdata.errors %}
+                                     {{ form_editarprojeto.treinamdata(class="form-control is-invalid") }}
+                                     <div class="invalid-feedback" style="width:25%">
+                                     {% for erro in form_editarprojeto.treinamdata.errors %}
+                                         {{ erro }}
+                                     {% endfor %}
+                                     </div>
+                                 {% else %}
+                                     {{ form_editarprojeto.treinamdata(class="form-control") }}
+                                 {% endif %}
+                                </div>
+                                <div class="form-group" style="width:25%">
+                                 {{ form_editarprojeto.dbookpwrbi.label(class="form-control-label") }}
+                                 {{ form_editarprojeto.dbookpwrbi(class="form-control") }}
+                                </div>
+                                <div class="form-group" style="width:25%">
+                                 {{ form_editarprojeto.dbkpwrbidt.label(class="form-control-label") }}
+                                 {% if form_editarprojeto.dbkpwrbidt.errors %}
+                                     {{ form_editarprojeto.dbkpwrbidt(class="form-control is-invalid") }}
+                                     <div class="invalid-feedback">
+                                     {% for erro in form_editarprojeto.dbkpwrbidt.errors %}
+                                         {{ erro }}
+                                     {% endfor %}
+                                     </div>
+                                 {% else %}
+                                     {{ form_editarprojeto.dbkpwrbidt(class="form-control") }}
+                                 {% endif %}
+                                </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                                <div class="form-group" style="width:25%">
+                                 {{ form_editarprojeto.aceiteproj.label(class="form-control-label") }}
+                                 {{ form_editarprojeto.aceiteproj(class="form-control") }}
+                                </div>
+                                <div class="form-group" style="width:25%">
+                                 {{ form_editarprojeto.aceitedata.label(class="form-control-label") }}
+                                 {% if form_editarprojeto.aceitedata.errors %}
+                                     {{ form_editarprojeto.aceitedata(class="form-control is-invalid") }}
+                                     <div class="invalid-feedback">
+                                     {% for erro in form_editarprojeto.aceitedata.errors %}
+                                         {{ erro }}
+                                     {% endfor %}
+                                     </div>
+                                 {% else %}
+                                     {{ form_editarprojeto.aceitedata(class="form-control") }}
+                                 {% endif %}
+                                </div>
+                              <div class="form-group" style="width:25%">
+                                 {{ form_editarprojeto.atestado.label(class="form-control-label") }}
+                                 {{ form_editarprojeto.atestado(class="form-control") }}
+                                </div>
+                                <div class="form-group" style="width:25%">
+                                 {{ form_editarprojeto.atestadodat.label(class="form-control-label") }}
+                                 {% if form_editarprojeto.atestadodat.errors %}
+                                     {{ form_editarprojeto.atestadodat(class="form-control is-invalid") }}
+                                     <div class="invalid-feedback">
+                                     {% for erro in form_editarprojeto.atestadodat.errors %}
+                                         {{ erro }}
+                                     {% endfor %}
+                                     </div>
+                                 {% else %}
+                                     {{ form_editarprojeto.atestadodat(class="form-control") }}
+                                 {% endif %}
+                                </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                                <div class="form-group" style="width:33.3%">
+                                 {{ form_editarprojeto.faturado.label(class="form-control-label") }}
+                                 {{ form_editarprojeto.faturado(class="form-control") }}
+                                </div>
+                                <div class="form-group" style="width:33.3%">
+                                 {{ form_editarprojeto.nfnumero.label(class="form-control-label") }}
+                                 {% if form_editarprojeto.nfnumero.errors %}
+                                     {{ form_editarprojeto.nfnumero(class="form-control is-invalid") }}
+                                     <div class="invalid-feedback">
+                                     {% for erro in form_editarprojeto.nfnumero.errors %}
+                                         {{ erro }}
+                                     {% endfor %}
+                                     </div>
+                                 {% else %}
+                                     {{ form_editarprojeto.nfnumero(class="form-control") }}
+                                 {% endif %}
+                                </div>
+                                <div class="form-group" style="width:33.3%">
+                                 {{ form_editarprojeto.nfdata.label(class="form-control-label") }}
+                                 {% if form_editarprojeto.nfdata.errors %}
+                                     {{ form_editarprojeto.nfdata(class="form-control is-invalid") }}
+                                     <div class="invalid-feedback">
+                                     {% for erro in form_editarprojeto.nfdata.errors %}
+                                         {{ erro }}
+                                     {% endfor %}
+                                     </div>
+                                 {% else %}
+                                     {{ form_editarprojeto.nfdata(class="form-control") }}
+                                 {% endif %}
+                                </div>
+                            {% endif %}
+                        </div>
+                            <div class="form-group">
+                             {{ form_editarprojeto.stakeholders.label(class="form-control-label") }}
+                             {% if form_editarprojeto.stakeholders.errors %}
+                                 {{ form_editarprojeto.stakeholders(class="form-control is-invalid") }}
+                                 <div class="invalid-feedback">
+                                 {% for erro in form_editarprojeto.stakeholders.errors %}
+                                     {{ erro }}
+                                 {% endfor %}
+                                 </div>
+                             {% else %}
+                                 {{ form_editarprojeto.stakeholders(class="form-control") }}
+                             {% endif %}
+                            </div>
+                            <div class="form-group mb-3">
+                             {{ form_editarprojeto.observacao.label(class="form-control-label") }}
+                             {% if form_editarprojeto.observacao.errors %}
+                                 {{ form_editarprojeto.observacao(class="form-control is-invalid") }}
+                                 <div class="invalid-feedback">
+                                 {% for erro in form_editarprojeto.observacao.errors %}
+                                     {{ erro }}
+                                 {% endfor %}
+                                 </div>
+                             {% else %}
+                                 {{ form_editarprojeto.observacao(class="form-control") }}
+                             {% endif %}
+                            </div>
+                        {% endif %}
+                    </fieldset>
+                    {{ form_editarprojeto.botao_submit_editarprojeto(class="btn btn-primary mt-2") }}
+                    {% if current_user.is_authenticated and current_user.access >= 3 %}
+                        {% if projeto != "NEW" %}
+                        <a href="" data-bs-toggle="modal" data-bs-target="#DelProject">
+                            <button type="button" class="btn btn-sm btn-danger">APAGAR PROJETO</button>
+                        </a>
+                        {% endif %}
+                    {% endif %}
+                </form>
+            </div>
+        <hr>
+    </div>
+
+<!-- Modal -->
+<div class="modal fade" id="DelProject" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+        <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Apagar projeto {{ projeto.idprojeto }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Você tem certeza de que deseja excluir o projeto {{ projeto.projetonome }}?<br>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <form method="POST" action="{{ url_for('excluir_projeto', project_id=projeto.idprojeto) }}">
+         <button type="submit" class="btn btn-danger">Excluir Projeto</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

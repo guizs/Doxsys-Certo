@@ -1,0 +1,57 @@
+{% extends 'home.html' %}
+
+{% block body %}
+
+{% if current_user.is_authenticated and current_user.access >= 4 %}
+  <div id="main" class="pt-3 border-bottom">
+     <div class="row">
+       <span>__Data:<strong>{{ '{:02d}/{:02d}/{:02d}'.format(hoje.day, hoje.month, hoje.year) }}</strong> | Status:<strong>{{ status }}</strong> Tipo:<strong>{{ tipo }} </strong>Mês:<strong>{{ mesatl }}</strong>(comparando com Data FATURADO) - [<strong>{{ total_itens }}</strong> itens = <strong>{{ total_valor }}</strong>]</span>
+     </div>
+     <hr>
+     {% if total_itens > 0 %}
+     <table class="table">
+         <thead>
+            <tr>
+              <th scope="col">Data</th>
+              <th scope="col">Faturado</th>
+              <th scope="col">Pagto</th>
+              <th scope="col">Categoria</th>
+              <th scope="col">SubCategoria</th>
+              <th scope="col">Cliente/Fornec</th>
+              <th scope="col">Valor</th>
+              <th scope="col">Descrição</th>
+              <th scope="col">Observação</th>
+            </tr>
+         </thead>
+        <tbody>
+        {% for financ in financeiro %}
+        <tr>
+          <th scope="row">{{ '{:02d}/{:02d}/{:02d}'.format(financ.FinancDB.dt_data.day, financ.FinancDB.dt_data.month, financ.FinancDB.dt_data.year) }}</th>
+          <td scope="row">{{ '{:02d}/{:02d}/{:02d}'.format(financ.FinancDB.dtfatur.day, financ.FinancDB.dtfatur.month, financ.FinancDB.dtfatur.year) }}</td>
+          {% if financ.FinancDB.pago == 1 %}
+            <td>{{ '{:02d}/{:02d}/{:02d}'.format(financ.FinancDB.dtpagto.day, financ.FinancDB.dtpagto.month, financ.FinancDB.dtpagto.year) }}</td>
+          {% else %}
+            <td><strong>Aberto</strong></td>
+          {% endif %}
+          <td>{{ financ.FinancDB.categoria }}</td>
+          <td>{{ financ.FinancDB.subcategor }}</td>
+          <td>{{ financ.FinancDB.benefic }}</td>
+          {% if currency %}
+            <td>{{ currency+'{:0,.2f}'.format(financ.FinancDB.valor).replace('R$-','-R$') }}</td>
+          {% else %}
+            <td>{{ '{:0,.2f}'.format(financ.FinancDB.valor).replace(',','').replace('.',',') }}</td>
+          {% endif %}
+          <td>{{ financ.FinancDB.descricao }}</td>
+          <td>{{ financ.FinancDB.observacao }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+  </div>
+  {% else %}
+     Sem dados para gerar o relatório!
+  {% endif %}
+{% else %}
+    <p>Insuficient Access Level!</p>
+{% endif %}
+{% endblock %}

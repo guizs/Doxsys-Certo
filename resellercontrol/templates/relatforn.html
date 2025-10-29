@@ -1,0 +1,104 @@
+{% extends 'home.html' %}
+
+{% block body %}
+
+<div id="main" class="d-flex align-items-center pt-3 pb-2 mb-1 border-bottom" style="height: 80px">
+  <h1 class="h2"><a style="text-decoration: none" href="{{ url_for('relatorios', mesatl=mesatl) }}">Relatórios</a></h1>
+  {% if current_user.is_authenticated and current_user.access >= 4 %}
+  <form method="POST" action="" class="mt-2 p-3" style="width: 100%; margin-left: 10px">
+    {{ form_scope.csrf_token }}
+    <fieldset>
+      <div class="form-group row">
+      <div class="row  align-items-left">
+       <div class="row px-0 py-0 fs-6">
+          <div class="row">
+            {% if benef == 'Todos' %}
+                <div class="col-1 mt-2 mb-2 ml-0 mr-0">
+                {{ form_scope.select_clifrn.label(class="form-control-label") }}
+               </div>
+               <div class="col-2 w-auto mt-1 mb-1 ml-0 mr-0" style="padding-right: 0px">
+                 {% if form_scope.select_clifrn.errors %}
+                  {{ form_scope.select_clifrn(class="form-control is-invalid") }}
+                 <div class="invalid-feedback">
+                 {% for erro in form_scope.select_clifrn.errors %}
+                     {{ erro }}
+                 {% endfor %}
+                 </div>
+                {% else %}
+                    {{ form_scope.select_clifrn(class="form-control") }}
+                {% endif %}
+               </div>
+               <div class="col-1 mt-2 mb-2 ml-0 mr-0" style="width: 50px">
+                {{ form_scope.select_stat.label(class="form-control-label") }}
+               </div>
+               <div class="col-2 w-auto mt-1 mb-1 ml-0 mr-0">
+                 {% if form_scope.select_stat.errors %}
+                  {{ form_scope.select_stat(class="form-control is-invalid") }}
+                 <div class="invalid-feedback">
+                 {% for erro in form_scope.select_stat.errors %}
+                     {{ erro }}
+                 {% endfor %}
+                 </div>
+                {% else %}
+                    {{ form_scope.select_stat(class="form-control") }}
+                {% endif %}
+               </div>
+
+               <div class="col-1 mt-2 mb-2 ml-0 mr-0" style="width: 40px; padding: 0px">
+                {{ form_scope.select_tipo.label(class="form-control-label") }}
+               </div>
+               <div class="col-2 mt-1 mb-1 ml-0 mr-0" style="padding-left: 3px;width:110px">
+                 {% if form_scope.select_tipo.errors %}
+                  {{ form_scope.select_tipo(class="form-control is-invalid") }}
+                 <div class="invalid-feedback">
+                 {% for erro in form_scope.select_tipo.errors %}
+                     {{ erro }}
+                 {% endfor %}
+                 </div>
+                {% else %}
+                   <div  style="width:90px">
+                    {{ form_scope.select_tipo(class="form-control") }}
+                   </div>
+                {% endif %}
+               </div>
+           {% endif %}
+           <div class="col-10 mt-2 mb-2 ml-0 mr-0" style="width: 35px; padding: 0">
+            {{ form_scope.select_mes.label(class="form-control-label") }}
+           </div>
+           <div class="col-10 mt-1 mb-1 ml-0 mr-0" style="width: 110px; padding: 0 5px 0 0">
+             {% if form_scope.select_mes.errors %}
+              {{ form_scope.select_mes(class="form-control is-invalid") }}
+             <div class="invalid-feedback">
+             {% for erro in form_scope.select_mes.errors %}
+                 {{ erro }}
+             {% endfor %}
+             </div>
+            {% else %}
+                {{ form_scope.select_mes(class="form-control") }}
+            {% endif %}
+           </div>
+           <div class="col-10 mt-1 mb-1 ml-0 mr-0" style="width: 110px">
+             {% if form_scope.select_mesfim.errors %}
+              {{ form_scope.select_mesfim(class="form-control is-invalid") }}
+             <div class="invalid-feedback">
+             {% for erro in form_scope.select_mesfim.errors %}
+                 {{ erro }}
+             {% endfor %}
+             </div>
+            {% else %}
+                {{ form_scope.select_mesfim(class="form-control") }}
+            {% endif %}
+           </div>
+           <div class="col-1 mt-2 mb-2 ml-0 mr-0">
+            {{ form_scope.botao_submit_financscope(class="link-secondary", target="_blank") }}
+           </div>
+
+       </div>
+      </div>
+      </div>
+    </fieldset>
+  </form>
+  {% endif %}
+</div>
+
+{% endblock %}

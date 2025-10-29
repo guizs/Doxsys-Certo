@@ -1,0 +1,365 @@
+{% extends 'home.html' %}
+
+{% block body %}
+<body onload="closeNav()">
+<div  id="header" class="d-flex flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom" xmlns="http://www.w3.org/1999/html" style="gap:20px; width:100;">
+<a href="javascript:void(0)" class="closebtn" onclick="openNav()" style="text-decoration: none">
+        <span data-feather="maximize-2" class="align-text-bottom"></span></a>
+  <h1 class="h2"><a style="text-decoration: none" href="{{ url_for('financ', status=status, tipo=tipo, mesatl=mesatl) }}">FINANCEIRO</a></h1>
+  {% if current_user.is_authenticated and current_user.access >= 4 %}
+  <div class="btn-group me-2"  style="    display: flex; gap: 10px; margin-left: 10px; ">
+   <form method="POST" action="{{ url_for('financadd', type='R') }}">
+    <button type="submit" class="btn btn-sm btn-outline-primary">+Receita</button>
+   </form>
+   <form method="POST" action="{{ url_for('financadd', type='D') }}">
+    <button type="submit" class="btn btn-sm btn-outline-danger">+Despesa</button>
+   </form>
+  </div>
+  <form class="input-group w-auto mt-2 mb-md-1">
+    <input name="Search" class="form-control form-control-dark w-50 rounded-0 border-1" type="text" placeholder="*Buscar Client/Descr/Obs">
+  </form>
+<!-- select_mes -->
+  <form method="POST" action="" class="mt-2 p-3" >
+    {{ form_scope.csrf_token }}
+    <fieldset>
+      <div class="form-group row" style="flex-wrap:nowrap !important">
+      <div class="row d-flex flex-wrap flex-md-nowrap align-items-left">
+       <div class="row px-0 py-0 fs-6">
+          <div class="row" style="flex-wrap:nowrap">
+           <div class="col-1 mt-2 mb-2 ml-0 mr-0" style="width:50px; padding:0;">
+            {{ form_scope.select_stat.label(class="form-control-label") }}
+           </div>
+           <div class="col-2 w-auto mt-1 mb-1 ml-0 mr-0" style="padding: 0;" >
+             {% if form_scope.select_stat.errors %}
+              {{ form_scope.select_stat(class="form-control is-invalid") }}
+             <div class="invalid-feedback" >
+             {% for erro in form_scope.select_stat.errors %}
+                 {{ erro }}
+             {% endfor %}
+             </div>
+            {% else %}
+                {{ form_scope.select_stat(class="form-control") }}
+            {% endif %}
+           </div>
+          <!-- /div>
+          <div class="row" -->
+           <div class="col-1 mt-2 mb-2 ml-0 mr-0"  style=" width:40px;padding-right: 0; padding-left:5px">
+            {{ form_scope.select_tipo.label(class="form-control-label") }}
+           </div>
+           <div class="col-2 mt-1 mb-1 ml-0 mr-0"  style=" width:100px; padding: 0;">
+             {% if form_scope.select_tipo.errors %}
+              {{ form_scope.select_tipo(class="form-control is-invalid") }}
+             <div class="invalid-feedback">
+             {% for erro in form_scope.select_tipo.errors %}
+                 {{ erro }}
+             {% endfor %}
+             </div>
+            {% else %}
+                {{ form_scope.select_tipo(class="form-control") }}
+            {% endif %}
+           </div>
+          <!-- /div>
+          <div class="row" -->
+           <div class="col-1 mt-2 mb-2 ml-0 mr-0" style="width:40px;padding:0; padding-left:5px">
+            {{ form_scope.select_mes.label(class="form-control-label") }}
+           </div>
+           <div class="col-3 mt-1 mb-1 ml-0 " style="padding:0;">
+             {% if form_scope.select_mes.errors %}
+              {{ form_scope.select_mes(class="form-control is-invalid") }}
+             <div class="invalid-feedback">
+             {% for erro in form_scope.select_mes.errors %}
+                 {{ erro }}
+             {% endfor %}
+             </div>
+            {% else %}
+                {{ form_scope.select_mes(class="form-control") }}
+            {% endif %}
+           </div>
+           <div class="col-1 mt-2 mb-2 ml-0 mr-0" >
+            {{ form_scope.botao_submit_financscope(class="link-secondary") }}
+           </div>
+
+       </div>
+      </div>
+      </div>
+    </fieldset>
+  </form>
+  {% endif %}
+</div>
+
+<div id="main" class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-1 pb-1 mt-1 mb-1">
+    {% if current_user.access >= 4 %}
+    <div class="row px-0 py-0 fs-6" style="line-height:0.8 padding:25px">
+       {% if Search %}
+         <h3 class="h3" style="color: #386"> <small style="color: #000">Searching: </small> {{ Search }} -
+         {% if total_valor >= 0 %}
+            <small style="color: #00F">  {{  total_itens }} itens, total = {{ 'R${:0,.2f}'.format(total_valor).replace('R$-','-R$') }}</small></h3>
+         {% else %}
+            <small style="color: #F00">  {{  total_itens }} itens, total = {{ 'R${:0,.2f}'.format(total_valor).replace('R$-','-R$') }}</small></h3>
+         {% endif %}
+       {% else %}
+        {% if financeiro.items[0] %}
+            {% if tipo == 'r' %}
+                <h3 class="h3"> <small>Receitas de </small> {{  mesatl }}
+            {% elif tipo == 'd' %}
+                <h3 class="h3"> <small>Despesas de </small> {{  mesatl }}
+            {% else %}
+                <h3 class="h3"> <small>Receitas e Despesas:</small> {{  mesatl }}
+            {% endif %}
+            {% if status == 'a' %}
+                <small> abertos! </small>
+            {% elif status == 'p' %}
+                <small> pagos! </small>
+            {% else %}
+                <small> pagos e abertos!</small>
+            {% endif %}
+            {% if total_valor >= 0 %}
+                <small style="color: #00F">  {{  total_itens }} itens, total = {{ currency+'{:0,.2f}'.format(total_valor).replace('R$-','-R$') }}</small></h3>
+            {% else %}
+                <small style="color: #F00">  {{  total_itens }} itens, total = {{ currency+'{:0,.2f}'.format(total_valor).replace('R$-','-R$') }}</small></h3>
+            {% endif %}
+        {% else %}
+            <h3 class="h3"> Nenhum registro de: {{ mesatl }}
+            {% if status == 'a' %}
+                <small> aberto! </small></h3>
+            {% elif status == 'p' %}
+                <small> pago! </small></h3>
+            {% else %}
+                <small> pago ou aberto!</small></h3>
+            {% endif %}
+        {% endif %}
+       {% endif %}
+      <table class="table table-striped">
+         <thead>
+            <tr>
+              <th scope="col">Data</th>
+              <th scope="col">Pagto</th>
+              <th scope="col">Fat</th>
+              <th scope="col">Categoria</th>
+              <th scope="col">SubCategoria</th>
+              <th scope="col">Cliente/Fornec</th>
+              <th scope="col">Valor</th>
+              <th scope="col">Descrição</th>
+              <th scope="col">Observação</th>
+            </tr>
+         </thead>
+      {% if financeiro %}
+        <tbody>
+        {% for financ in financeiro.items %}
+        <tr>
+            <!--  INCLUIR href="" no a para destacar o cliente quando o modal estiver funcionando  -->
+          <th scope="row"><a style="text-decoration: none" data-id={{ loop.index0 }} data-bs-toggle="modal" data-bs-target="#ShowFinanc{{ loop.index0 }}">{{ '{:02d}/{:02d}/{:02d}'.format(financ.FinancDB.dt_data.day, financ.FinancDB.dt_data.month, financ.FinancDB.dt_data.year) }}</a></th>
+          {% if financ.FinancDB.pago == 1 %}
+            <td style="color: #00F">{{ '{:02d}/{:02d}/{:02d}'.format(financ.FinancDB.dtpagto.day, financ.FinancDB.dtpagto.month, financ.FinancDB.dtpagto.year) }}</td>
+          {% else %}
+            {% if financ.FinancDB.valor > 0 %}
+                {% if financ.FinancDB.dt_data <= hoje %}
+                    <td style="color: #00F"><strong>Aberto</strong></td>
+                {% else %}
+                    <td style="color: #00F">Aberto</td>
+                {% endif %}
+            {% else %}
+                {% if financ.FinancDB.dt_data <= hoje %}
+                    <td style="color: #F00"><strong>Aberto</strong></td>
+                {% else %}
+                    <td style="color: #F00">Aberto</td>
+                {% endif %}
+            {% endif %}
+          {% endif %}
+          {% if financ.FinancDB.faturado == 1 %}
+            <td style="color: #00F"><strong>S</strong></td>
+          {% else %}
+            <td style="color: #F00"><strong>N</strong></td>
+          {% endif %}
+          {% if financ.FinancDB.valor <= 0 %}
+            <td title="{{ financ.FinancDB.categoria }}" style="color: #F00">{{ financ.FinancDB.categoria[0:12] }}</td>
+          {% else %}
+            <td title="{{ financ.FinancDB.categoria }}" >{{ financ.FinancDB.categoria[0:12] }}</td>
+          {% endif %}
+          {% if financ.FinancDB.valor <= 0 %}
+            <td title="{{ financ.FinancDB.subcategor }}" style="color: #F00">{{ financ.FinancDB.subcategor[0:12] }}</td>
+          {% else %}
+            <td title="{{ financ.FinancDB.subcategor }}">{{ financ.FinancDB.subcategor[0:12] }}</td>
+          {% endif %}
+          {% if financ.FinancDB.valor <= 0 %}
+            <td title="{{ financ.FinancDB.benefic }}" style="color: #F00"><strong><a style="text-decoration: none" data-id={{ loop.index0 }} data-bs-toggle="modal" data-bs-target="#ShowFinanc{{ loop.index0 }}">{{ financ.FinancDB.benefic[0:15] }}</a></strong></td>
+          {% else %}
+            <td title="{{ financ.FinancDB.benefic }}"><strong><a style="text-decoration: none" data-id={{ loop.index0 }} data-bs-toggle="modal" data-bs-target="#ShowFinanc{{ loop.index0 }}">{{ financ.FinancDB.benefic[0:15] }}</a></strong></td>
+          {% endif %}
+          {% if financ.FinancDB.valor <= 0 %}
+            {% if currency %}
+                <td style="color: #F00"><strong><a style="text-decoration: none" data-id={{ loop.index0 }} data-bs-toggle="modal" data-bs-target="#ShowFinanc{{ loop.index0 }}">{{ currency+'{:0,.2f}'.format(financ.FinancDB.valor).replace('R$-','-R$') }}</a></strong></td>
+            {% else %}
+                <td style="color: #F00"><strong><a style="text-decoration: none" data-id={{ loop.index0 }} data-bs-toggle="modal" data-bs-target="#ShowFinanc{{ loop.index0 }}">{{ '{:0,.2f}'.format(financ.FinancDB.valor).replace(',','').replace('.',',') }}</a></strong></td>
+            {% endif %}
+          {% else %}
+            {% if currency %}
+                <td><strong><a style="text-decoration: none" data-id={{ loop.index0 }} data-bs-toggle="modal" data-bs-target="#ShowFinanc{{ loop.index0 }}">{{ currency+'{:0,.2f}'.format(financ.FinancDB.valor).replace('R$-','-R$') }}</a></strong></td>
+            {% else %}
+                <td><strong><a style="text-decoration: none" data-id={{ loop.index0 }} data-bs-toggle="modal" data-bs-target="#ShowFinanc{{ loop.index0 }}">{{ '{:0,.2f}'.format(financ.FinancDB.valor).replace(',','').replace('.',',') }}</a></strong></td>
+            {% endif %}
+          {% endif %}
+          {% if financ.FinancDB.valor <= 0 %}
+            <td title="{{ financ.FinancDB.descricao }}" style="color: #F00">{{ financ.FinancDB.descricao[0:38] }}...</td>
+          {% else %}
+            <td title="{{ financ.FinancDB.descricao }}">{{ financ.FinancDB.descricao[0:38] }}...</td>
+          {% endif %}
+          {% if financ.FinancDB.valor <= 0 %}
+            <td title="{{ financ.FinancDB.observacao }}" style="color: #F00">{{ financ.FinancDB.observacao[0:25] }}...</td>
+          {% else %}
+            <td title="{{ financ.FinancDB.observacao }}">{{ financ.FinancDB.observacao[0:20] }}...</td>
+          {% endif %}
+        </tr>
+
+        <!-- Modal ShowFinanc -->
+        <div class="modal fade" id="ShowFinanc{{ loop.index0 }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable"><div class="modal-content"><div class="modal-header">
+          {% if financ.FinancDB.valor <= 0 %}
+             <h5 class="modal-title" id="exampleModalLabel">DESPESA:{{financ.FinancDB.benefic}}</h5>
+          {% else %}
+             <h5 class="modal-title" id="exampleModalLabel">RECEITA:{{financ.FinancDB.benefic}}</h5>
+          {% endif %}
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <div class="col col-16">
+                <h5> {{ financ.FinancDB.benefic }} <small> | VALOR: {{ 'R${:0,.2f}'.format(financ.FinancDB.valor).replace('R$-','-R$') }}</small></h5>
+                <div class="row">DATA:{{ '{}/{}/{}'.format(financ.FinancDB.dt_data.day, financ.FinancDB.dt_data.month, financ.FinancDB.dt_data.year) }}
+                | FAT: {{ '{}/{}/{}'.format(financ.FinancDB.dtfatur.day, financ.FinancDB.dtfatur.month, financ.FinancDB.dtfatur.year) }} | PAGTO:{{ '{}/{}/{}'.format(financ.FinancDB.dtpagto.day, financ.FinancDB.dtpagto.month, financ.FinancDB.dtpagto.year) }} </div>
+                <div class="row">CATEGORIA:{{ financ.FinancDB.categoria }} | SUB-CATEG:{{ financ.FinancDB.subcategor }}</div>
+                <div class="row">DESCRIÇÃO:{{ financ.FinancDB.descricao }}</div>
+                <div class="row">OBSERVAÇÃO:{{ financ.FinancDB.observacao }}</div>
+                <br>
+                <div class="row"><small>Registro {{ financ.FinancDB.idfinanc }} alterado em {{ '{}/{}/{}'.format(financ.FinancDB.dtalter.day, financ.FinancDB.dtalter.month, financ.FinancDB.dtalter.year) }} por {{ financ.usuario.username }}</small></div>
+              </div>
+          </div>
+          <div class="modal-footer">
+            {% if financ.FinancDB.pago == 1 %}
+                <a align="left" style="text-decoration:none" data-id=A{{ loop.index0 }} data-bs-toggle="modal" data-bs-target="#OpenFinanc{{ loop.index0 }}">
+                 <button type="submit" class="btn btn-primary">ABRIR - Não pago</button></a>
+            {% else %}
+                <a align="left" style="text-decoration:none" data-id=B{{ loop.index0 }} data-bs-toggle="modal" data-bs-target="#CloseFinanc{{ loop.index0 }}">
+                 <button type="submit" class="btn btn-primary">BAIXAR(Pagar)</button></a>
+            {% endif %}
+            <a align="left" style="text-decoration:none" data-id={{ loop.index0 }} data-bs-toggle="modal" data-bs-target="#DelFinanc{{ loop.index0 }}">
+             <button type="submit" class="btn btn-danger">Apagar</button></a>
+            <a class="btn btn-primary" href="{{ url_for('financedit', financ_id=financ.FinancDB.idfinanc) }}">EDITAR</a>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+          </div></div></div></div>
+
+        <!-- Modal DelFinanc-->
+        <div class="modal fade" id="DelFinanc{{ loop.index0 }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content"><div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Apagar registro {{financ.FinancDB.idfinanc}}?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+                <div class="modal-body">Você tem certeza de que deseja excluir este registro?<br>
+                    <strong>{{financ.FinancDB.benefic}} {{ 'R${:0,.2f}'.format(financ.FinancDB.valor).replace('R$-','-R$') }}</strong></div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <a href="{{ url_for('excluir_financ', financ_id=financ.FinancDB.idfinanc, status=status, tipo=tipo, mesatl=mesatl) }}"><button type="submit" class="btn btn-danger">Excluir Registro</button></a>
+                </div></div></div></div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="OpenFinanc{{ loop.index0 }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">ABRIR registro {{ financ.FinancDB.idfinanc }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                Você tem certeza de que deseja abrir {{ financ.FinancDB.benefic }} {{ 'R${:0,.2f}'.format(financ.FinancDB.valor).replace('R$-','-R$') }}?<br>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form method="POST" action="{{ url_for('financ_change', financ_id=financ.FinancDB.idfinanc, financ_pg=0, status=status, tipo=tipo, mesatl=mesatl, dtpg=hoje) }}">
+                 <button type="submit" class="btn btn-primary">Abrir</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="CloseFinanc{{ loop.index0 }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">BAIXAR o registro {{ financ.FinancDB.idfinanc }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+          <form method="POST" action="{{ url_for('financ_change', financ_id=financ.FinancDB.idfinanc, financ_pg=1, status=status, tipo=tipo, mesatl=mesatl, dtpg=form_financclose.dtpagto.data) }}">
+              <fieldset>
+              <div class="modal-body">
+                Você tem certeza de que deseja marcar como pago {{ financ.FinancDB.benefic }} {{ 'R${:0,.2f}'.format(financ.FinancDB.valor).replace('R$-','-R$') }}?<br>
+              </div>
+              <div class="form-group row">
+                <div class="row d-flex flex-wrap flex-md-nowrap align-items-left">
+                    <div class="col-2 mt-2 mb-2 ml-0 mr-0">
+                        {{ form_financclose.dtpagto.label(class="form-control-label") }}
+                    </div>
+                    <div class="col w-auto">
+                        {% if form_financclose.dtpagto.errors %}
+                         {{ form_financclose.dtpagto(class="form-control is-invalid") }}
+                         <div class="invalid-feedback">
+                         {% for erro in form_financclose.dtpagto.errors %}
+                             {{ erro }}
+                         {% endfor %}
+                         </div>
+                        {% else %}
+                            {{ form_financclose.dtpagto(class="form-control") }}
+                        {% endif %}
+                    </div>
+                </div>
+              </div>
+              </fieldset>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <!-- form method="POST" action="{{ url_for('financ_change', financ_id=financ.FinancDB.idfinanc, financ_pg=1, status=status, tipo=tipo, mesatl=mesatl, dtpg=hoje) }}">
+                 <button type="submit" class="btn btn-primary">Baixar</button>
+                </form -->
+                {{ form_financclose.botao_submit_financlose(class="btn btn-primary mt-2") }}
+              </div>
+          </form>
+
+            </div>
+          </div>
+        </div>
+
+        {% endfor %}
+        </tbody>
+      </table>
+      <div class="row">
+          <div class="btn-toolbar">
+              <div class="btn-group mt-2 me-1">
+              {% for page_num in financeiro.iter_pages(left_edge=3, right_edge=3, left_current=3, right_current=3) %}
+                {% if page_num %}
+                 {% if financeiro.page == page_num %}
+
+                   <a class = "btn btn-sm btn-info-secondary fw-bold" href="{{ url_for('financ', status=status, tipo=tipo, mesatl=mesatl, Search=Search, page=page_num)  }}">{{ page_num }}</a>
+
+                 {% else %}
+
+                   <a class = "btn btn-sm btn-outline-secondary" href="{{ url_for('financ', status=status, tipo=tipo, mesatl=mesatl, Search=Search, page=page_num)  }}">{{ page_num }}</a>
+
+                 {% endif %}
+                {% else %}
+                  ...
+                {% endif %}
+              {%endfor %}
+              </div>
+          </div>
+      </div>
+      {% endif %}
+    </div>
+    {% else %}
+        <p>Insuficient Access Level!</p>
+    {% endif %}
+</div>
+
+</body>
+{% endblock %}
+
+<!-- comit -->

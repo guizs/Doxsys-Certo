@@ -1,0 +1,222 @@
+{% extends 'home.html' %}
+
+{% block body %}
+
+<div id="main" class="d-flex align-items-center pt-3 pb-2 mb-1 border-bottom" style="height: 130px">
+  <h1 class="h2"><a style="text-decoration: none" href="{{ url_for('relatorios', mesatl=session['MESATL']) }}">Relatórios</a></h1>
+  {% if current_user.is_authenticated and current_user.access >= 2 %}
+
+    <form method="POST" action="" class="mt-2 p-3" style="width: 100%; margin-left: 10px">
+    {{ form_relatprop.csrf_token }}
+    <fieldset >
+       <div>
+           <div class="row mb-1" style="align-items: center; gap:10px">
+            <div class="row" style="width:195px; align-items: center">
+                <div class="col-2 mt-2 mb-2 ml-0 mr-0 p-0" style="width: 50px; padding-right: 0;">
+                {{ form_relatprop.select_status.label(class="form-control-label") }}
+                </div>
+                <div class="col-3 mt-1 mb-1 ml-0 mr-0 p-0" style="width: 120px">
+                 {% if form_relatprop.select_status.errors %}
+                  {{ form_relatprop.select_status(class="form-control is-invalid") }}
+                <div class="invalid-feedback">
+                 {% for erro in form_relatprop.select_status.errors %}
+                     {{ erro }}
+                 {% endfor %}
+                </div>
+                {% else %}
+                    {{ form_relatprop.select_status(class="form-control") }}
+                {% endif %}
+                </div>
+            </div>
+            <div class="row" style="width:215px; align-items: center">
+                <div class="col-2 mt-2 mb-2 ml-0 mr-0 p-0" style="width: 90px; padding-right: 0 ">
+                    {{ form_relatprop.forecast.label(class="form-control-label") }}
+                </div>
+                 <div class="col-3 mt-1 mb-1 ml-0 mr-0 p-0" style="width: 100px">
+                     {% if form_relatprop.forecast.errors %}
+                     {{ form_relatprop.forecast(class="form-control is-invalid") }}
+                <div class="invalid-feedback">
+                 {% for erro in form_relatprop.forecast.errors %}
+                     {{ erro }}
+                 {% endfor %}
+                </div>
+                {% else %}
+                    {{ form_relatprop.forecast(class="form-control") }}
+                {% endif %}
+                </div>
+            </div>
+            <div class="row" style="width:335px; align-items: center">
+                <div class="col-2 mt-2 mb-2 ml-0 mr-0 p-0" style="width: 80px; padding-right: 0">
+                    {{ form_relatprop.select_vendor.label(class="form-control-label") }}
+                </div>
+                 <div class="col-3 mt-1 mb-1 ml-0 mr-0 p-0" style="width: 230px">
+                     {% if form_relatprop.select_vendor.errors %}
+                     {{ form_relatprop.select_vendor(class="form-control is-invalid") }}
+                <div class="invalid-feedback">
+                 {% for erro in form_relatprop.select_vendor.errors %}
+                     {{ erro }}
+                 {% endfor %}
+                </div>
+                {% else %}
+                    {{ form_relatprop.select_vendor(class="form-control") }}
+                {% endif %}
+                </div>
+            </div>
+           </div>
+           <div class="row" style="align-items: center; gap:10px">
+            <div class="row" style="width:220px; align-items: center">
+                <div class="col-2 mt-2 mb-2 ml-0 mr-0 p-0" style="width: 45px; padding-right: 0">
+                    {{ form_relatprop.dataini.label(class="form-control-label") }}
+                </div>
+                 <div class="col-3 mt-1 mb-1 ml-0 mr-0 p-0" style="width: 150px">
+                     {% if form_relatprop.dataini.errors %}
+                     {{ form_relatprop.dataini(class="form-control is-invalid") }}
+                <div class="invalid-feedback">
+                 {% for erro in form_relatprop.dataini.errors %}
+                     {{ erro }}
+                 {% endfor %}
+                </div>
+                {% else %}
+                    {{ form_relatprop.dataini(class="form-control") }}
+                {% endif %}
+                </div>
+            </div>
+            <div class="row" style="width:210px; align-items: center">
+                <div class="col-2 mt-2 mb-2 ml-0 mr-0 p-0" style="width: 35px; padding-right: 0">
+                    {{ form_relatprop.datafim.label(class="form-control-label") }}
+                </div>
+                 <div class="col-3 mt-1 mb-1 ml-0 mr-0 p-0" style="width: 150px">
+                     {% if form_relatprop.datafim.errors %}
+                     {{ form_relatprop.datafim(class="form-control is-invalid") }}
+                <div class="invalid-feedback">
+                 {% for erro in form_relatprop.datafim.errors %}
+                     {{ erro }}
+                 {% endfor %}
+                </div>
+                {% else %}
+                    {{ form_relatprop.datafim(class="form-control") }}
+                {% endif %}
+                </div>
+            </div>
+            <div class="row" style="width:225px; align-items: center">
+                <div class="col-2 mt-2 mb-2 ml-0 mr-0 p-0" style="width: 50px; padding-right: 0">
+                    {{ form_relatprop.busca_texto.label(class="form-control-label") }}
+                </div>
+                 <div class="col-3 mt-1 mb-1 ml-0 mr-0 p-0" style="width: 150px">
+                     {% if form_relatprop.busca_texto.errors %}
+                     {{ form_relatprop.busca_texto(class="form-control is-invalid") }}
+                <div class="invalid-feedback">
+                 {% for erro in form_relatprop.busca_texto.errors %}
+                     {{ erro }}
+                 {% endfor %}
+                </div>
+                {% else %}
+                    {{ form_relatprop.busca_texto(class="form-control") }}
+                {% endif %}
+                </div>
+            </div>
+           <div class="row" style="width: 160px; align-items: center">
+           <div style="width:100px"> {{ form_relatprop.renovac.label(class="form-check-label") }}</div>
+            <div style="width:30px" class="col-4 mt-1 mb-1 ml-0 mr-0">{{ form_relatprop.renovac(class="form-check-input") }}</div>
+           </div>
+           <div class="col-1 mt-2 mb-2 ml-0 mr-0">
+            {{ form_relatprop.botao_submit_relatprop(class="link-secondary", target="_blank") }}
+           </div>
+           </div>
+       </div>
+    </fieldset>
+   </form>
+
+</div>
+  <div id="body" class="pt-3 border-bottom">
+    {% if propostas %}
+     <div class="row">
+         <h3>Relatório FORECAST</h3>
+         <span>Data:<strong>{{ '{:02d}/{:02d}/{:02d}'.format(hoje.day, hoje.month, hoje.year) }}</strong> | Status:<strong>{{ stat }}</strong> | Vendedor(a):<strong>{{ vendrnam }}</strong> | Forecast: <strong>{{ forcst }}%</strong></span>
+     </div>
+     <hr>
+       <table>
+         <thead>
+            <tr>
+              <th scope="col">ID</th>
+              <th scope="col">Status</th>
+              <th scope="col">Renov</th>
+              <th scope="col">Cliente</th>
+              <th scope="col">Vendedor</th>
+              <th scope="col">Forcst(%)</th>
+              <th scope="col">Provável</th>
+              <th scope="col">Software</th>
+              <th scope="col">Serviços</th>
+              <th scope="col">Backlog</th>
+            </tr>
+         </thead>
+        <tbody>
+        {% for proposta in propostas %}
+        <tr>
+          <th scope="row">{{ proposta.idproposta }}</th>
+          {% if proposta.status == 'Aberta' or proposta.status == 'Negociando' or proposta.status == 'Aguardando' %}
+            <td style="color: #00F">{{ proposta.status }}</td>
+          {% elif proposta.status == 'Vencida' or proposta.status == 'Perdida' %}
+            <td style="color: #F00">{{ proposta.status }}</td>
+          {% elif proposta.status == 'Fechada' %}
+            <td><strong>{{ proposta.status }}</strong></td>
+          {% else %}
+            <td>{{ proposta.status }}</td>
+          {% endif %}
+          {% if proposta.renovac == 1 %}
+            <td>Sim</td>
+          {% else %}
+            <td>Não</td>
+          {% endif %}
+          <td>{{ proposta.nomecliente }}</td>
+          <td>{{ proposta.vendedor }}</td>
+          {% if proposta.forecast >= 60 %}
+            <td><strong>{{ proposta.forecast }}</strong></td>
+          {% else %}
+            <td>{{ proposta.forecast }}</td>
+          {% endif %}
+          {% if proposta.dtprovavel %}
+            <td>{{ '{:02d}/{:02d}/{:02d}'.format(proposta.dtprovavel.day, proposta.dtprovavel.month, proposta.dtprovavel.year) }}</td>
+          {% else %}
+            <td>None</td>
+          {% endif %}
+          {% if currency %}
+            <td>{{ currency+'{:0,.2f}'.format(proposta.vlrsoft).replace('R$-','-R$') }}</td>
+            <td>{{ currency+'{:0,.2f}'.format(proposta.vlrserv).replace('R$-','-R$') }}</td>
+          {% else %}
+            <td>{{ '{:0,.2f}'.format(proposta.vlrsoft).replace(',','').replace('.',',') }}</td>
+            <td>{{ '{:0,.2f}'.format(proposta.vlrserv).replace(',','').replace('.',',') }}</td>
+          {% endif %}
+          <td>{{ '{:0,.0f}'.format(proposta.horasprev).replace(',','').replace('.',',') }}</td>
+        </tr>
+        {% endfor %}
+        <td></td>
+        <td><strong>TOTAL GERAL:</strong></td>
+        <td></td>
+        {% if currency %}
+            <td><strong>{{ currency+'{:0,.2f}'.format(prop_soft+prop_serv).replace('R$-','-R$') }}</strong></td>
+          {% else %}
+            <td><strong>{{ '{:0,.2f}'.format(prop_soft+prop_serv).replace(',','').replace('.',',') }}</strong></td>
+          {% endif %}
+        <td></td>
+        <td></td>
+        <td><strong>TOTAIS:</strong></td>
+         {% if currency %}
+            <td><strong>{{ currency+'{:0,.2f}'.format(prop_soft).replace('R$-','-R$') }}</strong></td>
+            <td><strong>{{ currency+'{:0,.2f}'.format(prop_serv).replace('R$-','-R$') }}</strong></td>
+          {% else %}
+            <td><strong>{{ '{:0,.2f}'.format(prop_soft).replace(',','').replace('.',',') }}</strong></td>
+            <td><strong>{{ '{:0,.2f}'.format(prop_serv).replace(',','').replace('.',',') }}</strong></td>
+          {% endif %}
+          <td><strong>{{ '{:0,.0f}'.format(prop_bklg).replace(',','').replace('.',',') }}</strong></td>
+        </tbody>
+      </table>
+    {% else %}
+         Sem dados para gerar o relatório!
+    {% endif %}
+  </div>
+  {% else %}
+      <p>Insuficient Access Level!</p>
+  {% endif %}
+
+{% endblock %}

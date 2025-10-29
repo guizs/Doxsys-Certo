@@ -1,0 +1,52 @@
+{% extends 'home.html' %}
+
+{% block body %}
+
+<div id="main" class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+ <div class="container-fluid">
+  {% if current_user.is_authenticated %}
+    {% if current_user.access >= 2 %}
+       <a href="javascript:void(0)" class="closebtn" onclick="openNav()" style="text-decoration: none; margin-right:10px">
+            <span data-feather="maximize-2" class="align-text-bottom"></span></a>
+       <div style="display:flex; align-items:center; gap:10px">
+         <h3>Comercial</h3>
+       </div>
+       <div class="col-3 w-auto"></div>
+       <div class="row align-items-start"><div class="col-3"> >>> <a style="text-decoration: none" href="{{ url_for('relattag', tipo='p', tag='#', mark='0')  }}">Relatório PIPE/MAIL</a></div><div class="col">Relatório de Pipeline ou Mailing com TAG</div></div>
+       <div class="row align-items-start"><div class="col-3"> >>> <a style="text-decoration: none" href="{{ url_for('relatprop')  }}">Relatório FORECAST</a></div><div class="col">Relatório das Propostas para Forecast</div></div>
+       <div class="row align-items-start"><div class="col-3"> >>> <a style="text-decoration: none" href="{{ url_for('relatpipe', mesatl=session['MESATL'])  }}">Relatório Comercial</a></div><div class="col">Lista de Apresentações Realizadas</div></div>
+    {% endif %}
+    {% if current_user.access >= 3 %}
+       <HR>
+       <div style="display:flex; align-items:center; gap:10px">
+         <h3>Técnico</h3>
+       </div>
+       <div class="col-4 w-auto"></div>
+       <div class="row align-items-start"><div class="col-3"> >>> <a style="text-decoration: none" href="{{ url_for('relattecn', mesatl=session['MESATL'])  }}">Relatório Técnico do Mês</a></div><div class="col">Lista de Projetos e Projetos Aceitos e com Atestados</div></div>
+    {% endif %}
+    {% if current_user.access >= 4 %}
+       <HR>
+       <div style="display:flex; align-items:center; gap:10px">
+         <h3>Financeiros</h3>
+       </div>
+       <div class="col-4 w-auto"></div>
+       <div class="row align-items-start"><div class="col-3"> >>> <a style="text-decoration: none" href="{{ url_for('relatrealiz', status='p', tipo='t', mesatl=session['MESATL'])  }}">Relatório Realizado no Mês</a></div><div class="col">Busca por receitas e/ou despesas pagas no mês</div></div>
+       <div class="row align-items-start"><div class="col-3"> >>> <a style="text-decoration: none" href="{{ url_for('relfatur', status='t', tipo='t', mesatl=session['MESATL'])  }}">Relatório Faturado no Mês</a></div><div class="col">Busca por receitas faturadas no mês</div></div>
+       <div class="row align-items-start"><div class="col-3"> >>> <a style="text-decoration: none" href="{{ url_for('relatrealiz', status='a', tipo='t', mesatl=session['MESATL'])  }}">Previsão do Fluxo de Caixa</a></div><div class="col">Lista receitas e despesas em aberto (passado e futuro)</div></div>
+       <div class="row align-items-start"><div class="col-3"> >>> <a style="text-decoration: none" href="{{ url_for('relatforn', mesatl=session['MESATL'], mesfim=session['MESFIM'], benef='Todos')  }}">Relatório de Cliente/Fornecedor</a></div><div class="col">Busca por cliente e fornecedor em determinado mês</div></div>
+       <div class="row align-items-start"><div class="col-3"> >>> <a style="text-decoration: none" href="{{ url_for('relatcfcs', mesatl=mesatl, mesfim=mesfim, scope='CliFor', status='t', tipo='t')  }}">Gráfico de Barras do Financeiro</a></div><div class="col">Gráfico por Cliente/Fornecedor ou Categoria ou Subcategoria em determinado intervalo</div></div>
+       <div class="row align-items-start"><div class="col-3"> >>> <a style="text-decoration: none" href="{{ url_for('relatforn', mesatl=session['MESATL'], mesfim=session['MESFIM'], benef='W3K Tecnologia')  }}">Acerto com Fornecedor W3K</a></div><div class="col">Despesas e Receitas com o fornecedor W3K</div></div>
+       <div class="row align-items-start"><div class="col-3"> >>> <a style="text-decoration: none" href="{{ url_for('relatrecur') }}">MRR & ARR Report</a></div><div class="col">Recorrências dos contratos ativos (valores da proposta)</div></div>
+       <div class="row align-items-start"><div class="col-3"> >>> <a style="text-decoration: none" href="{{ url_for('relatresult', mesatl=session['MESATL'], mesfim=session['MESFIM'])  }}">Resultado do Período</a></div><div class="col">Resultado Operacional e EBITDA(LAJIDA)</div></div>
+       <HR>
+       <div style="display:flex; align-items:center; gap:10px">
+         <h3>Sistema</h3>
+       </div>
+       <div class="row align-items-start"><div class="col-3"> >>> <a style="text-decoration: none" href="{{ url_for('relatusers', mesatl=session['MESATL'])  }}">Users LOG</a></div><div class="col">Acessos e operações dos usuários</div></div>
+    {% endif %}
+  {% else %}
+   <h3>Faça login no sistema!</h3>
+  {% endif %}
+ </div>
+</div>
+{% endblock %}ml>

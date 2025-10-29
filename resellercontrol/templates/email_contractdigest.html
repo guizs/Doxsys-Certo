@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8">
+        <title>DOXSYS - Digest diário de vencimento de contratos</title>
+    </head>
+    <body>
+        <p>Olá {{ username }},</p>
+        <p>Segue abaixo a lista dos contratos vencidos:<br>
+        Não esqueça de negociar com o cliente a renovação.</p>
+
+        <!-- Inserir a tabela de contratos vencidos -->
+        {{ contracts_list_venc|safe }}
+
+        <p>Abaixo estão os contratos que irão vencer no próximo mês:<br>
+        Não esqueça de enviar as propostas de renovação para os clientes.</p>
+
+        <!-- Inserir a tabela de contratos vencidos -->
+        {{ contracts_lst_a_venc|safe }}
+
+        <p>Bom dia.<br>
+        <b>DOXSYS</b></p>
+        <br>
+        <img src="cid:logo_dox" alt="DOX Logo">
+    </body>
+</html>

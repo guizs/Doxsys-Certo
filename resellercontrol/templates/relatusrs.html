@@ -1,0 +1,43 @@
+{% extends 'home.html' %}
+
+{% block body %}
+
+{% if current_user.is_authenticated and current_user.access >= 5 %}
+  <div id="main" class="pt-3 border-bottom">
+     <div class="row">
+        <span>Data:<strong> {{ '{:02d}/{:02d}/{:02d}'.format(hoje.day, hoje.month, hoje.year) }}</strong></span>
+        <span>De:<strong> {{ mesatl }} a {{ mesfim }}</strong> - <strong>{{ total_itens }}</strong> itens.</span>
+        <span>User: [<strong>{{ usrname }}</strong>]</span>
+     </div>
+     <hr>
+     {% if total_itens > 0 %}
+     <table class="table">
+         <thead>
+            <tr>
+              <th scope="col">Username</th>
+              <th scope="col">Data e Hora</th>
+              <th scope="col">Módulo</th>
+              <th scope="col">Função</th>
+              <th scope="col">Ação</th>
+            </tr>
+         </thead>
+        <tbody>
+        {% for linha in operacoes %}
+        <tr>
+          <td>{{ linha.usuario.username }}</td>
+          <td>{{ '{:02d}/{:02d}/{:02d} - {:02d}:{:02d}:{:02d}'.format(linha.LogDB.datahora.day, linha.LogDB.datahora.month, linha.LogDB.datahora.year, linha.LogDB.datahora.hour, linha.LogDB.datahora.minute, linha.LogDB.datahora.second) }}</td>
+          <td>{{ linha.LogDB.modulo }}</td>
+          <td>{{ linha.LogDB.funcao }}</td>
+          <td>{{ linha.LogDB.acao }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+  </div>
+  {% else %}
+     Sem dados para gerar o relatório!
+  {% endif %}
+{% else %}
+    <p>Insuficient Access Level!</p>
+{% endif %}
+{% endblock %}

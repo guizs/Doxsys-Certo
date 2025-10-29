@@ -1,0 +1,205 @@
+{% extends 'home.html' %}
+
+{% block body %}
+<div id="main" class="d-flex align-items-center pt-3 pb-2 mb-1 border-bottom" style="height: 80px">
+  <h1 class="h2"><a style="text-decoration: none" href="{{ url_for('relatorios', mesatl=mesatl) }}">Relatórios</a></h1>
+  {% if current_user.is_authenticated and current_user.access >= 4 %}
+  <form method="POST" action="" class="mt-2 p-3" style="width: 100%; margin-left: 10px">
+    {{ form_scope.csrf_token }}
+    <fieldset>
+      <div class="form-group row">
+      <div class="row  align-items-left">
+       <div class="row px-0 py-0 fs-6">
+          <div class="row">
+                <div class="col-1 mt-2 mb-2 ml-0 mr-0">
+                {{ form_scope.select_cfcs.label(class="form-control-label") }}
+               </div>
+               <div class="col-2 w-auto mt-1 mb-1 ml-0 mr-0" style="padding-right: 0px">
+                 {% if form_scope.select_cfcs.errors %}
+                  {{ form_scope.select_cfcs(class="form-control is-invalid") }}
+                 <div class="invalid-feedback">
+                 {% for erro in form_scope.select_cfcs.errors %}
+                     {{ erro }}
+                 {% endfor %}
+                 </div>
+                {% else %}
+                    {{ form_scope.select_cfcs(class="form-control") }}
+                {% endif %}
+               </div>
+               <div class="col-1 mt-2 mb-2 ml-0 mr-0" style="width: 50px">
+                {{ form_scope.select_stat.label(class="form-control-label") }}
+               </div>
+               <div class="col-2 w-auto mt-1 mb-1 ml-0 mr-0">
+                 {% if form_scope.select_stat.errors %}
+                  {{ form_scope.select_stat(class="form-control is-invalid") }}
+                 <div class="invalid-feedback">
+                 {% for erro in form_scope.select_stat.errors %}
+                     {{ erro }}
+                 {% endfor %}
+                 </div>
+                {% else %}
+                    {{ form_scope.select_stat(class="form-control") }}
+                {% endif %}
+               </div>
+
+               <div class="col-1 mt-2 mb-2 ml-0 mr-0" style="width: 40px; padding: 0px">
+                {{ form_scope.select_tipo.label(class="form-control-label") }}
+               </div>
+               <div class="col-2 mt-1 mb-1 ml-0 mr-0" style="padding-left: 3px;width:110px">
+                 {% if form_scope.select_tipo.errors %}
+                  {{ form_scope.select_tipo(class="form-control is-invalid") }}
+                 <div class="invalid-feedback">
+                 {% for erro in form_scope.select_tipo.errors %}
+                     {{ erro }}
+                 {% endfor %}
+                 </div>
+                {% else %}
+                   <div  style="width:90px">
+                    {{ form_scope.select_tipo(class="form-control") }}
+                   </div>
+                {% endif %}
+               </div>
+
+           <div class="col-10 mt-2 mb-2 ml-0 mr-0" style="width: 35px; padding: 0">
+            {{ form_scope.select_mes.label(class="form-control-label") }}
+           </div>
+           <div class="col-10 mt-1 mb-1 ml-0 mr-0" style="width: 110px; padding: 0 5px 0 0">
+             {% if form_scope.select_mes.errors %}
+              {{ form_scope.select_mes(class="form-control is-invalid") }}
+             <div class="invalid-feedback">
+             {% for erro in form_scope.select_mes.errors %}
+                 {{ erro }}
+             {% endfor %}
+             </div>
+            {% else %}
+                {{ form_scope.select_mes(class="form-control") }}
+            {% endif %}
+           </div>
+           <div class="col-10 mt-1 mb-1 ml-0 mr-0" style="width: 110px">
+             {% if form_scope.select_mesfim.errors %}
+              {{ form_scope.select_mesfim(class="form-control is-invalid") }}
+             <div class="invalid-feedback">
+             {% for erro in form_scope.select_mesfim.errors %}
+                 {{ erro }}
+             {% endfor %}
+             </div>
+            {% else %}
+                {{ form_scope.select_mesfim(class="form-control") }}
+            {% endif %}
+           </div>
+           <div class="col-1 mt-2 mb-2 ml-0 mr-0">
+            {{ form_scope.botao_submit_financcfcs(class="link-secondary", target="_blank") }}
+           </div>
+
+       </div>
+      </div>
+      </div>
+    </fieldset>
+  </form>
+
+</div>
+
+<BR>
+<div class="row">
+   <span>__Data:<strong>{{ '{:02d}/{:02d}/{:02d}'.format(hoje.day, hoje.month, hoje.year) }}</strong> | Ordem:[<strong>{{ scope }}</strong>] | Status:<strong>{{ status }}</strong> Tipo:<strong>{{ tipo }} </strong>Mês:<strong>{{ mesatl }}~{{ mesfim }}</strong> - [<strong>{{ total_itens }}</strong> itens = <strong>{{ total_valor }}</strong>]</span>
+</div>
+<div>
+    <canvas id="barChart" width="900" height="400"></canvas>
+</div>
+<BR>
+  <div>
+    <div class="row">
+       <span>__Data:<strong>{{ '{:02d}/{:02d}/{:02d}'.format(hoje.day, hoje.month, hoje.year) }}</strong> | Ordem:[<strong>{{ scope }}</strong>] | Status:<strong>{{ status }}</strong> Tipo:<strong>{{ tipo }} </strong>Mês:<strong>{{ mesatl }}~{{ mesfim }}</strong> - [<strong>{{ total_itens }}</strong> itens = <strong>{{ total_valor }}</strong>]</span>
+    </div>
+     <hr>
+     {% if total_itens > 0 %}
+     <table class="table">
+         <thead>
+            <tr>
+              <th scope="col">Data</th>
+              <th scope="col">Pagto</th>
+              <th scope="col">Categoria</th>
+              <th scope="col">SubCategoria</th>
+              <th scope="col">Cliente/Fornec</th>
+              <th scope="col">Valor</th>
+              <th scope="col">Descrição</th>
+              <th scope="col">Observação</th>
+            </tr>
+         </thead>
+        <tbody>
+        {% for financ in financeiro %}
+        <tr>
+          <th scope="row">{{ '{:02d}/{:02d}/{:02d}'.format(financ.dt_data.day, financ.dt_data.month, financ.dt_data.year) }}</th>
+          {% if financ.pago == 1 %}
+            <td>{{ '{:02d}/{:02d}/{:02d}'.format(financ.dtpagto.day, financ.dtpagto.month, financ.dtpagto.year) }}</td>
+          {% else %}
+            <td>Aberto</td>
+          {% endif %}
+          <td>{{ financ.categoria }}</td>
+          <td>{{ financ.subcategor }}</td>
+          <td>{{ financ.benefic }}</td>
+          {% if currency %}
+            <td>{{ currency+'{:0,.2f}'.format(financ.valor).replace('R$-','-R$') }}</td>
+          {% else %}
+            <td>{{ '{:0,.2f}'.format(financ.valor).replace(',','').replace('.',',') }}</td>
+          {% endif %}
+          <td>{{ financ.descricao }}</td>
+          <td>{{ financ.observacao }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+       <div class="row">
+        <span>Nota: <strong>A data listada é a data prevista da receita/despesa!</strong></span>
+       </div>
+  </div>
+      {% else %}
+         Sem dados para gerar o relatório!
+      {% endif %}
+{% else %}
+    <p>Insuficient Access Level!</p>
+{% endif %}
+
+<script>
+  var ctx = document.getElementById("barChart").getContext("2d");
+
+  // Valores do gráfico passados do backend
+  var labels = {{ labelvalues | safe }};
+  var valores = {{ valorvalues | safe }};
+
+  // Definição dinâmica de cores
+  var cores = valores.map(valor => valor >= 0 ? "rgb(0,0,255)" : "rgb(139,69,19)");
+
+  var barChart = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: labels,
+      datasets: [{
+        label: "Valores",
+        data: valores,
+        backgroundColor: cores,  // Aplicando as cores dinamicamente
+        borderColor: cores.map(cor => cor.replace("rgb", "rgba").replace(")", ", 0.8)")), // Bordas com transparência
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      },
+      plugins: {
+        title: {
+          display: true,
+          align: "center",
+          color: "rgb(0,0,255)",
+          font: { weight: "bold" },
+          text: "Gráfico DOXSYS"
+        }
+      }
+    }
+  });
+</script>
+
+{% endblock %}

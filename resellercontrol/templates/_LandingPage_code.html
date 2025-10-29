@@ -1,0 +1,118 @@
+<!-- landing silenciosa page que solicita o email do usuário -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  // Solicita o e-mail ao usuário ao carregar a página
+  const userEmail = prompt("Digite seu e-mail para receber as novidades sobre o Greendocs!");
+  // Usa "NoEmail" se o usuário cancelar ou não digitar nada
+  const emailToUse = userEmail ? userEmail : "NoEmail";
+  // Codifica para uso seguro na URL
+  const encodedEmail = encodeURIComponent(emailToUse);
+  // Monta a URL da sua API
+  const apiUrl = `https://www.doxsg.com/doxsys/lp/luciana.santos@doxsg.com,11970847098,${encodedEmail}`;
+  // Envia silenciosamente
+  fetch(apiUrl).catch(error => {
+    // Apenas loga no console em caso de erro
+    console.error('Erro ao comunicar com a API da landing page:', error);
+  });
+});
+</script>
+
+
+<!-- landing page silecionsa sem pedir email -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const encodedEmail = "DOX_HomePage";
+  const apiUrl = `https://www.doxsg.com/doxsys/lp/luciana.santos@doxsg.com,11970847098,${encodedEmail}`;
+  fetch(apiUrl).catch(error => {console.error('Erro ao comunicar com API da landing page:', error);});
+});
+</script>
+
+<!-- landing page que solicita o email do usuário -->
+<div id="resultado-api">
+  <p>Loading...</p>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+  // Solicita o email ao usuário assim que a página carrega
+  const userEmail = prompt("Digite seu email para receber as novidades sobre o Greendocs!");
+
+  // Define o email a ser usado na URL. Se userEmail for vazio ou null, usa "NoEmail".
+  const emailToUse = userEmail ? userEmail : "NoEmail";
+
+  // Codifica o email (ou "NoEmail") para garantir que ele seja um parâmetro de URL válido
+  const encodedEmail = encodeURIComponent(emailToUse);
+
+  // A URL da API com o email do usuário (ou "NoEmail")
+  // Ajustei a URL para incluir o número antes do e-mail, como no seu exemplo original.
+  const apiUrl = `https://www.doxsg.com/doxsys/lp/luciana.santos@doxsg.com,11970847098,${encodedEmail}`;
+
+  // Seleciona o elemento onde a resposta será exibida
+  const resultadoDiv = document.getElementById('resultado-api');
+
+  // Faz a chamada à API usando fetch
+  fetch(apiUrl)
+    .then(response => {
+      // Se a resposta do servidor for bem-sucedida (status 200-299)
+      if (response.ok) {
+        // Tenta converter a resposta para texto.
+        // Se você espera um JSON, use response.json()
+        return response.text();
+      }
+      // Se o servidor responder com um erro (ex: 404, 500)
+      throw new Error(`Erro na rede: ${response.statusText}`);
+    })
+    .then(data => {
+      // Exibe os dados retornados pela API dentro da div
+      console.log('Sucesso! Resposta recebida:', data);
+      resultadoDiv.innerHTML = `<p><strong>Sucesso!</strong> A comunicação foi estabelecida.</p><p>Resposta do servidor: ${data}</p>`;
+    })
+    .catch(error => {
+      // Se houver um erro na chamada (ex: CORS, sem conexão)
+      console.error('Falha ao chamar a API:', error);
+      resultadoDiv.innerHTML = '<p style="color: red;"><strong>Erro:</strong> Não foi possível comunicar com o servidor. Verifique o console para mais detalhes.</p>';
+    });
+
+});
+</script>
+
+
+<!-- Landind page que só registra quando a página é acessada -->
+<div id="resultado-api">
+  <p>Loading...</p>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const encodedEmail = "DOX_HomePage";
+  const apiUrl = `https://www.doxsg.com/doxsys/lp/luciana.santos@doxsg.com,11970847098,${encodedEmail}`;
+
+  // Seleciona o elemento onde a resposta será exibida
+  const resultadoDiv = document.getElementById('resultado-api');
+
+  // Faz a chamada à API usando fetch
+  fetch(apiUrl)
+    .then(response => {
+      // Se a resposta do servidor for bem-sucedida (status 200-299)
+      if (response.ok) {
+        // Tenta converter a resposta para texto.
+        // Se você espera um JSON, use response.json()
+        return response.text();
+      }
+      // Se o servidor responder com um erro (ex: 404, 500)
+      throw new Error(`Erro na rede: ${response.statusText}`);
+    })
+    .then(data => {
+      // Exibe os dados retornados pela API dentro da div
+      console.log('Sucesso! Resposta recebida:', data);
+      resultadoDiv.innerHTML = `<p><strong>Sucesso!</strong> A comunicação foi estabelecida.</p><p>Resposta do servidor: ${data}</p>`;
+    })
+    .catch(error => {
+      // Se houver um erro na chamada (ex: CORS, sem conexão)
+      console.error('Falha ao chamar a API:', error);
+      resultadoDiv.innerHTML = '<p style="color: red;"><strong>Erro:</strong> Não foi possível comunicar com o servidor. Verifique o console para mais detalhes.</p>';
+    });
+
+});
+</script>

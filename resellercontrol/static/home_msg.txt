@@ -1,0 +1,22 @@
+# HOME_MSG.txt
+# Arquivo com mensagem para ser exibida na página de abertura.
+# Use o caracter # para comentar a linha e impedir de ser exibida.
+# Use a TAG em HTML para configurar cada linha
+# Use R, G e B para configurar a cor da linha
+#
+# H1B:Título azul com destaque
+# H5R:Linha1 vermelha
+# H5R:Linha2 vermelha
+# H4G:Texto menor verde
+# H0K:Texto normal preto
+H1D:DOX SG Ltda
+H5D:Fone fixo: (11) 4330-1293  |  Sterna Café - ramal 308
+# ---
+# H2R:Novo Módulo para Versões e Bugs
+---
+H2R:Feriados com pontes em 2025:
+H4B:Aniversário S.Bernardo do Campo – 20/08, trabalharemos normal (compensando dia 03/03);
+H3B:Consciência Negra – dia 20/11, não trabalharemos dia 21/11.
+---
+H2G:Coletivas 2025 - 22/12/2025 à 04/01/2026
+# H0:Final do arquivo.

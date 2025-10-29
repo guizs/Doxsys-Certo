@@ -1,0 +1,497 @@
+{% extends 'home.html' %}
+
+{% block body %}
+<div id="main" class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-3 mt-1 mb-1" >
+    {% if current_user.access >= 1 %}
+    <div class="row px-0 py-0 fs-6" style="line-height:0.8 padding:25px">
+        {% if (resultcli or resultcont) %}
+            <h3 class="h3"> RESULTADO </h3>
+        {% else %}
+            <h3 class="h3"> Nenhum resultado encontrado! </h3>
+        {% endif %}
+      <table class="table table-striped">
+         <thead>
+            <tr>
+                {% if resultcli %}
+            <th scope="col">Cliente</th>
+            <th scope="col">Unidade</th>
+            <th scope="col">Telefone</th>
+            <th scope="col">Cidade</th>
+            <th scope="col">UF</th>
+            <th scope="col">CNPJ</th>
+              {% endif %}
+              {% if resultcont %}
+            <th scope="col">Cliente</th>
+            <th scope="col">Unidade</th>
+            <th scope="col">Contato</th>
+            <th scope="col">Fone</th>
+            <th scope="col">Email</th>
+              {% endif %}
+            </tr>
+         </thead>
+      {% if resultcli %}
+        <tbody>
+        {% for result in resultcli.items %}
+        <tr>
+          <td>
+            <a style="text-decoration: none; color: black; font-weight: 500;" href="{{ url_for('cliente', cli_id=result.idcliente) }}">
+                <span >{{ result.nomecliente }}</span>
+            </a>
+          </td>
+            <td>{{ result.unidade }}</td>
+            <td>{{ result.telefone }}</td>
+            <td>{{ result.municipio }}</td>
+            <td>{{ result.estado }}</td>
+            <td>{{ result.cnpj }}</td>
+        </tr>
+
+        <!-- Modal -->
+        <div class="modal fade" id="ShowContract{{ loop.index0 }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable"><div class="modal-content"><div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">ID:{{result.idcliente}} - {{ result.nomecliente }} - {{ result.unidade }}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+              <div class="col col-16">
+                <h5>{{ result.idcliente }}</h5>
+                <div class="row">CLIENTE:{{ result.idcliente }} </div>
+                <div class="row">MUNICIPIO:{{ result.municipio }} </div>
+              </div>
+          </div>
+          <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Ok</button>
+        {% endfor %}
+        </tbody>
+      </table>
+      <div class="row">
+          <div class="btn-toolbar">
+              <div class="btn-group mt-2 me-1">
+              {% for page_num in resultcli.iter_pages(left_edge=3, right_edge=3, left_current=3, right_current=3) %}
+                {% if page_num %}
+                 {% if resultcli.page == page_num %}
+                  <a class = "btn btn-sm btn-info-secondary fw-bold" href="{{ url_for('advsearch', orderby=orderby, page=page_num, Search=Search)  }}">{{ page_num }}</a>
+                 {% else %}
+                  <a class ="btn btn-sm btn-outline-secondary" href="{{ url_for('advsearch', orderby=orderby, page=page_num, Search=Search)  }}">{{ page_num }}</a>
+                 {% endif %}
+                {% else %}
+                  ...
+                {% endif %}
+              {%endfor %}
+              </div>
+          </div>
+      </div>
+      {% endif %}
+      {% if resultcont %}
+        <tbody>
+        {% for result in resultcont.items %}
+        <tr>
+            <td>
+                <a style="text-decoration: none; color: black; font-weight: 500;" href="{{ url_for('cliente', cli_id=result.ClientesDB.idcliente) }}">
+                    <span >{{ result.ClientesDB.nomecliente }}</span>
+                </a>
+            </td>
+            <td>{{ result.ClientesDB.unidade }}</td>
+            <td>{{ result.ContatoDB.nomecontato }}</td>
+            <td>{{ result.ContatoDB.mobile }} / {{result.ContatoDB.phone}}</td>
+            <td>{{ result.ContatoDB.email }}</td>
+        </tr>
+
+        <!-- Modal -->
+        <div class="modal fade" id="ShowContract{{ loop.index0 }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable"><div class="modal-content"><div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">ID:{{result.ClientesDB.idcliente}} - {{ result.ClientesDB.nomecliente }} - {{ result.ClientesDB.unidade }}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <div class="col col-16">
+                <h5>{{ result.ClientesDB.idcliente }}</h5>
+                <div class="row">CLIENTE:{{ result.ClientesDB.idcliente }} </div>
+                <div class="row">CONTATO:{{ result.ContatoDB.nomecontato }} </div>
+                <div class="row">MOBILE:{{ result.ContatoDB.mobile }} </div>
+              </div>
+          </div>
+          <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Ok</button></div></div></div></div>
+        {% endfor %}
+        </tbody>
+      </table>
+      <div class="row">
+          <div class="btn-toolbar">
+              <div class="btn-group mt-2 me-1">
+              {% for page_num in resultcont.iter_pages(left_edge=3, right_edge=3, left_current=3, right_current=3) %}
+                {% if page_num %}
+                 {% if resultcont.page == page_num %}
+                  <a class = "btn btn-sm btn-info-secondary fw-bold" href="{{ url_for('advsearch', page=page_num, Search=Search)  }}">{{ page_num }}</a>
+                 {% else %}
+                  <a class ="btn btn-sm btn-outline-secondary" href="{{ url_for('advsearch', page=page_num, Search=Search)  }}">{{ page_num }}</a>
+                 {% endif %}
+                {% else %}
+                  ...
+                {% endif %}
+              {%endfor %}
+              </div>
+          </div>
+      </div>
+      {% endif %}
+    </div>
+    {% else %}
+        <p>Insuficient Access Level!</p>
+    {% endif %}
+</div>
+
+
+
+    <div class="container">
+          <div class="container border mt-2 p-3 border-primary" style="margin-bottom: 15px">
+        <div class="row">
+            <div class="col" >
+                <form method="POST" action="" >
+                    {{ form_search_cli.csrf_token }}
+                    <legend>Dados do cliente</legend>
+                    <fieldset>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                        <div class="form-group" style="width:33%">
+                        {{ form_search_cli.nomecliente.label(class="form-control-label")  }}
+                        {% if form_search_cli.nomecliente.errors %}
+                            {{ form_search_cli.nomecliente(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for erro in form_search_cli.nomecliente.errors %}
+                                {{ erro }}
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form_search_cli.nomecliente(class="form-control") }}
+                        {% endif %}
+                        </div>
+                        <div class="form-group" style="width:33%">
+                        {{ form_search_cli.unidade.label(class="form-control-label")  }}
+                        {% if form_search_cli.unidade.errors %}
+                            {{ form_search_cli.unidade(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for erro in form_search_cli.unidade.errors %}
+                                {{ erro }}
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form_search_cli.unidade(class="form-control") }}
+                        {% endif %}
+                        </div>
+                        <div class="form-group" style="width:33%">
+                        {{ form_search_cli.razaosocial.label(class="form-control-label")  }}
+                        {% if form_search_cli.razaosocial.errors %}
+                            {{ form_search_cli.razaosocial(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for erro in form_search_cli.razaosocial.errors %}
+                                {{ erro }}
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form_search_cli.razaosocial(class="form-control") }}
+                        {% endif %}
+                        </div>
+                            </div>
+                          <div style="display: flex; align-items: center; gap: 10px;">
+                        <div class="form-group" style="width:33%">
+                        {{ form_search_cli.cnpj.label(class="form-control-label")  }}
+                        {% if form_search_cli.cnpj.errors %}
+                            {{ form_search_cli.cnpj(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for erro in form_search_cli.cnpj.errors %}
+                                {{ erro }}
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form_search_cli.cnpj(class="form-control") }}
+                        {% endif %}
+                        </div>
+                        <div class="form-group" style="width:33%">
+                        {{ form_search_cli.inscrmunicipal.label(class="form-control-label")  }}
+                        {% if form_search_cli.inscrmunicipal.errors %}
+                            {{ form_search_cli.inscrmunicipal(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for erro in form_search_cli.inscrmunicipal.errors %}
+                                {{ erro }}
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form_search_cli.inscrmunicipal(class="form-control") }}
+                        {% endif %}
+                        </div>
+                        <div class="form-group" style="width:33%">
+                        {{ form_search_cli.inscrestadual.label(class="form-control-label")  }}
+                        {% if form_search_cli.inscrestadual.errors %}
+                            {{ form_search_cli.inscrestadual(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for erro in form_search_cli.inscrestadual.errors %}
+                                {{ erro }}
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form_search_cli.inscrestadual(class="form-control") }}
+                        {% endif %}
+                        </div>
+                          </div>
+                          <div style="display: flex; align-items: center; gap: 10px;">
+                        <div class="form-group" style="width:20%">
+                        {{ form_search_cli.endereco.label(class="form-control-label")  }}
+                        {% if form_search_cli.endereco.errors %}
+                            {{ form_search_cli.endereco(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for erro in form_search_cli.endereco.errors %}
+                                {{ erro }}
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form_search_cli.endereco(class="form-control") }}
+                        {% endif %}
+                        </div>
+                              <div class="form-group" style="width:20%">
+                        {{ form_search_cli.cep.label(class="form-control-label")  }}
+                        {% if form_search_cli.cep.errors %}
+                            {{ form_search_cli.cep(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for erro in form_search_cli.cep.errors %}
+                                {{ erro }}
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form_search_cli.cep(class="form-control") }}
+                        {% endif %}
+                        </div>
+                                  <div class="form-group" style="width:20%">
+                        {{ form_search_cli.municipio.label(class="form-control-label")  }}
+                        {% if form_search_cli.municipio.errors %}
+                            {{ form_search_cli.municipio(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for erro in form_search_cli.municipio.errors %}
+                                {{ erro }}
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form_search_cli.municipio(class="form-control") }}
+                        {% endif %}
+                        </div>
+                                  <div class="form-group" style="width:20%">
+                        {{ form_search_cli.estado.label(class="form-control-label")  }}
+                        {% if form_search_cli.estado.errors %}
+                            {{ form_search_cli.estado(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for erro in form_search_cli.estado.errors %}
+                                {{ erro }}
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form_search_cli.estado(class="form-control") }}
+                        {% endif %}
+                        </div>
+                                <div class="form-group" style="width:20%">
+                        {{ form_search_cli.pais.label(class="form-control-label")  }}
+                        {% if form_search_cli.pais.errors %}
+                            {{ form_search_cli.pais(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for erro in form_search_cli.pais.errors %}
+                                {{ erro }}
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form_search_cli.pais(class="form-control") }}
+                        {% endif %}
+                        </div>
+                        <div class="form-group" style="display:none">
+                        {{ form_search_cli.complemento.label(class="form-control-label")  }}
+                        {% if form_search_cli.complemento.errors %}
+                            {{ form_search_cli.complemento(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for erro in form_search_cli.complemento.errors %}
+                                {{ erro }}
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form_search_cli.complemento(class="form-control") }}
+                        {% endif %}
+                        </div>
+                          </div>
+                          <div style="display: flex; align-items: center; gap: 10px;">
+                        <div class="form-group" style="width:33%">
+                        {{ form_search_cli.telefone.label(class="form-control-label")  }}
+                        {% if form_search_cli.telefone.errors %}
+                            {{ form_search_cli.telefone(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for erro in form_search_cli.telefone.errors %}
+                                {{ erro }}
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form_search_cli.telefone(class="form-control") }}
+                        {% endif %}
+                        </div>
+                        <div class="form-group" style="width:33%">
+                        {{ form_search_cli.emailnfe.label(class="form-control-label")  }}
+                        {% if form_search_cli.emailnfe.errors %}
+                            {{ form_search_cli.emailnfe(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for erro in form_search_cli.emailnfe.errors %}
+                                {{ erro }}
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form_search_cli.emailnfe(class="form-control") }}
+                        {% endif %}
+                        </div>
+                        <div class="form-group" style="width:33%">
+                        {{ form_search_cli.website.label(class="form-control-label")  }}
+                        {% if form_search_cli.website.errors %}
+                            {{ form_search_cli.website(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for erro in form_search_cli.website.errors %}
+                                {{ erro }}
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form_search_cli.website(class="form-control") }}
+                        {% endif %}
+                        </div>
+                          </div>
+                        <div class="form-group">
+                        {{ form_search_cli.observacao.label(class="form-control-label")  }}
+                        {% if form_search_cli.observacao.errors %}
+                            {{ form_search_cli.observacao(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for erro in form_search_cli.observacao.errors %}
+                                {{ erro }}
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form_search_cli.observacao(class="form-control") }}
+                        {% endif %}
+                        </div>
+                      </fieldset>
+                    {{ form_search_cli.botao_submit_search_cli(class="btn btn-primary mt-2") }}
+                </form>
+            </div>
+    </div>
+          </div>
+        <hr>
+    <div class="container border mt-2 p-3 border-primary" style="margin-bottom: 30px ; margin-top:15px">
+        <div class="row">
+            <div class="col" >
+                 <form method="POST" action="" >
+                    {{ form_search_cont.csrf_token }}
+                    <legend>Dados do contato</legend>
+                    <fieldset>
+                          <div style="display: flex; align-items: center; gap: 10px;">
+                        <div class="form-group" style="width:50%">
+                        {{ form_search_cont.nomecontato.label(class="form-control-label")  }}
+                        {% if form_search_cont.nomecontato.errors %}
+                            {{ form_search_cont.nomecontato(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for erro in form_search_cont.nomecontato.errors %}
+                                {{ erro }}
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form_search_cont.nomecontato(class="form-control") }}
+                        {% endif %}
+                        </div>
+                                   <div class="form-group" style="width:50%">
+                        {{ form_search_cont.email.label(class="form-control-label")  }}
+                        {% if form_search_cont.email.errors %}
+                            {{ form_search_cont.email(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for erro in form_search_cont.email.errors %}
+                                {{ erro }}
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form_search_cont.email(class="form-control") }}
+                        {% endif %}
+                        </div>
+
+                          </div>
+                          <div style="display: flex; align-items: center; gap: 10px;">
+                     <div class="form-group" style="width:33%">
+                        {{ form_search_cont.mobile.label(class="form-control-label")  }}
+                        {% if form_search_cont.mobile.errors %}
+                            {{ form_search_cont.mobile(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for erro in form_search_cont.mobile.errors %}
+                                {{ erro }}
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form_search_cont.mobile(class="form-control") }}
+                        {% endif %}
+                        </div>
+                        <div class="form-group" style="width:33%">
+                        {{ form_search_cont.phone.label(class="form-control-label")  }}
+                        {% if form_search_cont.phone.errors %}
+                            {{ form_search_cont.phone(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for erro in form_search_cont.phone.errors %}
+                                {{ erro }}
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form_search_cont.phone(class="form-control") }}
+                        {% endif %}
+                        </div>
+                        <div class="form-group" style="width:33%">
+                        {{ form_search_cont.departamento.label(class="form-control-label")  }}
+                        {% if form_search_cont.departamento.errors %}
+                            {{ form_search_cont.departamento(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for erro in form_search_cont.departamento.errors %}
+                                {{ erro }}
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form_search_cont.departamento(class="form-control") }}
+                        {% endif %}
+                        </div>
+                          </div>
+                         <div style="display: flex; align-items: center; gap: 10px;">
+                         <div class="form-group" style="width:33%">
+                        {{ form_search_cont.cargo.label(class="form-control-label")  }}
+                        {% if form_search_cont.cargo.errors %}
+                            {{ form_search_cont.cargo(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for erro in form_search_cont.cargo.errors %}
+                                {{ erro }}
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form_search_cont.cargo(class="form-control") }}
+                        {% endif %}
+                        </div>
+                        <div class="form-group"  style="width:33%">
+                        {{ form_search_cont.bizrole.label(class="form-control-label")  }}
+                        {% if form_search_cont.bizrole.errors %}
+                            {{ form_search_cont.bizrole(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for erro in form_search_cont.bizrole.errors %}
+                                {{ erro }}
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form_search_cont.bizrole(class="form-control") }}
+                        {% endif %}
+                        </div>
+                        <div class="form-group"  style="width:33%">
+                        {{ form_search_cont.observacao.label(class="form-control-label")  }}
+                        {% if form_search_cont.observacao.errors %}
+                            {{ form_search_cont.observacao(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for erro in form_search_cont.observacao.errors %}
+                                {{ erro }}
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form_search_cont.observacao(class="form-control") }}
+                        {% endif %}
+                        </div>
+                         </div>
+                    </fieldset>
+                    {{ form_search_cont.botao_submit_search_cont(class="btn btn-primary mt-2") }}
+                </form>
+            </div>
+    </div>
+
+
+{% endblock %}

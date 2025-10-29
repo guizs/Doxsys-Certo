@@ -1,0 +1,315 @@
+{% extends 'home.html' %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <form method="POST" action="" class="border mt-2 p-3 border-primary" >
+                    {{ form_editarcliente.csrf_token }}
+                    <legend>Dados do cliente</legend>
+                    <fieldset>
+                        <div style="display: flex; gap: 10px;">
+                        <div class="form-group">
+                           {{ form_editarcliente.status.label(class="form-control-label") }}
+                           {{ form_editarcliente.status(class="form-control") }}
+                        </div>
+                        <div class="form-group"  style="width:50%; ">
+                        {{ form_editarcliente.nomecliente.label(class="form-control-label")  }}
+                        {% if form_editarcliente.nomecliente.errors %}
+                            {{ form_editarcliente.nomecliente(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for erro in form_editarcliente.nomecliente.errors %}
+                                {{ erro }}
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form_editarcliente.nomecliente(class="form-control") }}
+                        {% endif %}
+                        </div>
+                        <div class="form-group"  style="width:50%">
+                        {{ form_editarcliente.unidade.label(class="form-control-label")  }}
+                        {% if form_editarcliente.unidade.errors %}
+                            {{ form_editarcliente.unidade(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for erro in form_editarcliente.unidade.errors %}
+                                {{ erro }}
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form_editarcliente.unidade(class="form-control") }}
+                        {% endif %}
+                        </div>
+                         </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                        <div class="form-group"  style="width:50%">
+                        {{ form_editarcliente.razaosocial.label(class="form-control-label")  }}
+                        {% if form_editarcliente.razaosocial.errors %}
+                            {{ form_editarcliente.razaosocial(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for erro in form_editarcliente.razaosocial.errors %}
+                                {{ erro }}
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form_editarcliente.razaosocial(class="form-control") }}
+                        {% endif %}
+                        </div>
+                        <div class="form-group" style="width:16.6%; display: flex; align-items: center;">
+                                {{ form_editarcliente.cnpj.label(class="form-control-label") }}
+                                {% if form_editarcliente.cnpj.errors %}
+                                    {{ form_editarcliente.cnpj(class="form-control is-invalid") }}
+                                    <div class="invalid-feedback">
+                                        {% for erro in form_editarcliente.cnpj.errors %}
+                                            {{ erro }}
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ form_editarcliente.cnpj(class="form-control") }}
+                                {% endif %}
+                                <span onclick="buscarDadosCNPJ()" data-feather="external-link" class="align-text-bottom" style="font-size: 12px; cursor: pointer;"></span>
+                        </div>
+                        <div class="form-group" style="width:16.6%">
+                        {{ form_editarcliente.inscrmunicipal.label(class="form-control-label")  }}
+                        {% if form_editarcliente.inscrmunicipal.errors %}
+                            {{ form_editarcliente.inscrmunicipal(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for erro in form_editarcliente.inscrmunicipal.errors %}
+                                {{ erro }}
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form_editarcliente.inscrmunicipal(class="form-control") }}
+                        {% endif %}
+                        </div>
+                        <div class="form-group" style="width:16.6%">
+                        {{ form_editarcliente.inscrestadual.label(class="form-control-label")  }}
+                        {% if form_editarcliente.inscrestadual.errors %}
+                            {{ form_editarcliente.inscrestadual(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for erro in form_editarcliente.inscrestadual.errors %}
+                                {{ erro }}
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form_editarcliente.inscrestadual(class="form-control") }}
+                        {% endif %}
+                        </div>
+                            </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                        <div class="form-group"  style="width:50%">
+                        {{ form_editarcliente.endereco.label(class="form-control-label")  }}
+                        {% if form_editarcliente.endereco.errors %}
+                            {{ form_editarcliente.endereco(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for erro in form_editarcliente.endereco.errors %}
+                                {{ erro }}
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form_editarcliente.endereco(class="form-control") }}
+                        {% endif %}
+                        </div>
+                        <div class="form-group"  style="width:16.6%">
+                        {{ form_editarcliente.complemento.label(class="form-control-label")  }}
+                        {% if form_editarcliente.complemento.errors %}
+                            {{ form_editarcliente.complemento(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for erro in form_editarcliente.complemento.errors %}
+                                {{ erro }}
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form_editarcliente.complemento(class="form-control") }}
+                        {% endif %}
+                        </div>
+                             <div class="form-group" style="width:16.6%">
+                        {{ form_editarcliente.estado.label(class="form-control-label")  }}
+                        {% if form_editarcliente.estado.errors %}
+                            {{ form_editarcliente.estado(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for erro in form_editarcliente.estado.errors %}
+                                {{ erro }}
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form_editarcliente.estado(class="form-control") }}
+                        {% endif %}
+                        </div>
+                        <div class="form-group" style="width:16.6%">
+                        {{ form_editarcliente.pais.label(class="form-control-label")  }}
+                        {% if form_editarcliente.pais.errors %}
+                            {{ form_editarcliente.pais(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for erro in form_editarcliente.pais.errors %}
+                                {{ erro }}
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form_editarcliente.pais(class="form-control") }}
+                        {% endif %}
+                        </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                        <div class="form-group" style="width:33%">
+                        {{ form_editarcliente.cep.label(class="form-control-label")  }}
+                        {% if form_editarcliente.cep.errors %}
+                            {{ form_editarcliente.cep(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for erro in form_editarcliente.cep.errors %}
+                                {{ erro }}
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form_editarcliente.cep(class="form-control") }}
+                        {% endif %}
+                        </div>
+                        <div class="form-group" style="width:33%">
+                        {{ form_editarcliente.municipio.label(class="form-control-label")  }}
+                        {% if form_editarcliente.municipio.errors %}
+                            {{ form_editarcliente.municipio(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for erro in form_editarcliente.municipio.errors %}
+                                {{ erro }}
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form_editarcliente.municipio(class="form-control") }}
+                        {% endif %}
+                        </div>
+                               <div class="form-group"  style="width:33%">
+                        {{ form_editarcliente.website.label(class="form-control-label")  }}
+                        {% if form_editarcliente.website.errors %}
+                            {{ form_editarcliente.website(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for erro in form_editarcliente.website.errors %}
+                                {{ erro }}
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form_editarcliente.website(class="form-control") }}
+                        {% endif %}
+                        </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                        <div class="form-group"  style="width:50%">
+                        {{ form_editarcliente.telefone.label(class="form-control-label")  }}
+                        {% if form_editarcliente.telefone.errors %}
+                            {{ form_editarcliente.telefone(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for erro in form_editarcliente.telefone.errors %}
+                                {{ erro }}
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form_editarcliente.telefone(class="form-control") }}
+                        {% endif %}
+                        </div>
+                        <div class="form-group"  style="width:50%">
+                        {{ form_editarcliente.emailnfe.label(class="form-control-label")  }}
+                        {% if form_editarcliente.emailnfe.errors %}
+                            {{ form_editarcliente.emailnfe(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for erro in form_editarcliente.emailnfe.errors %}
+                                {{ erro }}
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form_editarcliente.emailnfe(class="form-control") }}
+                        {% endif %}
+                        </div>
+                        </div>
+                        <div class="form-group">
+                        {{ form_editarcliente.observacao.label(class="form-control-label")  }}
+                        {% if form_editarcliente.observacao.errors %}
+                            {{ form_editarcliente.observacao(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for erro in form_editarcliente.observacao.errors %}
+                                {{ erro }}
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form_editarcliente.observacao(class="form-control") }}
+                        {% endif %}
+                        </div>
+                    </fieldset>
+                    <button onclick="history.back()" type="button" class="btn btn-secondary h-100 mt-2">VOLTAR</button>
+                    {{ form_editarcliente.botao_submit_editarcliente(class="btn btn-primary h-100 mt-2") }}
+                    {% if current_user.is_authenticated and current_user.access >= 3 %}
+                        <a href="" data-bs-toggle="modal" data-bs-target="#DelCliente">
+                            <button type="button" class="btn btn-sm btn-danger h-100 mt-2">APAGAR CLIENTE</button>
+                        </a>
+                    {% endif %}
+                </form>
+            </div>
+        <hr>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="DelCliente" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+        <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Apagar cliente {{ cliente.nomecliente }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Você tem certeza de que deseja excluir o cliente {{cliente.nomecliente}} - {{ cliente.unidade}}?<br>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <form method="POST" action="{{ url_for('excluir_cliente', cli_id=cliente.idcliente) }}">
+         <button type="submit" class="btn btn-danger">Excluir Cliente</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <script>
+        function buscarDadosCNPJ() {
+            const cnpj = document.getElementById("cnpj").value.replace(/\D/g, '');
+
+            if (cnpj.length !== 14) {
+                alert("CNPJ inválido. Por favor, insira um CNPJ válido com 14 dígitos.");
+                return;
+            }
+
+            fetch(`{{ url_for('proxy_cnpj', cnpj='__CNPJ__') }}`.replace('__CNPJ__', cnpj))
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(err => {
+                            alert('Erro ao buscar dados do CNPJ: ' + (err.erro || 'Erro desconhecido.'));
+                            throw new Error('Erro na consulta ao CNPJ.');
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.status === 'ERROR') {
+                        alert('Erro: ' + data.message);
+                    } else {
+                        document.getElementById('{{ form_editarcliente.nomecliente.id }}').value = data.fantasia;
+                        document.getElementById('{{ form_editarcliente.unidade.id }}').value = data.tipo;
+                        document.getElementById('{{ form_editarcliente.razaosocial.id }}').value = data.nome;
+                        document.getElementById('{{ form_editarcliente.endereco.id }}').value = data.logradouro + ', ' + data.numero;
+                        document.getElementById('{{ form_editarcliente.municipio.id }}').value = data.municipio;
+                        document.getElementById('{{ form_editarcliente.estado.id }}').value = data.uf;
+                        document.getElementById('{{ form_editarcliente.cep.id }}').value = data.cep.replace(/\D/g, '');
+                        document.getElementById('{{ form_editarcliente.emailnfe.id }}').value = data.email;
+                        document.getElementById('{{ form_editarcliente.telefone.id }}').value = data.telefone;
+                        // Concatenar 'atividade_principal' 'code' e 'text' e preencher o campo 'observacao'
+                        const atividadePrincipal = data.atividade_principal;
+                        if (atividadePrincipal && atividadePrincipal.length > 0) {
+                            const atividadeConcatenada = `${atividadePrincipal[0].code} - ${atividadePrincipal[0].text}`;
+                            document.getElementById('{{ form_editarcliente.observacao.id }}').value = atividadeConcatenada;
+                        }
+                    }
+                })
+                .catch(error => {
+                    alert('Erro ao buscar dados do CNPJ: ' + error.message);
+                });
+        }
+    </script>
+
+{% endblock %}

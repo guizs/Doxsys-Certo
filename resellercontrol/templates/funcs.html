@@ -1,0 +1,142 @@
+{% extends 'home.html' %}
+
+{% block body %}
+
+<div  id="header" class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom" xmlns="http://www.w3.org/1999/html">
+  <a href="javascript:void(0)" class="closebtn" onclick="openNav()" style="text-decoration: none">
+        <span data-feather="maximize-2" class="align-text-bottom"></span></a>
+    <h1 class="h2"><a style="text-decoration: none" href="{{ url_for('funcs', status='ativo') }}">Funcionários</a></h1>
+  {% if current_user.is_authenticated and current_user.access >= 1 %}
+  <form class="input-group w-50 mb-md-1">
+    <input name="Search" class="form-control form-control-dark w-50 rounded-0 border-1" type="text" placeholder="Busca funcionário">
+  </form>
+  {% endif %}
+  {% if current_user.is_authenticated and current_user.access >= 4 %}
+  <div class="btn-toolbar mb-2 mb-md-0">
+    <div class="btn-group me-2" style="display:flex; gap:10px; align-items:center">
+        <a href="{{ url_for('funcs', status='Ativo')  }}"> <button type="button" class="btn btn-sm btn-outline-secondary">ATIVOS</button></a>
+        <a href="{{ url_for('funcs', status='Inativo')  }}"> <button type="button" class="btn btn-sm btn-outline-secondary">INATIVOS</button></a>
+    </div>
+    <div class="btn-group me-2">
+      <form action="{{ url_for('funcadd') }}">
+      <!--  form method="POST" action="{{ url_for('funcadd') }}"  -->
+       <button type="submit" class="btn btn-sm btn-outline-primary">Novo funcionário</button>
+      </form>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<div id="main" class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-1 pb-1 mt-1 mb-1">
+    {% if current_user.access >= 1 %}
+    <div class="row px-0 py-0 fs-6" style="line-height:0.8 padding:25px">
+        {% if pessoal.items[0] %}
+            <h3 class="h3"> <small>Status:</small> {{  pessoal.items[0].PessoalDB.statusrh }}s </h3>
+        {% else %}
+            <h3 class="h3"> Nenhum funcionário com Status: {{ status }} </h3>
+        {% endif %}
+      <table class="table table-striped">
+         <thead>
+            <tr>
+              <th scope="col">ID</th>
+              <th scope="col">Funcionário</th>
+              <th scope="col">Admissão</th>
+              {% if status != "Inativo" %}
+                <th scope="col">Lim.Férias</th>
+              {% else %}
+                <th scope="col">Desligamento</th>
+              {% endif %}
+              <th scope="col">Celular</th>
+              <th scope="col">Cidade</th>
+              <th scope="col">UF</th>
+              <th scope="col">Aniversário</th>
+            </tr>
+         </thead>
+      {% if pessoal %}
+        <tbody>
+
+        {% for pessoa in pessoal.items %}
+        <tr>
+            <!--  INCLUIR href="" no a para destacar o cliente quando o modal estiver funcionando  -->
+          <td>{{ pessoa.PessoalDB.idfunc }}</td>
+          {% if current_user.access >= 4 %}
+            <th scope="row"><a style="text-decoration: none" data-id={{ loop.index0 }} data-bs-toggle="modal" data-bs-target="#ShowFunc{{ loop.index0 }}"> {{ pessoa.PessoalDB.nomefunc }}</a>
+             <a style="text-decoration: none" href="{{ url_for('funcedit', func_id=pessoa.PessoalDB.idfunc) }}"><span data-feather="edit" class="align-text-bottom"></span></a></th>
+          {% else %}
+            <td>{{ pessoa.PessoalDB.nomefunc }}</td>
+          {% endif %}
+          <td>{{ '{:02d}/{:02d}/{:02d}'.format(pessoa.PessoalDB.dtadmiss.day, pessoa.PessoalDB.dtadmiss.month, pessoa.PessoalDB.dtadmiss.year) }}</td>
+          {% if status != "Inativo" %}
+              {% if pessoa.PessoalDB.dtlimfer <= hoje30 %}
+                <td style="color: #F00">{{ '{:02d}/{:02d}/{:02d}'.format(pessoa.PessoalDB.dtlimfer.day, pessoa.PessoalDB.dtlimfer.month, pessoa.PessoalDB.dtlimfer.year) }}</td>
+              {% else %}
+                <td>{{ '{:02d}/{:02d}/{:02d}'.format(pessoa.PessoalDB.dtlimfer.day, pessoa.PessoalDB.dtlimfer.month, pessoa.PessoalDB.dtlimfer.year) }}</td>
+              {% endif %}
+          {% else %}
+              <td>{{ '{}/{}/{}'.format(pessoa.PessoalDB.dtdeslig.day, pessoa.PessoalDB.dtdeslig.month, pessoa.PessoalDB.dtdeslig.year) }}</td>
+          {% endif %}
+          <td>{{ pessoa.PessoalDB.fonecelr }}</td>
+          <td>{{ pessoa.PessoalDB.cidade }}</td>
+          <td>{{ pessoa.PessoalDB.estado }}</td>
+          <td style="color: #00F">{{ '{:02d}/{:02d}/{:02d}'.format(pessoa.PessoalDB.dtnascim.day, pessoa.PessoalDB.dtnascim.month, pessoa.PessoalDB.dtnascim.year) }}</td>
+        </tr>
+
+        {% if current_user.access >= 4 %}
+        <!-- Modal -->
+        <div class="modal fade" id="ShowFunc{{ loop.index0 }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable"><div class="modal-content"><div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">[{{ pessoa.PessoalDB.idfunc }}] {{ pessoa.PessoalDB.nomefunc }}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <div class="col col-16">
+                <h5>{{pessoa.PessoalDB.statusrh}} | {{pessoa.PessoalDB.nomefunc}}<small> | Aniv.: {{ '{:02d}/{:02d}/{:02d}'.format(pessoa.PessoalDB.dtnascim.day, pessoa.PessoalDB.dtnascim.month, pessoa.PessoalDB.dtnascim.year) }} </small> </h5>
+                <div class="row">ADMISSÃO: {{ '{:02d}/{:02d}/{:02d}'.format(pessoa.PessoalDB.dtadmiss.day, pessoa.PessoalDB.dtadmiss.month, pessoa.PessoalDB.dtadmiss.year) }} | LIMITE FÉRIAS: {{ '{:02d}/{:02d}/{:02d}'.format(pessoa.PessoalDB.dtlimfer.day, pessoa.PessoalDB.dtlimfer.month, pessoa.PessoalDB.dtlimfer.year) }}</div>
+                <div class="row">Cargo/Função: {{pessoa.PessoalDB.cargfunc}} | Inicial: {{pessoa.PessoalDB.salrinic}} | Salário: {{pessoa.PessoalDB.salrtual}}</div>
+                <div class="row">RG: {{pessoa.PessoalDB.rgfunc}} | CPF: {{pessoa.PessoalDB.cpffunc}} | Escolaridade: {{pessoa.PessoalDB.escolari}}</div>
+                <div class="row">Est.Civil: {{pessoa.PessoalDB.estadciv}} | Cônjuge: {{pessoa.PessoalDB.nomeconj}} - Aniv.:{{ '{}/{}/{}'.format(pessoa.PessoalDB.dtnasccg.day, pessoa.PessoalDB.dtnasccg.month, pessoa.PessoalDB.dtnasccg.year) }}</div>
+                <div class="row">CELULAR: {{pessoa.PessoalDB.fonecelr}} | FONE FIXO: {{pessoa.PessoalDB.fonefixo}}</div>
+                <div class="row">EMAIL: {{pessoa.PessoalDB.emailpes}}</div>
+                <div class="row">Endereço: {{pessoa.PessoalDB.endereco}} - {{pessoa.PessoalDB.bairro}} </div>
+                <div class="row">CEP: {{pessoa.PessoalDB.cep}} | Cidade: {{pessoa.PessoalDB.cidade}} | UF: {{pessoa.PessoalDB.estado}} </div>
+                <div class="row">Benefícios: {{ pessoa.PessoalDB.benefc }} </div>
+                <div class="row">Anot. Férias: {{ pessoa.PessoalDB.ferias }} </div>
+                <div class="row">Observações: {{ pessoa.PessoalDB.observacao }} </div>
+                <div class="row">Desligamento: {{ '{}/{}/{}'.format(pessoa.PessoalDB.dtdeslig.day, pessoa.PessoalDB.dtdeslig.month, pessoa.PessoalDB.dtdeslig.year) }}</div>
+                <br>
+                {% if pessoa.PessoalDB.dtlimfer <= hoje30 %}
+                  <div style="color: #F00" class="row">MARCAR FÉRIAS ANTES DO VENCIMENTO!</div>
+                {% endif %}
+                <div class="row"><small>Registro {{ pessoa.PessoalDB.idfunc }} alterado em {{ '{:02d}/{:02d}/{:02d}'.format(pessoa.PessoalDB.dtalter.day, pessoa.PessoalDB.dtalter.month, pessoa.PessoalDB.dtalter.year) }} por {{ pessoa.usuario.username }}</small></div>
+              </div>
+          </div>
+          <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Ok</button></div></div></div></div>
+          {% endif %}
+        {% endfor %}
+        </tbody>
+      </table>
+      <div class="row">
+          <div class="btn-toolbar">
+              <div class="btn-group mt-2 me-1">
+              {% for page_num in pessoal.iter_pages(left_edge=3, right_edge=3, left_current=3, right_current=3) %}
+                {% if page_num %}
+                 {% if pessoal.page == page_num %}
+                  <a class = "btn btn-sm btn-info-secondary fw-bold" href="{{ url_for('funcs', status=status, page=page_num)  }}">{{ page_num }}</a>
+                 {% else %}
+                  <a class ="btn btn-sm btn-outline-secondary" href="{{ url_for('funcs', status=status, page=page_num)  }}">{{ page_num }}</a>
+                 {% endif %}
+                {% else %}
+                  ...
+                {% endif %}
+              {%endfor %}
+              </div>
+          </div>
+      </div>
+      {% endif %}
+    </div>
+    {% else %}
+        <p>Insuficient Access Level!</p>
+    {% endif %}
+</div>
+
+{% endblock %}

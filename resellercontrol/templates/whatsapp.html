@@ -1,0 +1,50 @@
+{% extends 'home.html' %}
+
+{% block body %}
+    <h2>Enviar mensagem via WhatsApp</h2>
+
+    <form method="POST" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="phone" class="form-label">Número com DDD e código do país (ex: 5599999999999)</label>
+            <input type="text" class="form-control" id="phone" name="phone" required>
+        </div>
+        <div class="mb-3">
+            <label for="message" class="form-label">Mensagem</label>
+            <textarea class="form-control" id="message" name="message" rows="3"></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="media" class="form-label">Arquivo de mídia (opcional)</label>
+            <input type="file" class="form-control" id="media" name="media">
+        </div>
+        <button type="submit" class="btn btn-success">Enviar</button>
+    </form>
+
+<hr>
+<h4>Histórico de Conversas</h4>
+<ul class="list-group">
+   {% for msg, nomecontato in conversas %}
+   <div class="card mb-2">
+    <div class="card-body">
+      <h6 class="card-subtitle mb-1 text-muted">
+        {{ msg.tipo|capitalize }} - {{ msg.data.strftime("%d/%m/%Y %H:%M") }}
+        {% if msg.usuario %}
+          por {{ msg.usuario.username }}
+        {% endif %}
+      </h6>
+      {% if msg.tipo == 'recebida' %}
+        <strong>De:</strong>
+      {% else %}
+        <strong>Para:</strong>
+      {% endif %}
+      {{ nomecontato ~ ' (' ~ msg.telefone ~ ')' if nomecontato else msg.telefone }}<br>
+      <strong>Mensagem:</strong> {{ msg.mensagem | safe }}
+    </div>
+   </div>
+   {% else %}
+    <p>Nenhuma mensagem encontrada.</p>
+   {% endfor %}
+</ul>
+
+</body>
+</html>
+{% endblock %}

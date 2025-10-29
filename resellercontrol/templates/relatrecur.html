@@ -1,0 +1,187 @@
+{% extends 'home.html' %}
+
+{% block body %}
+
+<div id="main" class="d-flex align-items-center pt-3 pb-2 mb-1 border-bottom" style="height: 80px">
+  <h1 class="h2"><a style="text-decoration: none" href="{{ url_for('relatorios', mesatl=session['MESATL']) }}">Relatórios</a></h1>
+</div>
+
+{% if current_user.is_authenticated and current_user.access >= 4 %}
+<div id="main" class="pt-3">
+    <div class="row">
+        <h3>Relatório de Recorrências (MRR & ARR)</h3>
+        <small>MRR (Monthly Recurring Revenue) e ARR (Annual Recurring Revenue)</small>
+        <span>Data:<strong>{{ '{:02d}/{:02d}/{:02d}'.format(hoje.day, hoje.month, hoje.year) }}</strong> | Status dos Contratos:<strong>Ativo</strong> | [<strong>{{ total_itens }}</strong> contratos]</span>
+    </div>
+    <hr>
+
+    {% if total_itens > 0 %}
+
+    <!-- Seção de Totais (MOVIMENTEI PARA CIMA) -->
+    <div class="row mt-2 mb-4 text-start">
+        <div class="col-md-6 offset-md-6">
+            <h4 class="fw-bold">Totais Recorrentes</h4>
+            <ul class="list-group">
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    MRR Total (Receita Recorrente Mensal de Software)
+                    <span class="badge bg-primary rounded-pill fs-6">{{ (currency+'{:0,.2f}'.format(mrr_total).replace(',', 'X').replace('.', ',').replace('X', '.')).replace(currency+'-','-'+currency) }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    ARR Total (Receita Recorrente Anual de Software)
+                    <span class="badge bg-primary rounded-pill fs-6">{{ (currency+'{:0,.2f}'.format(arr_total).replace(',', 'X').replace('.', ',').replace('X', '.')).replace(currency+'-','-'+currency) }}</span>
+                </li>
+                 <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <strong>TOTAL DA RECEITA RECORRENTE</strong>
+                    <span class="badge bg-success rounded-pill fs-6">{{ (currency+'{:0,.2f}'.format(mrr_total+arr_total).replace(',', 'X').replace('.', ',').replace('X', '.')).replace(currency+'-','-'+currency) }}</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <hr>
+
+    <!-- Seção do Gráfico -->
+    <div class="row mb-4">
+        <div class="col">
+            <h4>Faturamento Recorrente Mensal (Previsto)</h4>
+            <canvas id="recorrenciaChart" width="900" height="350"></canvas>
+        </div>
+    </div>
+    <hr>
+
+    <!-- Seção da Tabela de Dados -->
+    <div class="table-responsive">
+        <table class="table table-striped table-sm">
+            <thead>
+                <tr>
+                    <th scope="col">Cliente</th>
+                    <th scope="col">Unidade</th>
+                    <th scope="col">Produto</th>
+                    <th scope="col">Faturamento</th>
+                    <th scope="col">Frequência</th>
+                    <th scope="col">Infra</th>
+                    <th scope="col">Users</th>
+                    <th scope="col">Storage(GB)</th>
+                    <th scope="col">PowerBI</th>
+                    <th scope="col" class="text-end">Software</th>
+                    <th scope="col" class="text-end">Serviço</th>
+                    <th scope="col" class="text-end">TOTAL</th>
+                    <th scope="col" class="text-center">Validade</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for item in relatorio_data %}
+            <tr>
+                <td>{{ item.cliente }}</td>
+                <td>{{ item.unidade }}</td>
+                <td>{{ item.produto }}</td>
+                <td>{{ item.faturamento }}</td>
+                <td>{{ item.frequencia }}</td>
+                <td>{{ item.infratype }}</td>
+                <td>{{ item.users_regulares }}</td>
+                <td>{{ item.gb_storage }}</td>
+                <td>{{ item.powerbi }}</td>
+                <td class="text-end" style="color: #007bff;">{{ (currency+'{:0,.2f}'.format(item.vlrsoft).replace(',', 'X').replace('.', ',').replace('X', '.')).replace(currency+'-','-'+currency) }}</td>
+                <td class="text-end" style="color: #28a745;">{{ (currency+'{:0,.2f}'.format(item.vlrserv).replace(',', 'X').replace('.', ',').replace('X', '.')).replace(currency+'-','-'+currency) }}</td>
+                <td class="text-end fw-bold">{{ (currency+'{:0,.2f}'.format(item.total).replace(',', 'X').replace('.', ',').replace('X', '.')).replace(currency+'-','-'+currency) }}</td>
+                <td class="text-center">{{ item.validade.strftime('%d/%m/%y') if item.validade else '-' }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+            <!-- ADICIONADO: Rodapé com os totais da tabela -->
+            <tfoot>
+                <tr class="fw-bold table-group-divider">
+                    <td colspan="9" class="text-end fs-5">TOTAIS:</td>
+                    <td class="text-end fs-5" style="color: #007bff;">{{ (currency+'{:0,.2f}'.format(total_vlrsoft).replace(',', 'X').replace('.', ',').replace('X', '.')).replace(currency+'-','-'+currency) }}</td>
+                    <td class="text-end fs-5" style="color: #28a745;">{{ (currency+'{:0,.2f}'.format(total_vlrserv).replace(',', 'X').replace('.', ',').replace('X', '.')).replace(currency+'-','-'+currency) }}</td>
+                    <td class="text-end fs-5">{{ (currency+'{:0,.2f}'.format(total_geral).replace(',', 'X').replace('.', ',').replace('X', '.')).replace(currency+'-','-'+currency) }}</td>
+                    <td></td> <!-- Célula vazia para alinhar com a coluna "Validade" -->
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    {% else %}
+        <div class="alert alert-info mt-3" role="alert">
+            Sem dados para gerar o relatório! Não foram encontrados contratos com o status "Ativo".
+        </div>
+    {% endif %}
+
+</div>
+{% else %}
+    <p class="alert alert-danger">Nível de Acesso Insuficiente!</p>
+{% endif %}
+
+<!-- Script do Gráfico (ATUALIZADO) -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        if (document.getElementById("recorrenciaChart")) {
+            // Recebe os dados dos clientes enviados pela rota
+            const customerData = {{ chart_customers | tojson | safe }};
+
+            var ctx = document.getElementById("recorrenciaChart").getContext("2d");
+            var recorrenciaChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: {{ chart_labels | safe }},
+                    datasets: [{
+                        label: "Faturamento Mensal Previsto",
+                        data: {{ chart_values | safe }},
+                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value, index, values) {
+                                    return ({{ currency | tojson }} + ' ' + value.toLocaleString('pt-BR', {minimumFractionDigits: 2}));
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                // Callback para customizar todo o tooltip
+                                label: function(context) {
+                                    const dataIndex = context.dataIndex;
+                                    const value = context.parsed.y;
+                                    const customers = customerData[dataIndex];
+
+                                    // Linha 1: Valor
+                                    let valueLabel = context.dataset.label || '';
+                                    if (valueLabel) {
+                                        valueLabel += ': ';
+                                    }
+                                    if (value !== null) {
+                                        valueLabel += {{ currency | tojson }} + ' ' + value.toLocaleString('pt-BR', {minimumFractionDigits: 2});
+                                    }
+
+                                    // Linha 2: Clientes
+                                    let customerLabel = '';
+                                    if (customers && customers.length > 0) {
+                                        // Limita a 5 nomes para não poluir o tooltip
+                                        let customerString = customers.slice(0, 5).join(', ');
+                                        if (customers.length > 5) {
+                                            customerString += `, ... (${customers.length - 5} mais)`;
+                                        }
+                                        customerLabel = 'Clientes: ' + customerString;
+                                    }
+
+                                    // Retorna um array de strings para criar múltiplas linhas
+                                    return [valueLabel, customerLabel];
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

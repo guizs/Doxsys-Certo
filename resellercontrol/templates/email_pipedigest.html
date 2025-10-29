@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8">
+        <title>DOXSYS - Digest diário do pipeline</title>
+    </head>
+    <body>
+        <p>Olá {{ username }},</p>
+        <p>Segue abaixo a lista de atividades do dia.<br>
+        Não esqueça de atualizar os dados no Pipeline.</p>
+
+        <!-- Inserir a tabela de usuários -->
+        {{ pipeline_list|safe }}
+
+        <p>Bom dia.<br>
+        <b>DOXSYS</b></p>
+        <br>
+        <img src="cid:logo_dox" alt="Dox Logo">
+    </body>
+</html>

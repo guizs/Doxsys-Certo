@@ -1,0 +1,225 @@
+{% extends 'home.html' %}
+
+{% block body %}
+
+<div  id="header" class="d-flex  flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb- ">
+  <a href="javascript:void(0)" class="closebtn" onclick="openNav()" style="text-decoration: none; margin-right:10px">
+        <span data-feather="maximize-2" class="align-text-bottom"></span></a>
+    <h1 class="h2">USUÁRIOS</h1>
+</div>
+{% if current_user.access >= 1 %}
+<div class="row">
+    {% if current_user.access > 3 and usuarios %}
+            <div class="row alert px-0 py-0 alert-dark fs-6 fw-bold" style="height:25px padding:25px">
+             <div class="col col-2" style="display:flex; align-items: center; gap:10px">
+              <div class="col col-1" style="text-align: left">
+                Nív
+              </div>
+              <div class="col col-2" style="text-align: left">
+                Nome
+              </div>
+             </div>
+              <div class="col col-2" style="text-align: left">
+                Sigla
+              </div>
+              <!-- div class="col col-2" style="text-align: left">
+                Role
+              </div -->
+              <div class="col col-2" style="text-align: left">
+                E-Mail
+              </div>
+              <div class="col col-2" style="text-align: left">
+                Celular
+              </div>
+              <div class="col col-2" style="text-align: left">
+                Telefone
+              </div>
+              {% if current_user.access >= 5 %}
+              <div class="col col-2" style="text-align: left">
+                Opc
+              </div>
+              {% endif %}
+            </div>
+        {% for usuario in usuarios %}
+            <div class="row px-0 py-0 border-bottom fs-6 fw-semibold" style="height:25px padding:25px;">
+             <div class="col col-2" style="display:flex; align-items: center; gap:10px">
+              <div class="col col-1" style="text-align: center">
+                {{ usuario.access }}
+              </div>
+              <div  style="text-align: left">
+                {{ usuario.username }} - [{{ usuario.id }}]
+              </div>
+             </div>
+              <div class="col col-1" style="text-align: left">
+                {{ usuario.sigla }}
+              </div>
+              <div class="col col-1" style="text-align: left">
+                {% if usuario.role %}
+                    {{ usuario.role[0:5] }}
+                {% else %}
+                    null
+                {% endif %}
+              </div>
+              <div class="col col-3" style="text-align: left">
+                {{ usuario.email }}
+              </div>
+              <div class="col col-2" style="text-align: left">
+                {{ usuario.mobile }}
+              </div>
+              <div class="col col-2" style="text-align: left">
+                {{ usuario.phone }}
+              </div>
+               {% if current_user.access >= 5 %}
+                <div class="col" style="text-align: left">
+                  <a style="text-decoration: none" href="{{ url_for('usredit', user_id=usuario.id) }}">
+                          <span data-feather="edit" class="align-text-bottom"></span>
+                      </a>
+
+
+                      <a style="text-decoration: none" href="" data-bs-toggle="modal" data-bs-target="#ExcluirUsuario{{ loop.index0 }}">
+                       <span data-feather="trash" class="feather-red"></span>
+                      </a>
+                </div>
+              {% endif %}
+            </div>
+                <!-- Modal -->
+              <div class="modal fade" id="ExcluirUsuario{{ loop.index0 }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog"><div class="modal-content"><div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Excluir Usuário</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    Deseja realmente excluir o usuário {{ usuario.id }}-{{ usuario.username }}?<BR>(Essa ação não pode ser desfeita) CONFIRMAR?
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    {% if current_user.access >= 5 %}  <!--   {% if usuario != current_user %}   {% endif %}  -->
+                    <form method="POST" action="{{ url_for('excluir_usuario', user_id=usuario.id) }}">
+                        <button type="submit" class="btn btn-danger">Excluir usuário</button>
+                    </form>
+                    {% endif %}
+                </div></div></div>
+              </div>
+
+        {% endfor %}
+    {% endif %}
+</div>
+<div class="row">
+    {% if current_user.access > 3 and usuarios %}
+            <div class="row alert px-0 py-0 alert-dark fs-6 fw-bold" style="height:25px padding:25px">
+             <div class="col col-2" style="display:flex; align-items: center; gap:10px">
+              <div class="col col-1" style="text-align: left">
+                Nív
+              </div>
+              <div class="col col-2" style="text-align: left">
+                Nome
+              </div>
+             </div>
+              <div class="col col-2" style="text-align: left">
+                Sigla
+              </div>
+              <!-- div class="col col-2" style="text-align: left">
+                Role
+              </div -->
+              <div class="col col-2" style="text-align: left">
+                E-Mail
+              </div>
+              <div class="col col-2" style="text-align: left">
+                Celular
+              </div>
+              <div class="col col-2" style="text-align: left">
+                Telefone
+              </div>
+            </div>
+            {% for usuario in usrnoaccess %}
+            <div class="row px-0 py-0 border-bottom fs-6 fw-semibold" style="height:25px padding:25px; color:red">
+             <div class="col col-2" style="display:flex; align-items: center; gap:10px; color:red">
+              <div class="col col-1" style="text-align: center">
+                {{ usuario.access }}
+              </div>
+              <div  style="text-align: left">
+                {{ usuario.username }} - [{{ usuario.id }}]
+              </div>
+             </div>
+              <div class="col col-1" style="text-align: left">
+                {{ usuario.sigla }}
+              </div>
+              <div class="col col-1" style="text-align: left">
+                {% if usuario.role %}
+                    {{ usuario.role[0:5] }}
+                {% else %}
+                    null
+                {% endif %}
+              </div>
+              <div class="col col-3" style="text-align: left">
+                {{ usuario.email }}
+              </div>
+              <div class="col col-2" style="text-align: left">
+                {{ usuario.mobile }}
+              </div>
+              <div class="col col-2" style="text-align: left">
+                {{ usuario.phone }}
+              </div>
+              {% if current_user.access >= 5 %}
+                <div class="col" style="text-align: left">
+                  <a style="text-decoration: none" href="{{ url_for('usredit', user_id=usuario.id) }}">
+                          <span data-feather="edit" class="align-text-bottom"></span>
+                      </a>
+                      <a style="text-decoration: none" href="" data-bs-toggle="modal" data-bs-target="#ExcluirUsuarioDefinitivo{{ loop.index0 }}">
+                       <span data-feather="trash" class="feather-red"></span>
+                      </a>
+                </div>
+              {% endif %}
+            </div>
+                <!-- Modal -->
+              <div class="modal fade" id="ExcluirUsuarioDefinitivo{{ loop.index0 }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog"><div class="modal-content"><div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Excluir Usuário</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    Deseja realmente excluir o usuário {{ usuario.id }}-{{ usuario.username }}?<BR>(Essa ação não pode ser desfeita) CONFIRMAR?
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    {% if current_user.access >= 5 %}  <!--   {% if usuario != current_user %}   {% endif %}  -->
+                    <form method="POST" action="{{ url_for('excluir_usuario', user_id=usuario.id) }}">
+                        <button type="submit" class="btn btn-danger">Excluir usuário</button>
+                    </form>
+                    {% endif %}
+                </div></div></div>
+              </div>
+        {% endfor %}
+    {% endif %}
+</div>
+<BR>
+<div class="row">
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+  <p>Access Level: [{{current_user.access}}]</p>
+  <ul>
+    <li>
+      0 - Sem acesso, somente páginas abertas
+    </li>
+    <li>
+      1 - Acesso para consulta aos dados e páginas abertas
+    </li>
+     <li>
+      2 - Acesso para consulta e edições de contatos e projetos
+    </li>
+    <li>
+      3 - Acesso para consulta e edição dos dados gerais do sistema
+    </li>
+    <li>
+      4 - Acesso à lista de usuários e demais registros de funcionários
+    </li>
+    <li>
+      5 - Acesso completo, incluindo a classificação de Access Level de outros usuários
+    </li>
+  </ul>
+  </div>
+</div>
+{% else %}
+    <p>Insuficient Access Level!</p>
+{% endif %}
+
+{% endblock %}

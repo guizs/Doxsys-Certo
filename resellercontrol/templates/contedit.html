@@ -1,0 +1,133 @@
+{% extends 'home.html' %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <form method="POST" action="" class="border mt-2 p-3 border-primary" >
+                    {{ form_editarcontato.csrf_token }}
+                    <legend>Dados do contato</legend>
+                    <fieldset>
+                        <div style="display: flex; gap: 10px;">
+                        <div class="form-group" style="width:50%">
+                        {{ form_editarcontato.nomecontato.label(class="form-control-label")  }}
+                            <strong>  -  {{ form_editarcontato.emphasis.label(class="form-control-label")  }} </strong>
+                            {{ form_editarcontato.emphasis() }}
+                            <strong>  -  {{ form_editarcontato.mailing.label(class="form-control-label")  }} </strong>
+                            {{ form_editarcontato.mailing() }}
+                        {% if form_editarcontato.nomecontato.errors %}
+                            {{ form_editarcontato.nomecontato(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for erro in form_editarcontato.nomecontato.errors %}
+                                {{ erro }}
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form_editarcontato.nomecontato(class="form-control") }}
+                        {% endif %}
+                        </div>
+                        <div class="form-group"  style="width:50%">
+                        {{ form_editarcontato.email.label(class="form-control-label")  }}
+                        {% if form_editarcontato.email.errors %}
+                            {{ form_editarcontato.email(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for erro in form_editarcontato.email.errors %}
+                                {{ erro }}
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form_editarcontato.email(class="form-control") }}
+                        {% endif %}
+                        </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                        <div class="form-group"  style="width:50%">
+                        {{ form_editarcontato.mobile.label(class="form-control-label")  }}
+                        {% if form_editarcontato.mobile.errors %}
+                            {{ form_editarcontato.mobile(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for erro in form_editarcontato.mobile.errors %}
+                                {{ erro }}
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form_editarcontato.mobile(class="form-control") }}
+                        {% endif %}
+                        </div>
+                        <div class="form-group"  style="width:50%">
+                        {{ form_editarcontato.phone.label(class="form-control-label")  }}
+                        {% if form_editarcontato.phone.errors %}
+                            {{ form_editarcontato.phone(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for erro in form_editarcontato.phone.errors %}
+                                {{ erro }}
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form_editarcontato.phone(class="form-control") }}
+                        {% endif %}
+                        </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                        <div class="form-group" style="width:33%">
+                        {{ form_editarcontato.departamento.label(class="form-control-label")  }}
+                        {% if form_editarcontato.departamento.errors %}
+                            {{ form_editarcontato.departamento(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for erro in form_editarcontato.departamento.errors %}
+                                {{ erro }}
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form_editarcontato.departamento(class="form-control") }}
+                        {% endif %}
+                        </div>
+                        <div class="form-group" style="width:33%">
+                        {{ form_editarcontato.cargo.label(class="form-control-label")  }}
+                        {% if form_editarcontato.cargo.errors %}
+                            {{ form_editarcontato.cargo(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for erro in form_editarcontato.cargo.errors %}
+                                {{ erro }}
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form_editarcontato.cargo(class="form-control") }}
+                        {% endif %}
+                        </div>
+                        <div class="form-group" style="width:33%">
+                        {{ form_editarcontato.bizrole.label(class="form-control-label")  }}
+                        {% if form_editarcontato.bizrole.errors %}
+                            {{ form_editarcontato.bizrole(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for erro in form_editarcontato.bizrole.errors %}
+                                {{ erro }}
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form_editarcontato.bizrole(class="form-control") }}
+                        {% endif %}
+                        </div>
+                        </div>
+                        <div class="form-group">
+                        {{ form_editarcontato.observacao.label(class="form-control-label")  }}
+                        {% if form_editarcontato.observacao.errors %}
+                            {{ form_editarcontato.observacao(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                            {% for erro in form_editarcontato.observacao.errors %}
+                                {{ erro }}
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form_editarcontato.observacao(class="form-control") }}
+                        {% endif %}
+                        </div>
+                    </fieldset>
+                    <button onclick="history.back()" type="button" class="btn btn-secondary h-100 mt-2">VOLTAR</button>
+                    {{ form_editarcontato.botao_submit_editarcontato(class="btn btn-primary h-100 mt-2") }}
+                </form>
+            </div>
+        <hr>
+    </div>
+
+{% endblock %}

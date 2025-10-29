@@ -1,0 +1,168 @@
+{% extends 'home.html' %}
+
+{% block body %}
+
+<div id="header" class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom" xmlns="http://www.w3.org/1999/html">
+  <a href="javascript:void(0)" class="closebtn" onclick="openNav()" style="text-decoration: none">
+        <span data-feather="maximize-2" class="align-text-bottom"></span></a>
+    <h1 class="h2"><a style="text-decoration: none" href="{{ url_for('equipamentos', status='ativo') }}">EQUIPAMENTOS</a></h1>
+  {% if current_user.is_authenticated and current_user.access >= 1 %}
+  <form class="input-group w-50 mb-md-1">
+    <input name="Search" class="form-control form-control-dark w-50 rounded-0 border-1" type="text" placeholder="Busca Equipto, Usuario, NF, Descrição ou Observação">
+  </form>
+  {% endif %}
+  {% if current_user.is_authenticated and current_user.access >= 2 %}
+  <div class="btn-toolbar mb-2 mb-md-0">
+    <div class="btn-group me-2" style="display:flex; gap:10px; align-items:center">
+        <a href="{{ url_for('equipamentos', status='ativo')  }}"> <button type="button" class="btn btn-sm btn-outline-secondary">ATIVOS</button></a>
+        <a href="{{ url_for('equipamentos', status='inativo')  }}"> <button type="button" class="btn btn-sm btn-outline-secondary">INATIVOS</button></a>
+    </div>
+    <div class="btn-group me-2">
+      <form action="{{ url_for('equiptosadd', status='ativo') }}">   <!-- substituir pro EQUIPTOADD  -->
+       <button type="submit" class="btn btn-sm btn-outline-primary">Novo Equipamento</button>
+      </form>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<div id="main" class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-1 pb-1 mt-1 mb-1">
+    {% if current_user.access >= 1 %}
+    <div class="row px-0 py-0 fs-6" style="line-height:0.8 padding:25px">
+        {% if equiptos.items[0] %}
+            <h3 class="h3"><small>Status:</small> {{ status }} </h3>
+        {% else %}
+            <h3 class="h3"> Nenhum equipamento encontrado </h3>
+        {% endif %}
+      <table class="table table-striped">
+         <thead>
+            <tr>
+              <th scope="col" style="color: #00F">Equipamento</th>
+              <th scope="col">Usuário</th>
+              <th scope="col">Nome</th>
+              <th scope="col">Marca</th>
+              <th scope="col">Modelo</th>
+             <!-- {% if orderby == 'f' %}
+                  {% if status == 'ativo' %}
+                    <th scope="col" style="color: #00F">Fim(Prev)</th>
+                  {% else %}
+                    <th scope="col" style="color: #00F">Dt aceite</th>
+                  {% endif %}
+              {% else %}
+                  {% if status == 'ativo' %}
+                    <th scope="col">Fim(Prev)<a style="text-decoration: none" href="{{ url_for('projetos', status='ativo', orderby='f') }}"><span data-feather="chevron-up" class="align-text-bottom"></span></a></th>
+                  {% else %}
+                    <th scope="col">Dt aceite<a style="text-decoration: none" href="{{ url_for('projetos', status='final', orderby='f') }}"><span data-feather="chevron-down" class="align-text-bottom"></span></a></th>
+                  {% endif %}
+              {% endif %} -->
+              <th scope="col">ID/ServiceTag/SN</th>
+              <th scope="col"> <a style="text-decoration: none" data-id=100 data-bs-toggle="modal" data-bs-target="#ProgressTab">Dt Compra</a> </th>
+              <th scope="col">Nota Fiscal</th>
+              <th scope="col">Descrição</th>
+              <th scope="col">User Admin</th>
+              <th scope="col">Password</th>
+              <th scope="col">PIN</th>
+              <th scope="col">Observação</th>
+              <th scope="col">Desativação</th>
+              <th scope="col">Motivo</th>
+            </tr>
+         </thead>
+      {% if equiptos %}
+        <tbody>
+        {% for equipto in equiptos.items %}
+        <tr>
+            <!--  INCLUIR href="" no a para destacar o cliente quando o modal estiver funcionando  -->
+          <th scope="row"><a style="text-decoration: none" data-id={{ loop.index0 }} data-bs-toggle="modal" data-bs-target="#ShowEquipto{{ loop.index0 }}"> {{ equipto.EquiptosDB.equipto_tipo }}</a>
+            <a style="text-decoration: none" href="{{ url_for('equiptosedit', equipto_id=equipto.EquiptosDB.idequipto) }}"><span data-feather="edit" class="align-text-bottom"></span></a></th>
+          <td>{{ equipto.EquiptosDB.usuario }}</td>
+          <td>{{ equipto.EquiptosDB.equipto_nome }}</td>
+          <td>{{ equipto.EquiptosDB.equipto_marca }}</td>
+          <td>{{ equipto.EquiptosDB.equipto_modelo }}</td>
+          <td>{{ equipto.EquiptosDB.equipto_id }}</td>
+          {% if equipto.EquiptosDB.dtcompra %}
+            <td>{{ '{:02d}/{:02d}/{:02d}'.format(equipto.EquiptosDB.dtcompra.day, equipto.EquiptosDB.dtcompra.month, equipto.EquiptosDB.dtcompra.year) }}</td>
+          {% else %}
+            <td>-</td>
+          {% endif %}
+          <td>{{ equipto.EquiptosDB.nfcompra }}</td>
+          <td>{{ equipto.EquiptosDB.descricao }}</td>
+          <td>{{ equipto.EquiptosDB.useradmin }}</td>
+          <td>{{ equipto.EquiptosDB.password }}</td>
+          <td>{{ equipto.EquiptosDB.pin }}</td>
+          <td>{{ equipto.EquiptosDB.observacao }}</td>
+          <td>{{ equipto.EquiptosDB.dtdesativ }}</td>
+          <td>{{ equipto.EquiptosDB.motivodesativ }}</td>
+        </tr>
+
+        <!-- Modal -->
+        <div class="modal fade" id="ShowEquipto{{ loop.index0 }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable"><div class="modal-content"><div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">{{ equipto.EquiptosDB.equipto_nome }} - {{ equipto.EquiptosDB.equipto_id }}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <div class="col col-16">
+                <h5>Responsável: {{equipto.EquiptosDB.usuario}}<small> <br> ID: {{ equipto.EquiptosDB.idequipto }} </small> </h5>
+                <div class="row">ID-Equipamento: {{ equipto.EquiptosDB.idequipto }} </div>
+                <div class="row">Usuário: {{ equipto.EquiptosDB.usuario }} </div>
+
+                {% if equipto.EquiptosDB.dtcriac %}
+                    <div class="row">Data Criação: {{ '{:02}/{:02}/{:02}'.format(equipto.EquiptosDB.dtcriac.day, equipto.EquiptosDB.dtcriac.month, equipto.EquiptosDB.dtcriac.year) }} </div>
+                {% else %}
+                    <div class="row">Data Criação: -</div>
+                {% endif %}
+                <div class="row">Data Alteração: {{ '{:02}/{:02}/{:02}'.format(equipto.EquiptosDB.dtalter.day, equipto.EquiptosDB.dtalter.month, equipto.EquiptosDB.dtalter.year) }} </div>
+                <div class="row">Status: {{ equipto.EquiptosDB.status }} </div>
+                <div class="row">Equipamento: {{ equipto.EquiptosDB.equipto_tipo }} </div>
+                <div class="row">Nome: {{ equipto.EquiptosDB.equipto_nome }} </div>
+                <div class="row">Marca: {{ equipto.EquiptosDB.equipto_marca }} </div>
+                <div class="row">Modelo: {{ equipto.EquiptosDB.equipto_modelo }} </div>
+                <div class="row">Data Compra: {{ '{:02}/{:02}/{:02}'.format(equipto.EquiptosDB.dtalter.day, equipto.EquiptosDB.dtalter.month, equipto.EquiptosDB.dtalter.year) }} </div>
+                {% if dtdesativ %}
+                    <div class="row">Data Desativado: {{ '{:02}/{:02}/{:02}'.format(equipto.EquiptosDB.dtdesativ.day, equipto.EquiptosDB.dtdesativ.month, equipto.EquiptosDB.dtdesativ.year) }} </div>
+                {% else %}
+                    <div class="row">Data Desativado: - </div>
+                {% endif %}
+                <div class="row">Motivo: {{ equipto.EquiptosDB.motivodesativ }} </div>
+                <div class="row">Nota Fiscal: {{ equipto.EquiptosDB.nfcompra }} </div>
+                <div class="row">Valor: {{ equipto.EquiptosDB.valor }} </div>
+                <div class="row">User Admin: {{ equipto.EquiptosDB.useradmin }} </div>
+                <div class="row">Password: {{ equipto.EquiptosDB.password }} </div>
+                <div class="row">PIN: {{ equipto.EquiptosDB.pin }} </div>
+                <div class="row">Descrição: {{ equipto.EquiptosDB.descricao }} </div>
+                <div class="row">Observações: {{ equipto.EquiptosDB.observacao }} </div>
+                <br>
+                <div class="row"><small>Registro {{ equipto.EquiptosDB.idprojeto }} alterado em {{ '{:02}/{:02}/{:02}'.format(equipto.EquiptosDB.dtalter.day, equipto.EquiptosDB.dtalter.month, equipto.EquiptosDB.dtalter.year) }} por {{ equipto.usuario.username }}</small></div>
+              </div>
+          </div>
+            <div class="modal-footer">
+                <div ><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Ok</button></div></div></div></div>
+            </div>
+        {% endfor %}
+        </tbody>
+      </table>
+      <div class="row">
+          <div class="btn-toolbar">
+              <div class="btn-group mt-2 me-1">
+              {% for page_num in equiptos.iter_pages(left_edge=3, right_edge=3, left_current=3, right_current=3) %}
+                {% if page_num %}
+                 {% if equiptos.page == page_num %}
+                  <a class = "btn btn-sm btn-info-secondary fw-bold" href="{{ url_for('equipamentos', status=status, page=page_num)  }}">{{ page_num }}</a>
+                 {% else %}
+                  <a class ="btn btn-sm btn-outline-secondary" href="{{ url_for('equipamentos', status=status, page=page_num)  }}">{{ page_num }}</a>
+                 {% endif %}
+                {% else %}
+                  ...
+                {% endif %}
+              {%endfor %}
+              </div>
+          </div>
+      </div>
+      {% endif %}
+    </div>
+    {% else %}
+        <p>Insuficient Access Level!</p>
+    {% endif %}
+</div>
+
+{% endblock %}

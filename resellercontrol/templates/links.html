@@ -1,0 +1,55 @@
+{% extends 'home.html' %}
+
+{% block body %}
+
+<div id="main" class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+ <div class="container-fluid">
+  <div style="display:flex; align-items:center; gap:10px">
+    <a href="javascript:void(0)" class="closebtn" onclick="openNav()" style="text-decoration: none; margin-right:10px">
+        <span data-feather="maximize-2" class="align-text-bottom"></span></a>
+   <h3>Páginas da DOX</h3>
+  </div>
+
+  <div class="row align-items-start"><div class="col-2"> >>> <a style="text-decoration: none" href="http://crm.doxsg.com.br/dox/cadastro" target="_blank">Cadastro</a></div><div class="col">Sistema de Cadastro da DOX (Clientes e Contatos)</div></div>
+  <div class="row align-items-start"><div class="col-2"> >>> <a style="text-decoration: none" href="http://crm.doxsg.com.br/dox/pipeline" target="_self">Pipeline</a></div><div class="col">CRM da DOX - Acompanhamento das oportunidades</div></div>
+  <div class="row align-items-start"><div class="col-2"> >>> <a style="text-decoration: none" href="http://www.doxsg.com/suporte/" target="_blank">Suporte Técnico</a></div><div class="col">GLPI - Sistema de controle dos chamados de suporte técnico</div></div>
+  <div class="row align-items-start"><div class="col-2"> >>> <a style="text-decoration: none" href="https://greendocs.docs.apiary.io/" target="_blank">Greendocs APIary</a></div><div class="col">Documentação sobre a API do Greendocs</div></div>
+  <div class="row align-items-start"><div class="col-2"> >>> <a style="text-decoration: none" href="http://poc.greendocs.doxsg.com.br/" target="_blank">POC Sandbox3</a></div><div class="col">PoC (Proof of Concept) SANDBOX3 Server</div></div>
+  <div class="row align-items-start"><div class="col-2"> >>> <a style="text-decoration: none" href="https://sandbox.capx.com.br/" target="_blank">CAPX Sandbox</a></div><div class="col">CAPX da W3K para Apreentação</div></div>
+  <div class="row align-items-start"><div class="col-2"> >>> <a style="text-decoration: none" href="https://br01.greendocs.net/" target="_blank">W3K BR01</a></div><div class="col">CloudStore e Sistema de Chamados da W3K</div></div>
+  <div class="container-xl"><hr></div>
+  <div class="row align-items-start"><div class="col-2"> >>> <a style="text-decoration: none" href="https://nfse.isssbc.com.br/" target="_blank">GINFES SB Campo</a></div><div class="col">NF Prefeitura de São Bernardo do Campo</div></div>
+  <!-- div class="row align-items-start"><div class="col-2"> >>> <a style="text-decoration: none" href="https://santoandre.ginfes.com.br/" target="_blank">GINFES Sto Andre</a></div><div class="col">NF2 Prefeitura de Santo André</div></div -->
+  <div class="row align-items-start"><div class="col-2"> >>> <a style="text-decoration: none" href="http://www.informe.issqn.com.br/localidade.cfm" target="_blank">Inscrição Municipal</a></div><div class="col">Inscrição Municipal - Cadastro ISSQN</div></div>
+  <div class="row align-items-start"><div class="col-2"> >>> <a style="text-decoration: none" href="https://www.saobernardo.sp.gov.br/negativa-de-debitos" target="_blank">CND Municipal (SBC)</a></div><div class="col">Certidão Negativa de Débito Municipal</div></div>
+  <div class="row align-items-start"><div class="col-2"> >>> <a style="text-decoration: none" href="https://cndt-certidao.tst.jus.br/inicio.faces" target="_blank">CND Trabalhista</a></div><div class="col">Certidão Negativa de Débito Trabalhista</div></div>
+  <div class="row align-items-start"><div class="col-2"> >>> <a style="text-decoration: none" href="https://www10.fazenda.sp.gov.br/CertidaoNegativaDeb/Pages/EmissaoCertidaoNegativa.aspx" target="_blank">CND Estadual</a></div><div class="col">Certidão Negativa de Débito Estadual</div></div>
+  <div class="row align-items-start"><div class="col-2"> >>> <a style="text-decoration: none" href="https://www.nube.com.br/" target="_self">NUBE - Estágios</a></div><div class="col">Portal do NUBE</div></div>
+  <div class="row align-items-start"><div class="col-2"> >>> <a style="text-decoration: none" href="https://extra-ibre.fgv.br/IBRE/sitefgvdados/default.aspx" target="_blank">Indices FGV</a></div><div class="col">Índices da Fundação Getúlio Vargas</div></div>
+  <div class="row align-items-start"><div class="col-2"> >>> <a style="text-decoration: none" href="https://www3.bcb.gov.br/CALCIDADAO/publico/corrigirPorIndice.do?method=corrigirPorIndice" target="_blank">Indices BCB gov.br</a></div><div class="col">Correção de valores pelo BCB do Governo</div></div>
+  <div class="row align-items-start"><div class="col-2"> >>> <a style="text-decoration: none" href="https://www.me.com.br/" target="_blank">ME</a></div><div class="col">Mercado Eletrônico</div></div>
+  <div class="row align-items-start"><div class="col-2"> >>> <a style="text-decoration: none" href="https://web.grupomednet.com.br/Assessor/Default" target="_blank">MedNet</a></div><div class="col">Grupo MedNet - Exames</div></div>
+  <div class="row align-items-start"><div class="col-2"> >>> <a style="text-decoration: none" href="https://solucoes.receita.fazenda.gov.br/Servicos/cnpjreva/Cnpjreva_Solicitacao.asp" target="_blank">Consulta CNPJ</a></div><div class="col">Consulta CNPJ Receita.GOV.BR</div></div>
+  <div class="row align-items-start"><div class="col-2"> >>> <a style="text-decoration: none" href="https://consultacnpj.redesim.gov.br/" target="_blank">Consulta CNPJ</a></div><div class="col">Consulta CNPJ Redesim.GOV.BR</div></div>
+  <div class="row align-items-start"><div class="col-2"> >>> <a style="text-decoration: none" href="https://solucoes.receita.fazenda.gov.br/Servicos/certidaointernet/PJ/Emitir" target="_blank">CND Federal</a></div><div class="col">Gerar CND em  RFB.GOV.BR</div></div>
+  <div class="row align-items-start"><div class="col-2"> >>> <a style="text-decoration: none" href="https://consulta-crf.caixa.gov.br/consultacrf/pages/listaEmpregadores.jsf" target="_blank">Regularidade do FGTS</a></div><div class="col">Certidão de Regularidade do FGTS</div></div>
+  <div class="row align-items-start"><div class="col-2"> >>> <a style="text-decoration: none" href="https://hr.totalpass.com" target="_blank">Total Pass - RH</a></div><div class="col">Página de RH da Total Pass</div></div>
+  <div class="row align-items-start"><div class="col-2"> >>> <a style="text-decoration: none" href="https://servicos.pf.gov.br/epol-sinic-publico/" target="_blank">Antecedentes Criminais</a></div><div class="col">Consulta de Antecedentes Criminais</div></div>
+  <div class="row align-items-start"><div class="col-2"> >>> <a style="text-decoration: none" href="https://mve.vivo.com.br/" target="_blank">Vivo</a></div><div class="col">Página da VIVO</div></div>
+  <!-- div class="row align-items-start"><div class="col-2"> >>> <a style="text-decoration: none" href="link" target="_blank">NOME-LINK</a></div><div class="col">DESCRIÇÃO</div></div -->
+  <hr>
+  <h3>Portais de clientes da DOX</h3>
+  <div class="row align-items-start"><div class="col-2"> >>> <a style="text-decoration: none" href="https://login.nimbi.com.br/" target="_self">BAMIN Portal Nimbi</a></div><div class="col">Bahia Mineração - Portal Nimbi</div></div>
+  <div class="row align-items-start"><div class="col-2"> >>> <a style="text-decoration: none" href="https://paracel.greendocs.net/" target="_self">PARACEL Portal</a></div><div class="col">PARACEL - Portal Greendocs - Procurement</div></div>
+  <!-- div class="row align-items-start"><div class="col-2"> >>> <a style="text-decoration: none" href="https://flpnwc-vre82b0inz.dispatcher.br1.hana.ondemand.com/sites/portalEVA#Shell-home" target="_self">SUZANO Portal</a></div><div class="col">SUZANO - Portal EVA</div></div -->
+  <div class="row align-items-start"><div class="col-2"> >>> <a style="text-decoration: none" href="https://portaleva.suzano.com.br/" target="_self">SUZANO Portal</a></div><div class="col">SUZANO - Portal EVA</div></div>
+  <div class="row align-items-start"><div class="col-2"> >>> <a style="text-decoration: none" href="http://45.174.220.245:8056/issweb/paginas/login" target="_self">NF-e Ribas(MS)</a></div><div class="col">SUZANO - NFe Prefeitura de Ribas do Rio Pardo em MS</div></div>
+  <div class="row align-items-start"><div class="col-2"> >>> <a style="text-decoration: none" href="https://portalcorp.cpfl.com.br/irj/portal/" target="_self">CPFL Portal</a></div><div class="col">CPFL - Portal Corporativo</div></div>
+  <div class="row align-items-start"><div class="col-2"> >>> <a style="text-decoration: none" href="https://service.ariba.com/" target="_self">CPFL Ariba</a></div><div class="col">CPFL - Portal ARIBA</div></div>
+  <div class="row align-items-start"><div class="col-2"> >>> <a style="text-decoration: none" href="https://sgnf.chesf.com.br/" target="_self">CHESF Portal</a></div><div class="col">CHESF Portal - Cia Hidrelétrica do São Francisco</div></div>
+  <div class="row align-items-start"><div class="col-2"> >>> <a style="text-decoration: none" href="https://portalfornecedor.neoenergia.com/irj/portal" target="_self">NeoEnergia Portal</a></div><div class="col">NEOENERGIA Portal</div></div>
+  <div class="row align-items-start"><div class="col-2"> >>> <a style="text-decoration: none" href="https://sgc.prumologistica.com.br" target="_self">PRUMO Portal</a></div><div class="col">PRUMO - Portal Prumo Logística - Porto do Açu</div></div>
+  <div class="row align-items-start"><div class="col-2"> >>> <a style="text-decoration: none" href="https://rj-saojoaodabarra-pm-nfs.cloud.el.com.br//paginas/sistema/login.jsf?e=expire" target="_self">DAPS SJBarra</a></div><div class="col">PRUMO - Portal da Prefeitura de São João da Barra</div></div>
+ </div>
+</div>
+{% endblock %}ml>

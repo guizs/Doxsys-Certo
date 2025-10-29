@@ -1,0 +1,131 @@
+<!--
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Relatorio DOXSYS</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='dashboard.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 1024px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+
+      .b-example-divider {
+        height: 3rem;
+        background-color: rgba(0, 0, 0, .1);
+        border: solid rgba(0, 0, 0, .15);
+        border-width: 1px 0;
+        box-shadow: inset 0 .5em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em rgba(0, 0, 0, .15);
+      }
+
+      .b-example-vr {
+        flex-shrink: 0;
+        width: 1.5rem;
+        height: 100vh;
+      }
+
+      .bi {
+        vertical-align: -.125em;
+        fill: currentColor;
+      }
+
+      .nav-scroller {
+        position: relative;
+        z-index: 2;
+        height: 2.75rem;
+        overflow-y: hidden;
+      }
+
+      .nav-scroller .nav {
+        display: flex;
+        flex-wrap: nowrap;
+        padding-bottom: 1rem;
+        margin-top: -1px;
+        overflow-x: auto;
+        text-align: center;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+      }
+
+    </style>
+
+    <link href="dashboard.css" rel="stylesheet">
+</head>
+<body>
+-->
+{% extends 'home.html' %}
+
+{% block body %}
+
+{% if current_user.is_authenticated and current_user.access >= 4 %}
+  <div id="main" class="pt-3 border-bottom">
+     <div class="row">
+         {% if busca %}
+            <span>Data:<strong>{{ '{:02d}/{:02d}/{:02d}'.format(hoje.day, hoje.month, hoje.year) }}</strong> | Mês:<strong>{{ mesatl }}~{{ mesfim }}</strong>(comparando com Data) - [<strong>{{ total_itens }}</strong> itens = <strong>{{ total_valor }}</strong>]</span>
+            <span>Busca:[<strong>{{ busca }}</strong>]</span>
+         {% else %}
+            <span>__Data:<strong>{{ '{:02d}/{:02d}/{:02d}'.format(hoje.day, hoje.month, hoje.year) }}</strong> | Busca:[<strong>{{ cliforn }}</strong>] | Status:<strong>{{ status }}</strong> Tipo:<strong>{{ tipo }} </strong>Mês:<strong>{{ mesatl }}~{{ mesfim }}</strong>(comparando com Data) - [<strong>{{ total_itens }}</strong> itens = <strong>{{ total_valor }}</strong>]</span>
+         {% endif %}
+     </div>
+     <hr>
+     {% if total_itens > 0 %}
+     <table class="table">
+         <thead>
+            <tr>
+              <th scope="col">Data</th>
+              <th scope="col">Pagto</th>
+              <th scope="col">Categoria</th>
+              <th scope="col">SubCategoria</th>
+              <th scope="col">Cliente/Fornec</th>
+              <th scope="col">Valor</th>
+              <th scope="col">Descrição</th>
+              <th scope="col">Observação</th>
+            </tr>
+         </thead>
+        <tbody>
+        {% for financ in financeiro %}
+        <tr>
+          <th scope="row">{{ '{:02d}/{:02d}/{:02d}'.format(financ.FinancDB.dt_data.day, financ.FinancDB.dt_data.month, financ.FinancDB.dt_data.year) }}</th>
+          {% if financ.FinancDB.pago == 1 %}
+            <td>{{ '{:02d}/{:02d}/{:02d}'.format(financ.FinancDB.dtpagto.day, financ.FinancDB.dtpagto.month, financ.FinancDB.dtpagto.year) }}</td>
+          {% else %}
+            <td>Aberto</td>
+          {% endif %}
+          <td>{{ financ.FinancDB.categoria }}</td>
+          <td>{{ financ.FinancDB.subcategor }}</td>
+          <td>{{ financ.FinancDB.benefic }}</td>
+          {% if currency %}
+            <td>{{ currency+'{:0,.2f}'.format(financ.FinancDB.valor).replace('R$-','-R$') }}</td>
+          {% else %}
+            <td>{{ '{:0,.2f}'.format(financ.FinancDB.valor).replace(',','').replace('.',',') }}</td>
+          {% endif %}
+          <td>{{ financ.FinancDB.descricao }}</td>
+          <td>{{ financ.FinancDB.observacao }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+  </div>
+  {% else %}
+     Sem dados para gerar o relatório!
+  {% endif %}
+{% else %}
+    <p>Insuficient Access Level!</p>
+{% endif %}
+{% endblock %}
+<!--
+</body>
+</html>
+-->

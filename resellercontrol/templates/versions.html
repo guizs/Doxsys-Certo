@@ -1,0 +1,108 @@
+{% extends 'home.html' %}
+
+{% block body %}
+
+<div id="header" class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom" xmlns="http://www.w3.org/1999/html">
+  <a href="javascript:void(0)" class="closebtn" onclick="openNav()" style="text-decoration: none">
+        <span data-feather="maximize-2" class="align-text-bottom"></span></a>
+    <h1 class="h2"><a style="text-decoration: none" href="{{ url_for('versions') }}">Versões</a></h1>
+  {% if current_user.is_authenticated and current_user.access >= 1 %}
+  <form class="input-group w-50 mb-md-1">
+    <input name="Search" class="form-control form-control-dark w-50 rounded-0 border-1" type="text" placeholder="Busca Produto, Versão, Cliente, Descrição, Chamado e Versão Fix">
+  </form>
+  {% endif %}
+  {% if current_user.is_authenticated and current_user.access >= 2 %}
+  <div class="btn-toolbar mb-2 mb-md-0">
+    <div class="btn-group me-2">
+      <form action="{{ url_for('versionadd') }}">
+       <button type="submit" class="btn btn-sm btn-outline-primary">Nova versão</button>
+      </form>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<div id="main" class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-1 pb-1 mt-1 mb-1">
+    {% if current_user.access >= 1 %}
+    <div class="row px-0 py-0 fs-6" style="line-height:0.8 padding:25px">
+     {% if versions %}
+      <table class="table table-striped">
+         <thead>
+            <tr>
+              <th scope="col">Produto</th>
+              <th scope="col">Versão</th>
+              <th scope="col">Cliente</th>
+              <th scope="col">Bug?</th>
+              <th scope="col">Data Bug</th>
+              <th scope="col">Descricao</th>
+              <th scope="col">Quem Detectou</th>
+              <th scope="col">Chamado</th>
+              <th scope="col">Prazo</th>
+              <th scope="col">Fix?</th>
+              <th scope="col">Data Conserto</th>
+              <th scope="col">Versão Conserto</th>
+            </tr>
+         </thead>
+        <tbody>
+        {% for version in versions.items %}
+        <tr>
+          <td>{{ version.VersionDB.produto }}</td>
+          <th scope="row"><a href="" title="{{ cliCredenc(version.VersionDB.version) | e }}" style="text-decoration: none" data-id={{ loop.index0 }} data-bs-toggle="modal" data-bs-target="#Showversion{{ loop.index0 }}"> {{ version.VersionDB.version }}</a>
+           <a style="text-decoration: none" href="{{ url_for('versionedt', version_id=version.VersionDB.id) }}"><span data-feather="edit" class="align-text-bottom"></span></a></th>
+          <td>{{ version.VersionDB.nomecliente }}</td>
+          <td>{{ 'Sim' if version.VersionDB.bug else 'Não'}}</td>
+          <td>{{ version.VersionDB.dtbug.strftime('%d/%m/%Y') if version.VersionDB.dtbug else '-' }}</td>
+          <td title="{{ version.VersionDB.descricao }}">{{ version.VersionDB.descricao[0:30] }}</td>
+          <td>{{ version.VersionDB.whoid }}</td>
+          <td>{{ version.VersionDB.chamado }}</td>
+          <td>{{ version.VersionDB.prazofix.strftime('%d/%m/%Y') if version.VersionDB.prazofix else '-' }}</td>
+          <td>{{ 'Sim' if version.VersionDB.bugfix else 'Não'}}</td>
+          <td>{{ version.VersionDB.dtfix.strftime('%d/%m/%Y') if version.VersionDB.dtfix else '-' }}</td>
+          <td>{{ version.VersionDB.versionfix }}</td>
+        </tr>
+
+        <!-- Modal -->
+        <div class="modal fade" id="Showversion{{ loop.index0 }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable"><div class="modal-content"><div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">[{{ version.VersionDB.version }}] {{ version.VersionDB.chamado }}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <div class="col col-16">
+                <h5>{{version.VersionDB.cliente}}</h5>
+                <div class="row">Descrição: {{version.VersionDB.descricao}}</div>
+                <br>
+                <div class="row"><small>Registro {{ version.VersionDB.id }} alterado em {{ version.VersionDB.dtalter.strftime('%d/%m/%Y') if version.VersionDB.dtalter else '-' }} por {{ version.usuario.username }}</small></div>
+              </div>
+          </div>
+          <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Ok</button></div></div></div></div>
+        {% endfor %}
+        </tbody>
+      </table>
+      <div class="row">
+          <div class="btn-toolbar">
+              <div class="btn-group mt-2 me-1">
+              {% for page_num in versions.iter_pages(left_edge=3, right_edge=3, left_current=3, right_current=3) %}
+                {% if page_num %}
+                 {% if versions.page == page_num %}
+                  <a class = "btn btn-sm btn-info-secondary fw-bold" href="{{ url_for('versions', page=page_num)  }}">{{ page_num }}</a>
+                 {% else %}
+                  <a class ="btn btn-sm btn-outline-secondary" href="{{ url_for('versions', page=page_num)  }}">{{ page_num }}</a>
+                 {% endif %}
+                {% else %}
+                  ...
+                {% endif %}
+              {%endfor %}
+              </div>
+          </div>
+      </div>
+     {% else %}
+        <p>Nenhuma versão pra mostrar!</p>
+     {% endif %}
+    </div>
+    {% else %}
+        <p>Insuficient Access Level!</p>
+    {% endif %}
+</div>
+
+{% endblock %}

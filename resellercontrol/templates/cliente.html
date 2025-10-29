@@ -1,0 +1,440 @@
+{% extends 'home.html' %}
+
+{% block body %}
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom"
+     xmlns="http://www.w3.org/1999/html">
+  <h1 class="h2"><a style="text-decoration: none" href="{{ url_for('clientes')}}">CLIENTE</a></h1>
+  {% if current_user.is_authenticated and current_user.access >= 2 %}
+  <div class="btn-toolbar mb-2 mb-md-0">
+    <div class="btn-group me-2" style="display:flex; align-items:center; gap:20px">
+      <form method="POST" action="{{ url_for('contadd', cli_id=cliente.idcliente) }}">
+       <button type="submit" class="btn btn-sm btn-outline-primary">Novo Contato</button>
+      </form>
+      <a style="text-decoration: none" href="{{ url_for('pipelineadd', cli_id=cliente.idcliente) }}">
+        <button type="submit" class="btn btn-sm btn-outline-primary">Nova Oportunidade</button>
+      </a>
+    </div>
+  </div>
+  {% endif %}
+</div>
+<div id="main" class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-1 pb-1 mt-1 mb-1">
+{% if current_user.access >= 1 %}
+<div class="row container-fluid">
+    {% if cliente %}
+           <div class="row alert px-0 py-0 alert-dark fs-6 fw-bold mb-1" style="height:25px padding:25px">
+              <div class="col col-3" style="text-align: left">Nome</div>
+              <div class="col col-3" style="text-align: left">Unidade</div>
+              <div class="col col-3" style="text-align: left">Cidade</div>
+              <div class="col col-2" style="text-align: left">UF</div>
+            </div>
+            <div class="row px-1 py-0 fs-6 fw-semibold" style="height:25px padding:25px">
+             <div class="col col-3" style="text-align: left">
+              <div class="row">{{ cliente.nomecliente }}</div>
+              <div class="row">{{ cliente.razaosocial }}</div>
+              <div class="row">{{ cliente.telefone }}</div>
+              <div class="row">{{ cliente.emailnfe }}</div>
+             </div>
+              <div class="col col-3" style="text-align: left">
+                  <div class="row">{{ cliente.unidade }}</div>
+                  <div class="row">{{ cliente.cnpj }}</div>
+                  <div class="row">{{ cliente.website }}</div>
+                  <div class="row">{{ cliente.inscrmunicipal }}</div>
+              </div>
+              <div class="col col-3" style="text-align: left">
+                  <div class="row">{{ cliente.municipio }}</div>
+                  <div class="row">{{ cliente.endereco }}</div>
+                  <div class="row">{{ cliente.complemento }}</div>
+                  <div class="row">{{ cliente.inscrestadual }}</div>
+              </div>
+              <div class="col col-2" style="text-align: left">
+                  <div class="row">{{ cliente.estado }}</div>
+                  <div class="row">{{ cliente.cep }}</div>
+                  <div class="row">{{ cliente.pais }}</div>
+                  <div class="row">{{ cliente.observacao }}</div>
+              </div>
+              <div class="col col-1">
+                <div class="row">
+                  <div class="btn-toolbar">
+                    <div class="btn-group me-1">
+                      <a style="text-decoration: none" href="{{ url_for('cliedit', cli_id=cliente.idcliente) }}">
+                          <span data-feather="edit" class="align-text-bottom"></span>
+                      </a>
+                    </div>
+                    <div class="btn-group">
+                      <a style="text-decoration: none" href="" data-bs-toggle="modal" data-bs-target="#DelClient">
+                       <span data-feather="trash" class="feather-red"></span>
+                      </a>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+    {% endif %}
+
+    <!-- LISTA DE CONTATOS ATIVOS -->
+    {% if contatos %}
+            <div class="row alert px-0 py-0 alert-dark fs-6 fw-bold" style="height:25px padding:25px">
+              <div class="col col-2" style="text-align: left">Contato</div>
+              <div class="col col-2" style="text-align: left">Telefones</div>
+              <div class="col col-3" style="text-align: left">Email</div>
+              <div class="col col-2" style="text-align: left">Cargo/Depart</div>
+              <div class="col col-2" style="text-align: left">Notas</div>
+            </div>
+        {% for contato in contatos %}
+            <div class="row px-0 py-0 border-bottom fs-6" style="height:25px padding:25px">
+              <div class="col col-2" style="text-align: left">
+              <div style="display:flex; align-items: center; gap:20px; font-size:14px; cursor:pointer">
+                   {% if contato.emphasis %}
+                    <div class="row fw-semibold">
+                        <a style="text-decoration: none" data-id={{ loop.index0 }} data-bs-toggle="modal" data-bs-target="#ShowContact{{ loop.index0 }}"> {{ contato.nomecontato }}</a>
+                    </div>
+                   {% else %}
+                     <div class="row fw-normal">
+                        <a style="text-decoration: none" data-id={{ loop.index0 }} data-bs-toggle="modal" data-bs-target="#ShowContact{{ loop.index0 }}"> {{ contato.nomecontato }}</a>
+                    </div>
+                   {% endif %}
+                     <a style="text-decoration: none" href="{{ url_for('contedit', cont_id=contato.idcontato) }}">
+                      <!--   form method="POST" action="{{ url_for('contedit', cont_id=contato.idcontato) }}"   -->
+                          <span data-feather="edit" class="align-text-bottom"></span>
+                       <!--   button type="submit" class="btn btn-sm btn-outline-secondary">EDIT</button    -->
+                      </a>
+              </div>
+
+              </div>
+              <!-- div class="col col-2" style="text-align: left; font-size:14px">
+                <div class="row fw-normal">{{ contato.mobile }} {% if contato.mobile and contato.phone %}/{% endif %}{{ contato.phone }}</div>
+              </div -->
+              <div class="col col-2" style="text-align: left; font-size:14px">
+                  <div class="row fw-normal">
+                    {% if contato.mobile %}
+                      <a href="{{ url_for('whatsapp_conversa', telefone=contato.mobile) }}">
+                        {{ contato.mobile }}
+                      </a>
+                    {% endif %}
+                    {% if contato.mobile and contato.phone %}/{% endif %}
+                    {% if contato.phone %} {{ contato.phone }} {% endif %}
+                  </div>
+              </div>
+
+              <div class="col col-3" style="text-align: left; font-size:14px">
+               <div class="row">{{ contato.email }}</div>
+              </div>
+              <div class="col col-2" style="text-align: left; font-size:14px">
+                <div class="row">{{ contato.departamento }}{% if contato.departamento and contato.cargo %} / {% endif %}{{ contato.cargo }}</div>
+              </div>
+              <div class="col col-2" style="text-align: left; font-size:14px">
+                <div class="row">{{ contato.observacao }}</div>
+              </div>
+              <div class="col col-1>
+                  <a style="text-decoration: none" data-bs-toggle="modal" data-bs-target="#DelContact{{ loop.index0 }}">
+                      <span data-feather="trash" class="feather-red"></span>
+                      <!--    button type="submit" class="btn btn-sm btn-outline-danger">DEL</button    -->
+                  </a>
+              </div>
+            </div>
+
+                    <!-- Modal -->
+                <div class="modal fade" id="DelContact{{ loop.index0 }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Apagar contato {{ contato.idcontato }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        Você tem certeza de que deseja excluir o contato {{ contato.nomecontato }}?<br>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <form method="POST" action="{{ url_for('excluir_contato', cont_id=contato.idcontato) }}">
+                         <button type="submit" class="btn btn-danger">Excluir Contato</button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+<!--Modal Contato-->
+       <div class="modal fade" id="ShowContact{{ loop.index0 }}" id="ShowClient" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable"><div class="modal-content"><div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">{{ contato.nomecontato }} - ID:{{contato.idcontato}}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <div class="col col-16">
+                <h5>{{ contato.cargo }}</h5>
+                <div class="row">EMAIL: {{ contato.email }}</div>
+                <div class="row">DEPARTAMENTO:{{ contato.departamento }}</div>
+                <div class="row">Fone:{{ contato.phone }} | Celular:{{ contato.mobile }}</div>
+                <div class="row">PAPEL:{{ contato.bizrole }}</div>
+                <div class="row">OBS:{{ contato.observacao }}</div>
+              </div>
+          </div>
+          <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Ok</button></div></div></div></div>
+        {% endfor %}
+    {% endif %}
+
+<div style="display:flex; padding:0">
+            {% if pipeline[0] %}
+            <div class="col" style="text-align: left;">
+            <tbody>
+            <tr>
+              <th><div class="row alert px-0 py-0 fs-6 fw-bold mb-1 alert-info" style="padding-left:10px !important;">Pipeline</div></th>
+            <div class="row px-1 py-0 fs-6 ">
+            {% for registro in pipeline %}
+              {% if registro.status == "Cliente" or registro.status == "Comprou" %}
+                <td><a style="text-decoration:none; color:black; cursor:pointer" data-id={{ loop.index0 }} data-bs-toggle="modal" data-bs-target="#ShowPipeline{{ loop.index0 }}"> [{{ registro.idpipeline }}] {{ registro.oportunidade }}</a></td>
+              {% elif registro.status == "Ativo" or registro.status == "Lead" %}
+                <td><a style="text-decoration:none; color:blue; cursor:pointer" data-id={{ loop.index0 }} data-bs-toggle="modal" data-bs-target="#ShowPipeline{{ loop.index0 }}"> [{{ registro.idpipeline }}] {{ registro.oportunidade }}</a></td>
+              {% else %}
+                <td><a style="text-decoration:none; color:red; cursor:pointer" data-id={{ loop.index0 }} data-bs-toggle="modal" data-bs-target="#ShowPipeline{{ loop.index0 }}"> [{{ registro.idpipeline }}] {{ registro.oportunidade }}</a></td>
+              {% endif %}
+               <!-- Modal Show Pipeline -->
+                <div class="modal fade" id="ShowPipeline{{ loop.index0 }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                 <div style="display: flex; align-items: center; justify-content: center;" class="modal-dialog modal-dialog-centered modal-dialog-scrollable"><div style="min-width: 60vw; min-height: 60vh" class="modal-content"><div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">OP: {{ registro.oportunidade }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                      <div class="col col-16">
+                        <h5>STATUS:{{ registro.status }} <small>  [ {{ registro.produto }} ]</small> </h5>
+                        <div style="padding-left: 10px; display:flex; flex-direction: column; gap:5px">
+                            <div class="row">AÇÃO: {{ '{}/{}/{}'.format(registro.dtacao.day, registro.dtacao.month, registro.dtacao.year) }} - {{ registro.acao }}</div>
+                            <!-- div class="row">HISTORICO: {{ registro.historico }} </div -->
+                            <div class="row">HISTORICO:
+                                {% set historico_lines = registro.historico.split('\n') %}
+                                {% for line in historico_lines %}
+                                    {% if  line[2:3] == '/' and (line[19:20] == ':' or line[20:21] == ':') %}
+                                        {% set formatted_line = '<span style="font-weight: bold;">' + line[:20] + '</span>' + line [20:] %}
+                                    {% else %}
+                                        {% set formatted_line = '<span style="font-weight: bold; text-decoration: underline;">  </span>' + line %}
+                                    {% endif %}
+                                    <div class="historico-line">{{ formatted_line|safe }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row"><small>Registro {{ registro.idpipeline }} alterado em {{ '{}/{}/{}'.format(registro.dtalter.day, registro.dtalter.month, registro.dtalter.year) }}</small></div>
+                      </div>
+                  </div>
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" >
+                        <a style="text-decoration: none; color: white" href="{{ url_for('pipeedit', pipeline_id=registro.idpipeline) }}">Editar Pipeline</a>
+                    </button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Ok</button></div></div></div>
+                 </div>
+            {% endfor %}
+            </div>
+            </tr>
+            </tbody>
+            </div>
+           {% endif %}
+
+            {% if propostas[0] %}
+             <div class="col " style="text-align: left">
+             <tbody>
+             <tr><th><div class="row alert px-0 py-0 fs-6 fw-bold mb-1 alert-info" style="padding-left:10px !important">Propostas</div></th>
+             <div class="row px-1 py-0 fs-6" >
+             {% for proposta in propostas %}
+               {% if proposta.status == "Fechada" %}
+                 <td scope="row fw-semibold"><a style="text-decoration: none; color:black; cursor:pointer" data-id={{ loop.index0 }} data-bs-toggle="modal" data-bs-target="#ShowProposta{{ loop.index0 }}"> [{{ proposta.idproposta }}] - {{ '{}/{}/{}'.format(proposta.dataprop.day, proposta.dataprop.month, proposta.dataprop.year) }} - {{ proposta.descricao[0:40] }}</a></td>
+               {% elif proposta.status == "Aberta" or proposta.status == "Negociando" or proposta.status == "Aguardando" %}
+                 <td scope="row fw-semibold"><a style="text-decoration: none; color:blue; cursor:pointer" data-id={{ loop.index0 }} data-bs-toggle="modal" data-bs-target="#ShowProposta{{ loop.index0 }}"> [{{ proposta.idproposta }}] - {{ '{}/{}/{}'.format(proposta.dataprop.day, proposta.dataprop.month, proposta.dataprop.year) }} - {{ proposta.descricao[0:40] }}</a></td>
+               {% else %}
+                 <td scope="row fw-semibold"><a style="text-decoration: none; color:red; cursor:pointer" data-id={{ loop.index0 }} data-bs-toggle="modal" data-bs-target="#ShowProposta{{ loop.index0 }}"> [{{ proposta.idproposta }}] - {{ '{}/{}/{}'.format(proposta.dataprop.day, proposta.dataprop.month, proposta.dataprop.year) }} - {{ proposta.descricao[0:40] }}</a></td>
+               {% endif %}
+
+               <!-- Modal Propostas -->
+                <div class="modal fade" id="ShowProposta{{ loop.index0 }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                 <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable"><div class="modal-content"><div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">Cliente:{{proposta.idcliente}} - {{ proposta.nomecliente }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body" >
+                      <div class="col col-16" style="display:flex; flex-direction: column; gap:10px">
+                        <h5>{{ proposta.status }}({{ proposta.idproposta }}) <small> - [{{ proposta.descricao }}]] </small> </h5>
+                        <div >Forecast:{{ proposta.forecast }}% para: {{ '{}/{}/{}'.format(proposta.dtprovavel.day, proposta.dtprovavel.month, proposta.dtprovavel.year) }}</div>
+                        <div>Software: {{ proposta.vlrsoft }} | Serviços: {{ proposta.vlrserv }}</div>
+                        {% if proposta.renovac == '1' %}
+                          <div >Renovação: <strong>SIM</strong> | Período:{{ proposta.periodo }}</div>
+                        {% else %}
+                          <div >Renovação: <strong>NÃO</strong> | Período:{{ proposta.periodo }}</div>
+                        {% endif %}
+                        <div >Notas:{{ proposta.notas }}</div>
+                        {% if proposta.arquivo %}
+                          <div>{{ proposta.arquivo }}</div>
+                        {% endif %}
+                        <br>
+                      </div>
+                     </div>
+                     <div class="modal-footer">
+                          <div>
+                              {% if proposta.arquivo %}
+                                 <button type="button" class="btn btn-secondary">
+                                     <a style="text-decoration: none" href="{{ proposta.arquivo }}" target="_blank">
+                                        ABRIR PROPOSTA
+                                     </a>
+                                 </button>
+                              {% endif %}
+                              <button type="button" class="btn btn-secondary" >
+                               <a style="text-decoration: none; color: white" href="{{ url_for('propedit', idprop=proposta.idproposta) }}">Editar Proposta</a>
+                              </button>
+                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Ok</button>
+                          </div></div></div></div>
+                     </div>
+            {% endfor %}
+             </div>
+             </tr>
+            </tbody>
+            </div>
+           {% endif %}
+
+            {% if contratos[0] %}
+            <div class="col" style="text-align: left">
+             <tbody>
+             <tr><th><div class="row alert px-0 py-0 fs-6 fw-bold mb-1 alert-info" style="padding-left:10px !important">Contrato</div></th>
+             <div class="row px-1 py-0 fs-6" >
+             {% for contrato in contratos %}
+               {% if contrato.status == "Ativo" %}
+                <td scope="row"><a style="text-decoration: none; color:blue; cursor:pointer" data-id={{ loop.index0 }} data-bs-toggle="modal" data-bs-target="#ShowContract{{ loop.index0 }}"> [{{ contrato.idcontrato }}] {{ contrato.pedido }} - {{ '{}/{}/{}'.format(contrato.dtpedido.day, contrato.dtpedido.month, contrato.dtpedido.year) }} - {{ contrato.observacao[0:40] }}</a></td>
+               {% else %}
+                <td scope="row"><a style="text-decoration: none; color:red; cursor:pointer" data-id={{ loop.index0 }} data-bs-toggle="modal" data-bs-target="#ShowContract{{ loop.index0 }}"> [{{ contrato.idcontrato }}] {{ contrato.pedido }} - {{ '{}/{}/{}'.format(contrato.dtpedido.day, contrato.dtpedido.month, contrato.dtpedido.year) }} - {{ contrato.observacao[0:40] }}</a></td>
+               {% endif %}
+               <!-- Modal Contratos -->
+                <div class="modal fade" id="ShowContract{{ loop.index0 }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                 <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable"><div class="modal-content"><div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">ID:{{contrato.idcliente}} - {{ contrato.nomecliente }} - {{ contrato.unidade }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                      <div class="col col-16">
+                        <h5>{{ contrato.produto }}({{ contrato.aplicacaotype }}) <small> - [{{ contrato.faturamento }}] fatura [{{ contrato.fatfrequencia}}] </small> </h5>
+                        <div class="row">PROPOSTA:{{ contrato.proposta }} - {{ '{}/{}/{}'.format(contrato.dtproposta.day, contrato.dtproposta.month, contrato.dtproposta.year) }}</div>
+                        <div class="row">PEDIDO:{{ contrato.pedido }} - {{ '{}/{}/{}'.format(contrato.dtpedido.day, contrato.dtpedido.month, contrato.dtpedido.year) }} | VALIDADE: {{ '{}/{}/{}'.format(contrato.validadecontrato.day, contrato.validadecontrato.month, contrato.validadecontrato.year) }}</div>
+                        <div class="row">CONTRATO:{{ contrato.codcontrato }} | DURAÇÃO: {{ contrato.duracaocontrato }} meses</div>
+                        <div class="row">USERS: {{ contrato.usersregulares + contrato.usersavancados}} ({{ contrato.usersregulares }} Reg./{{contrato.usersavancados}} Avan.)/ {{ contrato.milregistros }}k docs/ {{ contrato.gbstorage }}Gb</div>
+                        <div class="row">INSTÂNCIA: {{ contrato.instanciatype }} | INFRA: {{ contrato.infratype }}</div>
+                        <div class="row">HORAS: {{ contrato.horasentregues }} de {{ contrato.horascontratadas }} - {{ contrato.horasstatus }}</div>
+                        <div class="row">BM:{{ contrato.bminstruc }}</div>
+                        <div class="row">NF:{{ contrato.nfinstruc }}</div>
+                        <div class="row">OBS:{{ contrato.observacao }}</div>
+                        <div class="row" style="color: #00F">Vendedor: {{ contrato.vendedor }}</div>
+                        <br>
+                      </div>
+                     </div>
+                     <div class="modal-footer">
+                          <div ><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Ok</button></div></div></div></div>
+                     </div>
+            {% endfor %}
+             </div>
+             </tr>
+            </tbody>
+            </div>
+           {% endif %}
+
+</div>
+    <!-- LISTA DE CONTATOS APAGADOS -->
+    {% if contat_del[0] %}
+            <hr>
+            <div class="row alert px-0 py-0 alert-dark fs-6 fw-bold" style="height:25px padding:25px">
+              <div class="col col-2" style="text-align:left; color:red">Contato Cancelado</div>
+              <div class="col col-2" style="text-align: left; color:red">Telefones</div>
+              <div class="col col-3" style="text-align: left; color:red">Email</div>
+              <div class="col col-2" style="text-align: left; color:red">Cargo/Depart</div>
+              <div class="col col-2" style="text-align: left; color:red">Notas</div>
+            </div>
+        {% for contato in contat_del %}
+            <div class="row px-0 py-0 border-bottom fs-6" style="height:25px padding:25px; font-size:14px">
+              <div class="col col-2" style="display:flex; align-items: center; gap:20px;">
+                      <div class="row">
+                        <a style="text-decoration: none; color:red;cursor:pointer;" data-id={{ loop.index0 }} data-bs-toggle="modal" data-bs-target="#ShowContactDelete{{ loop.index0 }}"> {{ contato.nomecontato }}</a>
+                    </div>
+                     <a style="text-decoration: none" href="{{ url_for('contedit', cont_id=contato.idcontato) }}">
+                       <span data-feather="edit" class="feather-red"></span>
+                     </a>
+              </div>
+
+              <div  class="col col-2" style="color: #F00; font-size:14px">{{ contato.mobile }} / {{ contato.phone }}</div>
+              <div class="col col-3" style="color: #F00; font-size:14px">{{ contato.email }}</div>
+              <div class="col col-2" style="color: #F00; font-size:14px">{{ contato.cargo }}/{{contato.departamento}}</div>
+                 <div class="col col-2" style="color: #F00; font-size:14px">{{ contato.observacao }}</div>
+              {% if current_user.access >= 4 %}
+              <div class="col col-1">
+                      <a style="text-decoration: none" href="" data-bs-toggle="modal" data-bs-target="#DelContact_del{{ loop.index0 }}">
+                       <span data-feather="trash" class="feather-red"></span>
+                      </a>
+              </div>
+              {% endif %}
+            </div>
+                <!-- Modal -->
+                <div class="modal fade" id="DelContact_del{{ loop.index0 }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Apagar contato {{ contato.idcontato }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        Você tem certeza de que deseja excluir definitivamente o contato {{ contato.nomecontato }}?<br>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <form method="POST" action="{{ url_for('contdel', cont_id=contato.idcontato) }}">
+                         <button type="submit" class="btn btn-danger">Excluir Contato</button>
+                        </form>
+                        <form method="POST" action="{{ url_for('contactv', cont_id=contato.idcontato) }}">
+                         <button type="submit" class="btn btn-secondary">Reativar Contato</button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+<!--    Modal Contatos Deletados-->
+    <div class="modal fade" id="ShowContactDelete{{ loop.index0 }}" id="ShowClient" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable"><div class="modal-content"><div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">{{ contato.nomecontato }} - ID:{{contato.idcontato}}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <div class="col col-16">
+                <h5>{{ contato.cargo }}</h5>
+                <div class="row">EMAIL: {{ contato.email }}</div>
+                <div class="row">DEPARTAMENTO:{{ contato.departamento }}</div>
+                <div class="row">Fone:{{ contato.phone }} | Celular:{{ contato.mobile }}</div>
+                <div class="row">PAPEL:{{ contato.bizrole }}</div>
+                <div class="row">OBS:{{ contato.observacao }}</div>
+              </div>
+          </div>
+          <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Ok</button></div></div></div></div>
+        {% endfor %}
+    {% endif %}
+</div>
+{% else %}
+    <p>Insuficient Access Level!</p>
+{% endif %}
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="DelClient" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+        <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Apagar cliente {{ cliente.idcliente }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Você tem certeza de que deseja excluir o cliente {{ cliente.nomecliente }} - {{ cliente.unidade }}?<br>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <form method="POST" action="{{ url_for('excluir_cliente', cli_id=cliente.idcliente) }}">
+         <button type="submit" class="btn btn-danger">Excluir Cliente</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,117 @@
+{% extends 'home.html' %}
+
+{% block body %}
+
+<div  id="header" class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom" xmlns="http://www.w3.org/1999/html">
+  <div style="display:flex; align-items:center; gap:10px; margin-right:30px">
+      <a href="javascript:void(0)" class="closebtn" onclick="openNav()" style="text-decoration: none">
+        <span data-feather="maximize-2" class="align-text-bottom"></span></a>
+    <h1 class="h2"><a style="text-decoration: none" href="{{ url_for('kbfaq')}}">KB&FAQ</a></h1>
+  </div>
+  <div class="btn-toolbar mb-2 mb-md-0">
+    <div class="btn-group me-2">
+      {% if current_user.is_authenticated and current_user.access >= 2 %}
+       <div class="col container-fluid">
+         <a href="{{ url_for('kbfaqedt', id=0) }}">
+           <button type="button" class="btn btn-sm btn-outline-primary">NOVO</button>
+         </a>
+       </div>
+      {% endif %}
+    </div>
+  </div>
+  <form class="input-group mb-md-1">
+    <input name="Search" class="form-control form-control-dark w-50 rounded-0 border-1" type="text" placeholder="Busca Categoria, Título ou Descrição">
+  </form>
+</div>
+
+<div id="main" class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-1 pb-1 mt-1 mb-1">
+  <div class="row container-fluid">
+
+ {% if current_user.access >= 1 %}
+    <div class="row px-0 py-0 fs-6" style="line-height:0.8 padding:25px">
+      <table class="table table-striped">
+         <thead>
+            <tr>
+              <th scope="col">ID</th>
+              <th scope="col">Categoria</th>
+              <th scope="col">Titulo / Pergunta</th>
+              <th scope="col">Descrição / Resposta</th>
+              <!-- th scope="col">Notas</th -->
+            </tr>
+         </thead>
+      {% if kbfaqs %}
+        <tbody>
+        {% for kbfaq in kbfaqs.items %}
+        <tr>
+          <th title="U:{{ kbfaq.idusuario }} D:{{ '{:02d}/{:02d}/{:02d}'.format(kbfaq.dtalter.day, kbfaq.dtalter.month, kbfaq.dtalter.year) }} L:{{ kbfaq.accesslevel }}" style="display:flex; align-items:center; gap:3px">
+            <a style="text-decoration: none" data-id={{ loop.index0 }} data-bs-toggle="modal" data-bs-target="#ShowKBFaq{{ loop.index0 }}"> {{ "%04d"|format(kbfaq.idkbfaq) }}</a>
+            {% if kbfaq.active == 1 %}
+             <a href="{{ url_for('kbfaqedt', id=kbfaq.idkbfaq) }}">
+               <span data-feather="edit" class="align-text-bottom"></span>
+            </a>
+            {% endif %}
+          </th>
+          {% if kbfaq.active == 1 %}
+              <td>{{ kbfaq.categoria }}</td>
+              <td title="{{ kbfaq.titulo }}">{{ kbfaq.titulo[0:52] }}..</td>
+              <td title="{{ kbfaq.descricao }}">{{ kbfaq.descricao[0:86] }}..</td>
+          {% else %}
+              <td style="color: #F00">{{ kbfaq.categoria }}</td>
+              <td style="color: #F00" title="{{ kbfaq.titulo }}">{{ kbfaq.titulo[0:52] }}..</td>
+              <td style="color: #F00" title="{{ kbfaq.descricao }}">{{ kbfaq.descricao[0:86] }}..</td>
+          {% endif %}
+        </t>
+
+        <!-- Modal -->
+        <div class="modal fade" id="ShowKBFaq{{ loop.index0 }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable"><div class="modal-content">
+           <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">ID:{{ "%04d"|format(kbfaq.idkbfaq) }}</h5>
+             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+           </div>
+          <div class="modal-body">
+              <div class="col col-16">
+                <h5>{{ kbfaq.categoria }}</h5>
+                  <div class="row"><strong>Q: </strong> {{ kbfaq.titulo }}</div>
+                  <div class="row"><strong>A: </strong>{{ kbfaq.descricao }}</div>
+              </div>
+          </div>
+          <div class="modal-footer">
+            {% if kbfaq.active == 1 %}
+              <a align="left" style="text-decoration:none" href="{{ url_for('kbfaqedt', id=kbfaq.idkbfaq) }}">
+                <button type="submit" class="btn btn-primary">Editar</button></a>
+              </a>
+            {% endif %}
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Ok</button>
+          </div>
+        </div></div></div>
+
+        {% endfor %}
+        </tbody>
+      {% endif %}
+      </table>
+      <div class="row">
+       <div class="btn-toolbar">
+        <div class="btn-group mt-2 me-1">
+        {% for page_num in kbfaqs.iter_pages(left_edge=3, right_edge=3, left_current=3, right_current=3) %}
+            {% if page_num %}
+             {% if kbfaqs.page == page_num %}
+              <a class = "btn btn-sm btn-info-secondary fw-bold" href="{{ url_for('kbfaq', page=page_num, Search=Search)  }}">{{ page_num }}</a>
+             {% else %}
+              <a class ="btn btn-sm btn-outline-secondary" href="{{ url_for('kbfaq', page=page_num, Search=Search)  }}">{{ page_num }}</a>
+             {% endif %}
+            {% else %}
+              ...
+            {% endif %}
+        {%endfor %}
+        </div>
+       </div>
+      </div>
+    </div>
+{% else %}
+    <p>Insuficient Access Level!</p>
+{% endif %}
+</div>
+</div>
+
+{% endblock %}

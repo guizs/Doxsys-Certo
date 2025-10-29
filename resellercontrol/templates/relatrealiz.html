@@ -1,0 +1,202 @@
+{% extends 'home.html' %}
+
+{% block body %}
+
+<div id="main" class="d-flex align-items-center pt-3 pb-2 mb-1 border-bottom" style="height: 80px">
+  <h1 class="h2"><a style="text-decoration: none" href="{{ url_for('relatorios', mesatl=session['MESATL']) }}">Relatórios</a></h1>
+  {% if current_user.is_authenticated and current_user.access >= 4 %}
+   {% if status == 'p' %}
+    <form method="POST" action="" class="mt-2 p-3" style="width: 100%; margin-left: 10px">
+    {{ form_realiz.csrf_token }}
+    <fieldset >
+      <div class="form-group row" >
+      <div class="row  align-items-left">
+       <div class="row px-0 py-0 fs-6">
+          <div class="row">
+               <div class="col-2 mt-2 mb-2 ml-0 mr-0" style="width: 40px; padding-right: 0">
+                {{ form_realiz.select_tipo.label(class="form-control-label") }}
+               </div>
+               <div class="col-3 mt-1 mb-1 ml-0 mr-0" style="width: 150px">
+                 {% if form_realiz.select_tipo.errors %}
+                  {{ form_realiz.select_tipo(class="form-control is-invalid") }}
+                 <div class="invalid-feedback">
+                 {% for erro in form_realiz.select_tipo.errors %}
+                     {{ erro }}
+                 {% endfor %}
+                 </div>
+                {% else %}
+                    {{ form_realiz.select_tipo(class="form-control") }}
+                {% endif %}
+               </div>
+
+           <div class="col-2 mt-2 mb-2 ml-0 mr-0" style="width: 40px; padding-right: 0">
+            {{ form_realiz.select_mes.label(class="form-control-label") }}
+           </div>
+           <div class="col-4 mt-1 mb-1 ml-0 mr-0" style="width: 150px">
+             {% if form_realiz.select_mes.errors %}
+              {{ form_realiz.select_mes(class="form-control is-invalid") }}
+             <div class="invalid-feedback">
+             {% for erro in form_realiz.select_mes.errors %}
+                 {{ erro }}
+             {% endfor %}
+             </div>
+            {% else %}
+                {{ form_realiz.select_mes(class="form-control") }}
+            {% endif %}
+           </div>
+           <div class="row" style="width:230px; align-items: center;">
+                <div class="col-2 mt-2 mb-2 ml-0 mr-0" style="width: 50px; padding-right: 0">
+                    {{ form_realiz.busca.label(class="form-control-label") }}
+                </div>
+                 <div class="col-3 mt-1 mb-1 ml-0 mr-0" style="width: 150px">
+                     {% if form_realiz.busca.errors %}
+                     {{ form_realiz.busca(class="form-control is-invalid") }}
+                <div class="invalid-feedback">
+                 {% for erro in form_realiz.busca.errors %}
+                     {{ erro }}
+                 {% endfor %}
+                </div>
+                {% else %}
+                    {{ form_realiz.busca(class="form-control") }}
+                {% endif %}
+                </div>
+            </div>
+           <div class="col-1 mt-2 mb-2 ml-0 mr-0">
+            {{ form_realiz.botao_submit_financrealiz(class="link-secondary", target="_blank") }}
+           </div>
+       </div>
+      </div>
+      </div>
+    </fieldset>
+   </form>
+  {% endif %}
+</div>
+  <div id="main" class="pt-3 border-bottom">
+     <div class="row">
+      {% if status == 'p' %}
+         <h3>Relatório Realizado no Mês</h3>
+         <span>Data:<strong>{{ '{:02d}/{:02d}/{:02d}'.format(hoje.day, hoje.month, hoje.year) }}</strong> | Status:<strong>Pagos</strong> | Tipo:<strong>{{ tipo }}</strong> | Mês:<strong>{{ mesatl }}</strong>(comparando com Data de Pagamento) - [<strong>{{ total_itens }}</strong> itens = <strong>{{ total_valor }}</strong>]</span>
+      {% else %}
+         <h3>Previsão do Fluxo de Caixa</h3>
+         <span>Data:<strong>{{ '{:02d}/{:02d}/{:02d}'.format(hoje.day, hoje.month, hoje.year) }}</strong> | Status:<strong>Abertos</strong> | Tipo:<strong>Todos</strong> - [<strong>{{ total_itens }}</strong> itens - Saldo=<strong>{{ saldo }}</strong> Final=<strong>{{ total_valor }}</strong>]</span>
+         {% if status == 'a' %}
+           <div>
+             <canvas id="lineChart" width="900" height="400"></canvas>
+           </div>
+         {% endif %}
+      {% endif %}
+     </div>
+     <hr>
+     {% if total_itens > 0 %}
+     <table class="table">
+         <thead>
+            <tr>
+              {% if status == 'p' %}
+                <th scope="col">Pagto</th>
+              {% endif %}
+              <th scope="col">Data</th>
+              <th scope="col">Categoria</th>
+              <th scope="col">SubCategoria</th>
+              <th scope="col">Cliente/Fornec</th>
+              <th scope="col">Valor</th>
+              <th scope="col">Descrição</th>
+              {% if status == 'p' %}
+                <th scope="col">Observação</th>
+              {% else %}
+                <th scope="col">Saldo</th>
+              {% endif %}
+            </tr>
+         </thead>
+        <tbody>
+        {% for financ in financeiro %}
+        <tr>
+          {% if status == 'p' %}
+            {% if financ.FinancDB.pago == 1 %}
+                <th>{{ '{:02d}/{:02d}/{:02d}'.format(financ.FinancDB.dtpagto.day, financ.FinancDB.dtpagto.month, financ.FinancDB.dtpagto.year) }}</th>
+            {% else %}
+                <th>Aberto</th>
+            {% endif %}
+          {% endif %}
+          <td scope="row">{{ '{:02d}/{:02d}/{:02d}'.format(financ.FinancDB.dt_data.day, financ.FinancDB.dt_data.month, financ.FinancDB.dt_data.year) }}</td>
+          <td>{{ financ.FinancDB.categoria }}</td>
+          <td>{{ financ.FinancDB.subcategor }}</td>
+          <td>{{ financ.FinancDB.benefic }}</td>
+          {% if financ.FinancDB.valor > 0 %}
+            {% if currency %}
+               <td style="color: #00F">{{ (currency+'{:0,.2f}'.format(financ.FinancDB.valor)).replace(currency+'-','-'+currency) }}</td>
+            {% else %}
+               <td style="color: #00F">{{ '{:0,.2f}'.format(financ.FinancDB.valor).replace(',','').replace('.',',') }}</td>
+            {% endif %}
+          {% else %}
+            {% if currency %}
+               <td style="color: #F00">{{ (currency+'{:0,.2f}'.format(financ.FinancDB.valor)).replace(currency+'-','-'+currency) }}</td>
+            {% else %}
+               <td style="color: #F00">{{ '{:0,.2f}'.format(financ.FinancDB.valor).replace(',','').replace('.',',') }}</td>
+            {% endif %}
+          {% endif %}
+          <td>{{ financ.FinancDB.descricao }}</td>
+          {% if status == 'p' %}
+            <td>{{ financ.FinancDB.observacao }}</td>
+          {% else %}
+              {% if lst_saldo[loop.index0][2] >= 0 %}
+                {% if currency %}
+                    <td style="color: #00F">{{ (currency+'{:0,.2f}'.format(lst_saldo[loop.index0][2])).replace(currency+'-','-'+currency) }}</td>
+                {% else %}
+                    <td style="color: #00F">{{ '{:0,.2f}'.format(lst_saldo[loop.index0][2]).replace(',','').replace('.',',') }}</td>
+                {% endif %}
+              {% else %}
+                {% if currency %}
+                    <td style="color: #F00">{{ (currency+'{:0,.2f}'.format(lst_saldo[loop.index0][2])).replace(currency+'-','-'+currency) }}</td>
+                {% else %}
+                    <td style="color: #F00">{{ '{:0,.2f}'.format(lst_saldo[loop.index0][2]).replace(',','').replace('.',',') }}</td>
+                {% endif %}
+              {% endif %}
+          {% endif %}
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+  </div>
+      {% else %}
+         Sem dados para gerar o relatório!
+      {% endif %}
+  {% else %}
+      <p>Insuficient Access Level!</p>
+  {% endif %}
+
+<script>
+          var ctx = document.getElementById("lineChart").getContext("2d");
+          var lineChart = new Chart(ctx, {
+            data: {
+              labels: {{ labelvalues | safe  }},
+              datasets: [{
+                type: "line",
+                label: "Saldo",
+                data: {{ saldovalues | safe }},
+                fill: false,
+                borderColor: "rgb(0,0,255)",
+                borderWidth: 1,
+                lineTension: 0.15
+              }, {
+                type: "bar",
+                label: "Valor",
+                data: {{ valorvalues | safe }},
+                fill: true,
+                backgroundColor: "(245,222,179)",
+                borderColor: "rgb(139,69,19)",
+                borderWidth: 1,
+                lineTension: 0.15
+              }]
+            },
+            options: {
+              responsive: true,
+              scales: {
+                y: {
+                  beginAtZero: true
+                }
+              }
+            }
+          })
+  </script>
+
+{% endblock %}

@@ -1,0 +1,139 @@
+{% extends 'home.html' %}
+
+{% block body %}
+
+<div id="main" class="d-flex align-items-center pt-3 pb-2 mb-1 border-bottom" style="height: 80px">
+  <h1 class="h2"><a style="text-decoration: none" href="{{ url_for('credenciais', status='ativo') }}">Credenciais</a></h1>
+  {% if current_user.is_authenticated and current_user.access >= 2 %}
+  <form method="POST" action="" class="mt-2 p-3" style="width: 100%; margin-left: 10px" enctype="multipart/form-data">
+    {{ form_apicall.csrf_token }}
+    <fieldset>
+      <div class="form-group row">
+      <div class="row align-items-left">
+       <div class="row px-0 py-0 fs-6">
+          <div class="row">
+           <div class="col-10 mt-2 mb-2 ml-0 mr-0" style="width: 70px">
+            {{ form_apicall.method.label(class="form-control-label") }}
+           </div>
+           <div class="col-10 mt-1 mb-1 ml-0 mr-0" style="width: 100px">
+             {% if form_apicall.method.errors %}
+              {{ form_apicall.method(class="form-control is-invalid") }}
+             <div class="invalid-feedback">
+             {% for erro in form_apicall.method.errors %}
+                 {{ erro }}
+             {% endfor %}
+             </div>
+            {% else %}
+                {{ form_apicall.method(class="form-control") }}
+            {% endif %}
+           </div>
+           <div class="col-10 mt-1 mb-1 ml-0 mr-0" style="width: 120px">
+             {% if form_apicall.scope.errors %}
+              {{ form_apicall.scope(class="form-control is-invalid") }}
+             <div class="invalid-feedback">
+             {% for erro in form_apicall.scope.errors %}
+                 {{ erro }}
+             {% endfor %}
+             </div>
+            {% else %}
+                {{ form_apicall.scope(class="form-control") }}
+            {% endif %}
+           </div>
+           <div class="col-10 mt-1 mb-1 ml-0 mr-0" style="width: 220px">
+             {% if form_apicall.useremail.errors %}
+              {{ form_apicall.useremail(class="form-control is-invalid") }}
+             <div class="invalid-feedback">
+             {% for erro in form_apicall.useremail.errors %}
+                 {{ erro }}
+             {% endfor %}
+             </div>
+            {% else %}
+                {{ form_apicall.useremail(class="form-control") }}
+            {% endif %}
+           </div>
+           <div class="col-4 mt-2 mb-2 ml-0 mr-0">
+                <input type="file" name="file" id="file">
+           </div>
+           <div class="col-1 mt-2 mb-2 ml-0 mr-0">
+            {{ form_apicall.botao_submit_apicall(class="link-secondary", target="_blank") }}
+           </div>
+       </div>
+      </div>
+      </div>
+      </div>
+    </fieldset>
+  </form>
+</div>
+   <div class="form-group row">
+      <div class="row  align-items-left">
+          <H5> {{ searchparam }} </H5>
+          <BR>
+          {% if response_code == 0 %}
+          <H4 style="color:blue"> Exemplo de conteúdo para o arquivo de parâmetros*:</H4>
+          <p>Quando usar uma planilha Excel, podem existir várias colunas mas só será utilizado o valor da coluna <span style="color:red"><b> parametros</b></span></p>
+          <H5>PESQUISAS [GET] items</H5>
+          <p>pesquisa=bomba</p>
+          <p>ID_Documento=11554</p>
+          <p>NomeDocumento=DOX.PJ.ELE.DES.0014&TipoItem=6</p>
+          <p style="color:red">* As pesquisas que retornam vários documentos não funcionam com uma conta de serviço!</p>
+          <BR>
+          <H5>ALTERAÇÃO [PUT] items</H5>
+          <p>NomeDocumento=DOX.TC.TEC.TST.0002&TipoItem=6&Usuario=criador.eng@doxsg.com&Campos={'TAGs': 'TAG022s TAG234w TAG333'}&RevisaoDocumento=12641</p>
+          <BR>
+          <H5>FLUXO [POST] workflows</H5>
+          <p>NomeDocumento=DOX.TC.TEC.PCT.0013&TipoItem=6&Usuario=criador.eng@doxsg.com&NomeAcao=Aprovar_Verificacao</p>
+          <BR>
+          <H5>POSIÇÃO DE USUÀRIO [POST/DELETE] users (fornecer email de login do usuário a ser alterado)</H5>
+          <p><b>Exemplo de linha para um arquivo .TXT</b></p>
+          <p>{"Positions": [{"env_id": 3, "unity": "BSC - Bracell", "area": "40000 - Geral", "role": "E - Eletrica"}, {"env_id": 3, "unity": "BSC - Bracell", "area": "40075 - Clorato"}]}</p>
+          <p><b>Exemplo de tabela para um arquivo .XLSX</b></p>
+            <table>
+              <tr>
+                <th>environmt_ID</th>
+                <th>unidade</th>
+                <th>área</th>
+                <th>função</th>
+                <th style="color:red">parametros</th>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td>BSC - Bracell</td>
+                <td>40075 - Clorato</td>
+                <td></td>
+                <td>{'Positions': [{'env_id': 3, 'unity': 'BSC - Bracell', 'area': '40075 - Clorato'}]}</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td>BSC - Bracell</td>
+                <td>40000 - Geral</td>
+                <td>E - Eletrica</td>
+                <td>{'Positions': [{'env_id': 3, 'unity': 'BSC - Bracell', 'area': '40000 - Geral', 'role': 'E - Eletrica'}]}</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td>0987 - Savanna</td>
+                <td>40075 - Clorato</td>
+                <td></td>
+                <td>{'Positions': [{'env_id': 3, 'unity': '0987 - Savanna', 'area': '40075 - Clorato'}]}</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td>0987 - Savanna</td>
+                <td>40000 - Geral</td>
+                <td>E - Eletrica</td>
+                <td>{'Positions': [{'env_id': 3, 'unity': '0987 - Savanna', 'area': '40000 - Geral', 'role': 'E - Eletrica'}]}</td>
+              </tr>
+            </table>
+          <BR>
+          <p style="color:red">* As alterações em usuários necessita de uma conta de serviço! Várias alterações no mesmo usuário podem ser incluídas no mesmo comando.</p>
+          <p></p>
+          {% else %}
+          <p>{{ response }}</p><BR>
+          {% endif %}
+      </div>
+   </div>
+
+  {% endif %}
+
+
+{% endblock %}

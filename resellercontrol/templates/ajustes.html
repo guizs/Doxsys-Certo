@@ -1,0 +1,276 @@
+{% extends 'home.html' %}
+
+{% block body %}
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom" xmlns="http://www.w3.org/1999/html">
+  <div class="row w-auto">
+    <h3 class="h2">AJUSTES DO SISTEMA</h3>
+  </div>
+</div>
+{% if current_user.is_authenticated and current_user.access >= 4 %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+  <div class="col w-auto">
+    <div class="row w-auto">
+        <a style="text-decoration: none" href="#" data-bs-toggle="modal" data-bs-target="#AddSaldo"> Adicionar saldo atual</a>
+    </div>
+    <div class="row w-auto">
+        <a style="text-decoration: none" href="#" data-bs-toggle="modal" data-bs-target="#AddCliForn"> Adicionar novo valor de lista</a>
+    </div>
+  </div>
+</div>
+
+    {% if variables %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+              <th scope="col">Variável</th>
+              <th scope="col">Valor</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for var in variables %}
+        <tr>
+          <th scope="row">
+              <a align="left" style="text-decoration:none" href="{{ url_for('ajustedt', idvar=var.idvar) }}">{{ var.var }}</a>
+          </th>
+          <td style="color: #00F">{{ var.valor }}</td>
+        </tr>
+        {% endfor %}
+
+        </tbody>
+    </table>
+    {% endif %}
+
+    <br>
+    <hr>
+    {% if lstopc %}
+    <br>
+    <h3 class="title_page margin_title">Listas de Opções</h3>
+    <table class="table table-striped">
+        <thead>
+            <tr class="tr_top">
+              <th scope="col">Lista</th>
+              <th scope="col">Opção</th>
+              <th scope="col">Mensagem</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for itm in lstopc %}
+        <tr>
+          <th scope="row">
+              {{ itm.lst }}
+              <!-- a align="left" href="{{ url_for('ajustedt', idvar=itm.opt) }}">{{ itm.lst }}</a -->
+          </th>
+          <td>{{ itm.opt }}</td>
+          <td>{{ itm.msg }}</td>
+        </tr>
+        {% endfor %}
+
+        </tbody>
+    </table>
+    {% endif %}
+
+{% endif %}
+
+<!-- Modal AddSaldo -->
+<div class="modal fade" id="AddSaldo" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Adicionar saldo atual</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+          <form method="POST" action="" class="row container-fluid">
+          {{ form_addsaldo.csrf_token }}
+                <fieldset>
+                  <div class="row container-fluid" style="text-align: left">
+                    <div class="form-group row">
+                      <div class="row d-flex flex-wrap flex-md-nowrap align-items-left">
+                        <div class="col-3 mt-2 mb-2 ml-0 mr-0">
+                         {{ form_addsaldo.conta.label(class="form-control-label") }}
+                        </div>
+                        <div class="col w-auto">
+                         {% if form_addsaldo.conta.errors %}
+                             {{ form_addsaldo.conta(class="form-control is-invalid") }}
+                             <div class="invalid-feedback">
+                             {% for erro in form_addsaldo.conta.errors %}
+                                 {{ erro }}
+                             {% endfor %}
+                             </div>
+                         {% else %}
+                             {{ form_addsaldo.conta(class="form-control") }}
+                         {% endif %}
+                        </div>
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <div class="row d-flex flex-wrap flex-md-nowrap align-items-left">
+                        <div class="col-3 mt-2 mb-2 ml-0 mr-0">
+                         {{ form_addsaldo.saldo.label(class="form-control-label") }}
+                        </div>
+                        <div class="col w-auto">
+                         {% if form_addsaldo.saldo.errors %}
+                             {{ form_addsaldo.saldo(class="form-control is-invalid") }}
+                             <div class="invalid-feedback">
+                             {% for erro in form_addsaldo.saldo.errors %}
+                                 {{ erro }}
+                             {% endfor %}
+                             </div>
+                         {% else %}
+                             {{ form_addsaldo.saldo(class="form-control") }}
+                         {% endif %}
+                        </div>
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <div class="row d-flex flex-wrap flex-md-nowrap align-items-left">
+                        <div class="col-3 mt-2 mb-2 ml-0 mr-0">
+                         {{ form_addsaldo.aplic.label(class="form-control-label") }}
+                        </div>
+                        <div class="col w-auto">
+                         {% if form_addsaldo.aplic.errors %}
+                             {{ form_addsaldo.aplic(class="form-control is-invalid") }}
+                             <div class="invalid-feedback">
+                             {% for erro in form_addsaldo.aplic.errors %}
+                                 {{ erro }}
+                             {% endfor %}
+                             </div>
+                         {% else %}
+                             {{ form_addsaldo.aplic(class="form-control") }}
+                         {% endif %}
+                        </div>
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <div class="row d-flex flex-wrap flex-md-nowrap align-items-left">
+                        <div class="col-3 mt-2 mb-2 ml-0 mr-0">
+                         {{ form_addsaldo.variac.label(class="form-control-label") }}
+                        </div>
+                        <div class="col w-auto">
+                         {% if form_addsaldo.variac.errors %}
+                             {{ form_addsaldo.variac(class="form-control is-invalid") }}
+                             <div class="invalid-feedback">
+                             {% for erro in form_addsaldo.variac.errors %}
+                                 {{ erro }}
+                             {% endfor %}
+                             </div>
+                         {% else %}
+                             {{ form_addsaldo.variac(class="form-control") }}
+                         {% endif %}
+                        </div>
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <div class="row d-flex flex-wrap flex-md-nowrap align-items-left">
+                        <div class="col-3 mt-2 mb-2 ml-0 mr-0">
+                         {{ form_addsaldo.observacao.label(class="form-control-label") }}
+                        </div>
+                        <div class="col w-auto">
+                         {% if form_addsaldo.observacao.errors %}
+                             {{ form_addsaldo.observacao(class="form-control is-invalid") }}
+                             <div class="invalid-feedback">
+                             {% for erro in form_addsaldo.observacao.errors %}
+                                 {{ erro }}
+                             {% endfor %}
+                             </div>
+                         {% else %}
+                             {{ form_addsaldo.observacao(class="form-control") }}
+                         {% endif %}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    {{ form_addsaldo.botao_submit_addsaldo(class="row btn btn-sm btn-outline-secondary") }}
+                  </div>
+                </fieldset>
+          </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal AddCliForn -->
+<div class="modal fade" id="AddCliForn" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Adicionar valor na lista</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+          <form method="POST" action="" class="row container-fluid">
+          {{ form_addlstopc.csrf_token }}
+                <fieldset>
+                  <div class="row container-fluid" style="text-align: left">
+                    <div class="form-group row">
+                      <div class="row d-flex flex-wrap flex-md-nowrap align-items-left">
+                        <div class="col-3 mt-2 mb-2 ml-0 mr-0">
+                         {{ form_addlstopc.lst.label(class="form-control-label") }}
+                        </div>
+                        <div class="col w-auto">
+                         {% if form_addlstopc.lst.errors %}
+                             {{ form_addlstopc.lst(class="form-control is-invalid") }}
+                             <div class="invalid-feedback">
+                             {% for erro in form_addlstopc.lst.errors %}
+                                 {{ erro }}
+                             {% endfor %}
+                             </div>
+                         {% else %}
+                             {{ form_addlstopc.lst(class="form-control") }}
+                         {% endif %}
+                        </div>
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <div class="row d-flex flex-wrap flex-md-nowrap align-items-left">
+                        <div class="col-3 mt-2 mb-2 ml-0 mr-0">
+                         {{ form_addlstopc.opt.label(class="form-control-label") }}
+                        </div>
+                        <div class="col w-auto">
+                         {% if form_addlstopc.opt.errors %}
+                             {{ form_addlstopc.opt(class="form-control is-invalid") }}
+                             <div class="invalid-feedback">
+                             {% for erro in form_addlstopc.opt.errors %}
+                                 {{ erro }}
+                             {% endfor %}
+                             </div>
+                         {% else %}
+                             {{ form_addlstopc.opt(class="form-control") }}
+                         {% endif %}
+                        </div>
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <div class="row d-flex flex-wrap flex-md-nowrap align-items-left">
+                        <div class="col-3 mt-2 mb-2 ml-0 mr-0">
+                         {{ form_addlstopc.msg.label(class="form-control-label") }}
+                        </div>
+                        <div class="col w-auto">
+                         {% if form_addlstopc.msg.errors %}
+                             {{ form_addlstopc.msg(class="form-control is-invalid") }}
+                             <div class="invalid-feedback">
+                             {% for erro in form_addlstopc.msg.errors %}
+                                 {{ erro }}
+                             {% endfor %}
+                             </div>
+                         {% else %}
+                             {{ form_addlstopc.msg(class="form-control") }}
+                         {% endif %}
+                        </div>
+                      </div>
+                    </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    {{ form_addlstopc.botao_submit_addlstopc(class="row btn btn-sm btn-outline-secondary") }}
+                  </div>
+                </fieldset>
+          </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

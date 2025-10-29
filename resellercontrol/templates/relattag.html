@@ -1,0 +1,130 @@
+{% extends 'home.html' %}
+
+{% block body %}
+
+<div id="main" class="d-flex align-items-center pt-3 pb-2 mb-1 border-bottom" style="height: 80px">
+  <h1 class="h2"><a style="text-decoration: none;" href="{{ url_for('relatorios', mesatl=mesatl) }}">Relatórios</a></h1>
+  {% if current_user.is_authenticated and current_user.access >= 2 %}
+
+    <form method="POST" action="" class="mt-2 p-3" style="width: 100%; margin-left: 10px">
+    {{ form_relattag.csrf_token }}
+    <fieldset >
+       <div class="row" style="align-items: center;">
+            <div class="row" style="width:260px; align-items: center;">
+                <div class="col-2 mt-2 mb-2 ml-0 mr-0" style="width: 80px; padding-right: 0;">
+                {{ form_relattag.select_tipo.label(class="form-control-label") }}
+                </div>
+                <div class="col-3 mt-1 mb-1 ml-0 mr-0" style="width: 150px">
+                 {% if form_relattag.select_tipo.errors %}
+                  {{ form_relattag.select_tipo(class="form-control is-invalid") }}
+                <div class="invalid-feedback">
+                 {% for erro in form_relattag.select_tipo.errors %}
+                     {{ erro }}
+                 {% endfor %}
+                </div>
+                {% else %}
+                    {{ form_relattag.select_tipo(class="form-control") }}
+                {% endif %}
+                </div>
+            </div>
+            <div class="row" style="width:230px; align-items: center;">
+                <div class="col-2 mt-2 mb-2 ml-0 mr-0" style="width: 50px; padding-right: 0">
+                    {{ form_relattag.select_tag.label(class="form-control-label") }}
+                </div>
+                 <div class="col-3 mt-1 mb-1 ml-0 mr-0" style="width: 150px">
+                     {% if form_relattag.select_tag.errors %}
+                     {{ form_relattag.select_tag(class="form-control is-invalid") }}
+                <div class="invalid-feedback">
+                 {% for erro in form_relattag.select_tag.errors %}
+                     {{ erro }}
+                 {% endfor %}
+                </div>
+                {% else %}
+                    {{ form_relattag.select_tag(class="form-control") }}
+                {% endif %}
+                </div>
+            </div>
+           <div class="row" style="width: 215px; align-items: center;">
+           <div style="width:150px"> {{ form_relattag.select_bool.label(class="form-check-label") }}</div>
+            <div style="width:30px" class="col-4 mt-1 mb-1 ml-0 mr-0">{{ form_relattag.select_bool(class="form-check-input") }}</div>
+           </div>
+           <div class="col-1 mt-2 mb-2 ml-0 mr-0">
+            {{ form_relattag.botao_submit_relattag(class="link-secondary", target="_blank") }}
+           </div>
+       </div>
+    </fieldset>
+   </form>
+
+</div>
+  <div id="body" class="pt-3 border-bottom">
+    {% if resultado %}
+     <div class="row">
+      {% if tipo == 'p' %}
+         <h3>Relatório PIPELINE - Tag: {{ tag }}</h3>
+         <span>Data:<strong>{{ '{:02d}/{:02d}/{:02d}'.format(hoje.day, hoje.month, hoje.year) }}</strong> | Tipo:<strong>PIPELINE</strong> | Tag:<strong>{{ tag }}</strong> - Prioridade: <strong>{{ mark }}</strong> [<strong>{{ resultado.count() }}</strong> itens]</span>
+      {% elif tipo == 'm' %}
+         <h3>Relatório MAILING - Tag: {{ tag }}</h3>
+         <span>Data:<strong>{{ '{:02d}/{:02d}/{:02d}'.format(hoje.day, hoje.month, hoje.year) }}</strong> | Tipo:<strong>MAILING</strong> | Tag:<strong>{{ tag }}</strong> - Mailing: <strong>{{ mark }}</strong> [<strong>{{ resultado.count() }}</strong> itens]</span>
+      {% endif %}
+     </div>
+     <hr>
+     <table class="table table-borderless">
+         <thead>
+            <tr>
+              {% if tipo == 'p' %}
+                  <th scope="col">[P]</th>
+                  <th scope="col">Cliente</th>
+                  <th scope="col">Unidade</th>
+                  <th scope="col">Oportunidade</th>
+                  <th scope="col">Vendedor</th>
+                  <th scope="col">DtAção</th>
+                  <th scope="col">Ação</th>
+                  <th scope="col">Produto</th>
+                  <th scope="col">Status</th>
+              {% elif tipo == 'm' %}
+                  <th scope="col">[E]</th>
+                  <th scope="col">Cliente</th>
+                  <th scope="col">Contato</th>
+                  <th scope="col">Email</th>
+                  <th scope="col">DtAlteração</th>
+                  <th scope="col">Aniversário</th>
+              {% endif %}
+            </tr>
+
+         </thead>
+        <tbody>
+        {% for lstitem in resultado %}
+        <tr>
+          {% if tipo == 'p' %}
+            <td>[{{ lstitem.PipelineDB.prioridade }}]</td>
+            <td scope="col">{{ lstitem.ClientesDB.nomecliente }}</td>
+            <td scope="col">{{ lstitem.ClientesDB.unidade }}</td>
+            <td scope="col">{{ lstitem.PipelineDB.oportunidade }}</td>
+            <td scope="col">{{ lstitem.usuario.username }}</td>
+            <td scope="col">{{ '{:02d}/{:02d}/{:02d}'.format(lstitem.PipelineDB.dtacao.day, lstitem.PipelineDB.dtacao.month, lstitem.PipelineDB.dtacao.year) }}</td>
+            <td scope="col">{{ lstitem.PipelineDB.acao }}</td>
+            <td scope="col">{{ lstitem.PipelineDB.produto }}</td>
+            <td scope="col">{{ lstitem.PipelineDB.status }}</td>
+          {% elif tipo == 'm' %}
+            <td>[{{ lstitem.ContatoDB.emphasis }}]</td>
+            <td scope="col">{{ lstitem.ClientesDB.nomecliente }}</td>
+            <td scope="col">{{ lstitem.ContatoDB.nomecontato }}</td>
+            <td scope="col">{{ lstitem.ContatoDB.email }}</td>
+            {% if lstitem.ContatoDB.dtalter %}
+                <td scope="col">{{ '{:02d}/{:02d}/{:02d}'.format(lstitem.ContatoDB.dtalter.day, lstitem.ContatoDB.dtalter.month, lstitem.ContatoDB.dtalter.year) }}</td>
+            {% endif %}
+            <td scope="col">{{ lstitem.ContatoDB.aniversario }}</td>
+          {% endif %}
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+  </div>
+      {% else %}
+         Sem dados para gerar o relatório!
+      {% endif %}
+  {% else %}
+      <p>Insuficient Access Level!</p>
+  {% endif %}
+
+{% endblock %}

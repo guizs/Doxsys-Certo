@@ -1,0 +1,211 @@
+{% extends 'home.html' %}
+
+{% block body %}
+
+<div id="header" class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom" xmlns="http://www.w3.org/1999/html">
+  <a href="javascript:void(0)" class="closebtn" onclick="openNav()" style="text-decoration: none">
+        <span data-feather="maximize-2" class="align-text-bottom"></span></a>
+    <h1 class="h2"><a style="text-decoration: none" href="{{ url_for('projetos', status='ativo', orderby='p') }}">PROJETOS</a></h1>
+  {% if current_user.is_authenticated and current_user.access >= 1 %}
+  <form class="input-group w-50 mb-md-1">
+    <input name="Search" class="form-control form-control-dark w-50 rounded-0 border-1" type="text" placeholder="Busca Projeto ou Cliente">
+  </form>
+  {% endif %}
+  {% if current_user.is_authenticated and current_user.access >= 2 %}
+  <div class="btn-toolbar mb-2 mb-md-0">
+    <div class="btn-group me-2" style="display:flex; gap:10px; align-items:center">
+        <a href="{{ url_for('projetos', status='ativo', orderby='p')  }}"> <button type="button" class="btn btn-sm btn-outline-secondary">ATIVOS</button></a>
+        <a href="{{ url_for('projetos', status='final', orderby='f')  }}"> <button type="button" class="btn btn-sm btn-outline-secondary">FINALIZADOS</button></a>
+    </div>
+    <div class="btn-group me-2">
+      <form action="{{ url_for('projectadd') }}">
+      <!--  form method="POST" action="{{ url_for('projectadd') }}"  -->
+       <button type="submit" class="btn btn-sm btn-outline-primary">Novo Projeto</button>
+      </form>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<div id="main" class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-1 pb-1 mt-1 mb-1">
+    {% if current_user.access >= 1 %}
+    <div class="row px-0 py-0 fs-6" style="line-height:0.8 padding:25px">
+        {% if projetos.items[0] %}
+            <h3 class="h3"><small>Status:</small> {{ projetos.items[0].ProjetosDB.statusproj }} - Backlog: {{hrsdone}}/{{backlog}}</h3>
+        {% else %}
+            <h3 class="h3"> Nenhum projeto com Status: {{ status }} </h3>
+        {% endif %}
+      <table class="table table-striped">
+         <thead>
+            <tr>
+              {% if orderby == 'p' %}
+                <th scope="col" style="color: #00F">Projeto</th>
+              {% else %}
+                {% if status == 'ativo' %}
+                    <th scope="col">Projeto<a style="text-decoration: none" href="{{ url_for('projetos', status='ativo', orderby='p') }}"><span data-feather="chevron-up" class="align-text-bottom"></span></a></th>
+                {% else %}
+                    <th scope="col">Projeto<a style="text-decoration: none" href="{{ url_for('projetos', status='final', orderby='p') }}"><span data-feather="chevron-up" class="align-text-bottom"></span></a></th>
+                {% endif %}
+              {% endif %}
+              <th scope="col">Cliente</th>
+              <th scope="col">OS</th>
+              <th scope="col">Hs Bklg</th>
+              <th scope="col">Início</th>
+              {% if orderby == 'f' %}
+                  {% if status == 'ativo' %}
+                    <th scope="col" style="color: #00F">Fim(Prev)</th>
+                  {% else %}
+                    <th scope="col" style="color: #00F">Dt aceite</th>
+                  {% endif %}
+              {% else %}
+                  {% if status == 'ativo' %}
+                    <th scope="col">Fim(Prev)<a style="text-decoration: none" href="{{ url_for('projetos', status='ativo', orderby='f') }}"><span data-feather="chevron-up" class="align-text-bottom"></span></a></th>
+                  {% else %}
+                    <th scope="col">Dt aceite<a style="text-decoration: none" href="{{ url_for('projetos', status='final', orderby='f') }}"><span data-feather="chevron-down" class="align-text-bottom"></span></a></th>
+                  {% endif %}
+              {% endif %}
+              <th scope="col">Técnico</th>
+              <th scope="col"> <a style="text-decoration: none" data-id=100 data-bs-toggle="modal" data-bs-target="#ProgressTab">%</a> </th>
+              <th scope="col">Aceite</th>
+              <th scope="col">Fatur</th>
+            </tr>
+         </thead>
+      {% if projetos %}
+        <tbody>
+
+        {% for projeto in projetos.items %}
+        <tr>
+            <!--  INCLUIR href="" no a para destacar o cliente quando o modal estiver funcionando  -->
+          <th scope="row"><a style="text-decoration: none" data-id={{ loop.index0 }} data-bs-toggle="modal" data-bs-target="#ShowProject{{ loop.index0 }}"> {{ projeto.ProjetosDB.projetonome }}</a>
+            <a style="text-decoration: none" href="{{ url_for('projectedit', project_id=projeto.ProjetosDB.idprojeto) }}"><span data-feather="edit" class="align-text-bottom"></span></a></th>
+          <td>{{ projeto.ClientesDB.nomecliente }}</td>
+          <td>{{ projeto.ProjetosDB.oscodigo }}</td>
+          {% if projeto.ProjetosDB.horasprev <= projeto.ProjetosDB.horasusds %}
+            <td style="color: #F00"> {{ projeto.ProjetosDB.horasusds }}/{{ projeto.ProjetosDB.horasprev }}</td>
+          {% else %}
+            <td>{{ projeto.ProjetosDB.horasusds }}/{{ projeto.ProjetosDB.horasprev }}</td>
+          {% endif %}
+          <td>{{ '{:02d}/{:02d}/{:02d}'.format(projeto.ProjetosDB.prjinicplan.day, projeto.ProjetosDB.prjinicplan.month, projeto.ProjetosDB.prjinicplan.year) }}</td>
+          {% if status == 'ativo' %}
+              {% if projeto.ProjetosDB.prjfimplan < hoje %}
+                <td style="color: #F00">{{ '{:02d}/{:02d}/{:02d}'.format(projeto.ProjetosDB.prjfimplan.day, projeto.ProjetosDB.prjfimplan.month, projeto.ProjetosDB.prjfimplan.year) }}</td>
+              {% else %}
+                <td>{{ '{:02d}/{:02d}/{:02d}'.format(projeto.ProjetosDB.prjfimplan.day, projeto.ProjetosDB.prjfimplan.month, projeto.ProjetosDB.prjfimplan.year) }}</td>
+              {% endif %}
+          {% else %}
+              {% if projeto.ProjetosDB.aceitedata %}
+                <td><strong>{{ '{:02d}/{:02d}/{:02d}'.format(projeto.ProjetosDB.aceitedata.day, projeto.ProjetosDB.aceitedata.month, projeto.ProjetosDB.aceitedata.year) }}</strong></td>
+              {% else %}
+                <td> --- </td>
+              {% endif %}
+          {% endif %}
+          <td>{{ projeto.ProjetosDB.tecniconome }}</td>
+          <td>{{ '{:.0%}'.format(projeto.ProjetosDB.percentual) }}</td>
+          <td>{{ projeto.ProjetosDB.aceiteproj }}</td>
+          {% if (projeto.ProjetosDB.aceiteproj == 'Sim') and (projeto.ProjetosDB.faturado == 'Não') %}
+            <td style="color: #F00">{{ projeto.ProjetosDB.faturado }}</td>
+          {% else %}
+            <td>{{ projeto.ProjetosDB.faturado }}</td>
+          {% endif %}
+
+        </tr>
+
+        <!-- Modal -->
+        <div class="modal fade" id="ShowProject{{ loop.index0 }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable"><div class="modal-content"><div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">{{ projeto.ProjetosDB.projetonome }} / {{ projeto.ClientesDB.nomecliente }}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <div class="col col-16">
+                <h5>IDs:{{projeto.ProjetosDB.idprojeto}}/{{projeto.ProjetosDB.idclint}}<small> Resp/Tecn: {{ projeto.ProjetosDB.responsnome }} / {{ projeto.ProjetosDB.tecniconome }} </small> </h5>
+                <div class="row">PROPOSTA: {{ projeto.ProjetosDB.propcodigo }} - {{ '{}/{}/{}'.format(projeto.ProjetosDB.propdata.day, projeto.ProjetosDB.propdata.month, projeto.ProjetosDB.propdata.year) }}</div>
+                <div class="row">PEDIDO: {{ projeto.ProjetosDB.pedidocodig }} - {{ '{}/{}/{}'.format(projeto.ProjetosDB.pedidodata.day, projeto.ProjetosDB.pedidodata.month, projeto.ProjetosDB.pedidodata.year) }} </div>
+                <div class="row">OS: {{ projeto.ProjetosDB.oscodigo }} - {{ '{}/{}/{}'.format(projeto.ProjetosDB.osdata.day, projeto.ProjetosDB.osdata.month, projeto.ProjetosDB.osdata.year) }} </div>
+                <div class="row">Horas Usad/Prev: {{ projeto.ProjetosDB.horasusds }} / {{ projeto.ProjetosDB.horasprev }}</div>
+                <div class="row">KICKOFF: {{ projeto.ProjetosDB.kickoff }} - {{ '{}/{}/{}'.format(projeto.ProjetosDB.kickoffdata.day, projeto.ProjetosDB.kickoffdata.month, projeto.ProjetosDB.kickoffdata.year) }} </div>
+                <div class="row">TESTES: {{ projeto.ProjetosDB.testes }} - {{ '{}/{}/{}'.format(projeto.ProjetosDB.testesdata.day, projeto.ProjetosDB.testesdata.month, projeto.ProjetosDB.testesdata.year) }} </div>
+                <div class="row">HOMOLOGAÇÃO: {{ projeto.ProjetosDB.homologacao }} - {{ '{}/{}/{}'.format(projeto.ProjetosDB.homologdata.day, projeto.ProjetosDB.homologdata.month, projeto.ProjetosDB.homologdata.year) }} </div>
+                <div class="row">DataBook e PowerBI: {{ projeto.ProjetosDB.dbookpwrbi }} - {{ '{}/{}/{}'.format(projeto.ProjetosDB.dbkpwrbidt.day, projeto.ProjetosDB.dbkpwrbidt.month, projeto.ProjetosDB.dbkpwrbidt.year) }} </div>
+                <div class="row">TREINAMENTO: {{ projeto.ProjetosDB.treinamento }} - {{ '{}/{}/{}'.format(projeto.ProjetosDB.treinamdata.day, projeto.ProjetosDB.treinamdata.month, projeto.ProjetosDB.treinamdata.year) }} </div>
+                <div class="row">ACEITE: {{ projeto.ProjetosDB.aceiteproj }} - {{ '{}/{}/{}'.format(projeto.ProjetosDB.aceitedata.day, projeto.ProjetosDB.aceitedata.month, projeto.ProjetosDB.aceitedata.year) }} </div>
+                <div class="row">FATURADO: {{ projeto.ProjetosDB.faturado }} - NF:{{ projeto.ProjetosDB.nfnumero }} - {{ '{}/{}/{}'.format(projeto.ProjetosDB.nfdata.day, projeto.ProjetosDB.nfdata.month, projeto.ProjetosDB.nfdata.year) }} </div>
+                <div class="row">Atestado: {{ projeto.ProjetosDB.atestado }} - {{ '{}/{}/{}'.format(projeto.ProjetosDB.atestadodat.day, projeto.ProjetosDB.atestadodat.month, projeto.ProjetosDB.atestadodat.year) }} </div>
+                <div class="row">StakeHolders: {{ projeto.ProjetosDB.stakeholders }} </div>
+                <div class="row">Observações: {{ projeto.ProjetosDB.observacao }} </div>
+                <br>
+                <div class="row"><small>Registro {{ projeto.ProjetosDB.idprojeto }} alterado em {{ '{}/{}/{}'.format(projeto.ProjetosDB.dtalter.day, projeto.ProjetosDB.dtalter.month, projeto.ProjetosDB.dtalter.year) }} por {{ projeto.usuario.username }}</small></div>
+              </div>
+          </div>
+            <div class="modal-footer">
+                <div>
+                    <button type="button" class="btn btn-secondary" >
+                        <a style="text-decoration: none; color: white" href="{{ url_for('cliente', cli_id=projeto.ProjetosDB.idclint) }}">Ir para cliente</a>
+                    </button>
+                </div>
+                <div ><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Ok</button></div></div></div></div>
+            </div>
+        {% endfor %}
+        </tbody>
+      </table>
+      <div class="row">
+          <div class="btn-toolbar">
+              <div class="btn-group mt-2 me-1">
+              {% for page_num in projetos.iter_pages(left_edge=3, right_edge=3, left_current=3, right_current=3) %}
+                {% if page_num %}
+                 {% if projetos.page == page_num %}
+                  <a class = "btn btn-sm btn-info-secondary fw-bold" href="{{ url_for('projetos', status=status, orderby=orderby, page=page_num)  }}">{{ page_num }}</a>
+                 {% else %}
+                  <a class ="btn btn-sm btn-outline-secondary" href="{{ url_for('projetos', status=status, orderby=orderby, page=page_num)  }}">{{ page_num }}</a>
+                 {% endif %}
+                {% else %}
+                  ...
+                {% endif %}
+              {%endfor %}
+              </div>
+          </div>
+      </div>
+      {% endif %}
+    </div>
+    {% else %}
+        <p>Insuficient Access Level!</p>
+    {% endif %}
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="ShowProject" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+ <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable"><div class="modal-content"><div class="modal-header">
+  <h5 class="modal-title" id="exampleModalLabel">Dados do projeto</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+  </div>
+  <div class="modal-body">
+    Essa janela foi criada para exibir os dados desse projeto!
+  </div>
+  <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Ok</button></div></div></div></div>
+
+<!-- Modal para mostrar a tabela de progresso -->
+<div class="modal fade" id="ProgressTab" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+ <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+  <div class="modal-content"><div class="modal-header">
+    <h5 class="modal-title" id="exampleModalLabel">Percentual de progresso</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+  </div>
+  <div class="modal-body">
+    <table class="table table-striped">
+         <thead>
+            <tr><th>Avanço</th><th>Descrição</th></tr>
+         </thead>
+         <tbody>
+            <tr><th>20%</th><th>Kickoff</th></tr>
+            <tr><th>20%</th><th>Testes</th></tr>
+            <tr><th>20%</th><th>Homologação</th></tr>
+            <tr><th>05%</th><th>PowerBI/Databook</th></tr>
+            <tr><th>15%</th><th>Treinamento</th></tr>
+            <tr><th>15%</th><th>Aceite</th></tr>
+            <tr><th>04%</th><th>Faturado</th></tr>
+            <tr><th>01%</th><th>Atestado</th></tr>
+         </tbody>
+  </div>
+  </div></div></div>
+
+{% endblock %}

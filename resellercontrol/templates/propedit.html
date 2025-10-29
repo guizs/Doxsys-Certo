@@ -1,0 +1,200 @@
+{% extends 'home.html' %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+                <form method="POST" action="" class="border mt-2 p-3 border-secondary" >
+                {{ form_editprop.csrf_token }}
+                {% if idprop != '' %}
+                    <legend>Editar Proposta {{ idprop }} - {{ cliente.nomecliente }} - {{ cliente.unidade }}</legend>
+                {% else %}
+                    <legend>Adicionar Proposta p/ {{ cliente.nomecliente }} - {{ cliente.unidade }} [{{ vendor.username }}]</legend>
+                {% endif %}
+                <fieldset>
+                    <div class="form-group row">
+                      <div style="display:flex; align-items: center; margin-bottom:10px">
+                        <div class="mt-2 mb-2 ml-0 mr-0" style="width:50px; padding:0; padding-right: 8px;">
+                            {{ form_editprop.status.label(class="form-control-label") }}
+                        </div>
+                        <div class="col-2 w-auto">
+                            {% if form_editprop.status.errors %}
+                             {{ form_editprop.status(class="form-control is-invalid") }}
+                             <div class="invalid-feedback">
+                             {% for erro in form_editprop.status.errors %}
+                                 {{ erro }}
+                             {% endfor %}
+                             </div>
+                            {% else %}
+                                {{ form_editprop.status(class="form-control") }}
+                            {% endif %}
+                        </div>
+                        <div style="width:15px; height:31px; display:flex; align-items:; margin-left: 15px; margin-right:5px">
+                       {{ form_editprop.renovac() }}
+                        </div>
+                      <strong style="height: 20px; display: flex; align-items: end;">  -  {{ form_editprop.renovac.label(class="form-control-label")  }} </strong>
+                    </div>
+
+                      <div style="display:flex; gap:10px; margin-bottom:15px">
+                       <div  style="display:flex; gap:5px; width:33.3%">
+                            {{ form_editprop.forecast.label(class="form-control-label") }}
+                            {% if form_editprop.forecast.errors %}
+                             {{ form_editprop.forecast(class="form-control is-invalid") }}
+                                <div class="invalid-feedback">
+                             {% for erro in form_editprop.forecast.errors %}
+                                 {{ erro }}
+                             {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form_editprop.forecast(class="form-control") }}
+                            {% endif %}
+                       </div>
+                          <div style="display:flex; gap:5px; width:33.3%">
+                            {{ form_editprop.dtprovavel.label(class="form-control-label") }}
+
+                            {% if form_editprop.dtprovavel.errors %}
+                             {{ form_editprop.dtprovavel(class="form-control is-invalid") }}
+                             <div class="invalid-feedback">
+                             {% for erro in form_editprop.dtprovavel.errors %}
+                                 {{ erro }}
+                             {% endfor %}
+                             </div>
+                            {% else %}
+                                {{ form_editprop.dtprovavel(class="form-control") }}
+                            {% endif %}
+                          </div>
+
+                      {% if idprop != '' %}
+                          <div  style="display:flex; gap:5px; width:30%">
+                            {{ form_editprop.idvendor.label(class="form-control-label") }}
+                            {% if form_editprop.idvendor.errors %}
+                             {{ form_editprop.idvendor(class="form-control is-invalid") }}
+                             <div class="invalid-feedback">
+                             {% for erro in form_editprop.idvendor.errors %}
+                                 {{ erro }}
+                             {% endfor %}
+                             </div>
+                            {% else %}
+                                {{ form_editprop.idvendor(class="form-control") }}
+                            {% endif %}
+                          </div>
+
+                      {% endif %}
+                      </div>
+                    </div>
+
+                    <div class="row d-flex mb-3">
+                        <div style="display:flex; gap:5px; width:25%">
+
+                                {{ form_editprop.vlrsoft.label(class="form-control-label") }}
+
+                            {% if form_editprop.vlrsoft.errors %}
+                             {{ form_editprop.vlrsoft(class="form-control is-invalid") }}
+                             <div class="invalid-feedback">
+                                {% for erro in form_editprop.vlrsoft.errors %}
+                                 {{ erro }}
+                                {% endfor %}
+                             </div>
+                            {% else %}
+                                {{ form_editprop.vlrsoft(class="form-control") }}
+                            {% endif %}
+                        </div>
+                        <div style="display:flex; gap:5px; width:25%">
+
+                                {{ form_editprop.vlrserv.label(class="form-control-label") }}
+
+                            {% if form_editprop.vlrserv.errors %}
+                             {{ form_editprop.vlrserv(class="form-control is-invalid") }}
+                             <div class="invalid-feedback">
+                             {% for erro in form_editprop.vlrserv.errors %}
+                                 {{ erro }}
+                             {% endfor %}
+                             </div>
+                            {% else %}
+                                {{ form_editprop.vlrserv(class="form-control") }}
+                            {% endif %}
+                        </div><div style="display:flex; gap:5px; width:20%">
+
+                                {{ form_editprop.horasprev.label(class="form-control-label") }}
+
+                            {% if form_editprop.horasprev.errors %}
+                             {{ form_editprop.horasprev(class="form-control is-invalid") }}
+                             <div class="invalid-feedback">
+                             {% for erro in form_editprop.horasprev.errors %}
+                                 {{ erro }}
+                             {% endfor %}
+                             </div>
+                            {% else %}
+                                {{ form_editprop.horasprev(class="form-control") }}
+                            {% endif %}
+                        </div>
+                          <div style="display:flex; gap:5px; width:30%">
+                            {{ form_editprop.periodo.label(class="form-control-label") }}
+
+                                {% if form_editprop.periodo.errors %}
+                                {{ form_editprop.periodo(class="form-control is-invalid") }}
+                                <div class="invalid-feedback">
+                                {% for erro in form_editprop.periodo.errors %}
+                                    {{ erro }}
+                                {% endfor %}
+                                </div>
+                                {% else %}
+                                    {{ form_editprop.periodo(class="form-control") }}
+                                {% endif %}
+                        </div>
+                      </div>
+
+                    <div class="row mb-3">
+                        <div style="display:flex; gap:5px; width:50%; align-items:center">
+                            {{ form_editprop.descricao.label(class="form-control-label") }}
+                            {% if form_editprop.descricao.errors %}
+                             {{ form_editprop.descricao(class="form-control is-invalid") }}
+                             <div class="invalid-feedback">
+                             {% for erro in form_editprop.descricao.errors %}
+                                 {{ erro }}
+                             {% endfor %}
+                             </div>
+                            {% else %}
+                                {{ form_editprop.descricao(class="form-control") }}
+                            {% endif %}
+                        </div>
+                      <div style="display:flex; gap:5px; width:50%; align-items:center">
+                            {{ form_editprop.notas.label(class="form-control-label") }}
+                            {% if form_editprop.notas.errors %}
+                             {{ form_editprop.notas(class="form-control is-invalid") }}
+                             <div class="invalid-feedback">
+                             {% for erro in form_editprop.notas.errors %}
+                                 {{ erro }}
+                             {% endfor %}
+                             </div>
+                            {% else %}
+                                {{ form_editprop.notas(class="form-control") }}
+                            {% endif %}
+                       </div>
+                       <div class="row mb-3">
+                        <div style="display:flex; gap:5px; width:100%; align-items:center">
+                            {{ form_editprop.arquivo.label(class="form-control-label") }}
+                            {% if form_editprop.arquivo.errors %}
+                             {{ form_editprop.arquivo(class="form-control is-invalid") }}
+                             <div class="invalid-feedback">
+                             {% for erro in form_editprop.arquivo.errors %}
+                                 {{ erro }}
+                             {% endfor %}
+                             </div>
+                            {% else %}
+                                {{ form_editprop.arquivo(class="form-control") }}
+                            {% endif %}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="footer" style="display:flex; gap:20px">
+                        <button onclick="history.back()" type="button" class="btn btn-secondary">Cancelar</button>
+                        {{ form_editprop.botao_submit_addprop(class="row btn btn-sm btn-outline-secondary") }}
+                    </div>
+                </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

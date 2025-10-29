@@ -1,0 +1,250 @@
+{% extends 'home.html' %}
+
+{% block body %}
+
+<div  id="header" class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom" xmlns="http://www.w3.org/1999/html">
+  <div style="display:flex; align-items:center; gap:10px; margin-right:30px">
+      <a href="javascript:void(0)" class="closebtn" onclick="openNav()" style="text-decoration: none">
+        <span data-feather="maximize-2" class="align-text-bottom"></span></a>
+    <h1 class="h2"><a style="text-decoration: none" href="{{ url_for('propostas', orderby='n')}}">PROPOSTAS</a></h1>
+  </div>
+  <form class="input-group mb-md-1">
+    <input name="Search" class="form-control form-control-dark w-50 rounded-0 border-1" type="text" placeholder="Busca Status,Vendedor,Cliente ou Descrição">
+  </form>
+    <div class="btn-toolbar mb-2 mb-md-0">
+      <div class="btn-group me-2">
+<!--      Botão  antigo de adicionar proposta    -->
+<!--      {% if current_user.is_authenticated and current_user.access >= 5 %}-->
+<!--       <div class="col container-fluid">-->
+<!--         <a href="" data-bs-toggle="modal" data-bs-target="#AddProp">-->
+<!--           <button type="button" class="btn btn-sm btn-outline-primary">Add new prop (LEGADO)</button>-->
+<!--         </a>-->
+<!--       </div>-->
+<!--      {% endif %}-->
+    </div>
+  </div>
+</div>
+
+<div id="main" class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-1 pb-1 mt-1 mb-1">
+  <div class="row container-fluid">
+
+ {% if current_user.access >= 1 %}
+    <div class="row px-0 py-0 fs-6" style="line-height:0.8 padding:25px">
+      <table class="table table-striped">
+         <thead>
+            <tr>
+              <th scope="col">ID<a style="text-decoration: none" href="{{ url_for('propostas', orderby='n') }}"><span data-feather="chevron-down" class="align-text-bottom"></span></a></th>
+              <th scope="col">Data</th>
+              <th scope="col">Status</th>
+              <th scope="col">Renov</th>
+              <th scope="col">Cliente<a style="text-decoration: none" href="{{ url_for('propostas', orderby='c') }}"><span data-feather="chevron-up" class="align-text-bottom"></span></a></th>
+              <th scope="col">Vendedor</th>
+              <th scope="col">Forcst(%)</th>
+              <th scope="col">Provável</th>
+              <th scope="col">Descrição da proposta</th>
+              <!-- th scope="col">Notas</th -->
+            </tr>
+         </thead>
+    {% if propostas %}
+        <tbody>
+        {% for proposta in propostas.items %}
+        <tr>
+          <th style="display:flex; align-items:center; gap:3px">
+            {% if proposta.arquivo %}
+              {% set caminho = proposta.arquivo %}
+              {% if not (caminho.endswith('.pdf') or caminho.endswith('.docx') or caminho.endswith('.xlsx')) %}
+                {% set caminho = caminho + '.pdf' %}
+              {% endif %}
+              <p style="min-width:30px; margin:0">
+                <a style="text-decoration: none" href="{{ caminho }}" target="_blank">
+                  {{ "%04d"|format(proposta.idproposta) }}
+                </a>
+              </p>
+            {% else %}
+              {{ "%04d"|format(proposta.idproposta) }}
+            {% endif %}
+            <a style="text-decoration: none" href="{{ url_for('propedit', idprop=proposta.idproposta) }}">
+                <span data-feather="edit" class="align-text-bottom"></span>
+            </a>
+          </th>
+          <td>{{ '{:02d}/{:02d}/{:02d}'.format(proposta.dataprop.day, proposta.dataprop.month, proposta.dataprop.year) }}</td>
+          {% if proposta.status == 'Aberta' or proposta.status == 'Negociando' or proposta.status == 'Aguardando' %}
+            <td style="color: #00F">{{ proposta.status }}</td>
+          {% elif proposta.status == 'Vencida' or proposta.status == 'Perdida' %}
+            <td style="color: #F00">{{ proposta.status }}</td>
+          {% elif proposta.status == 'Fechada' %}
+            <td><strong>{{ proposta.status }}</strong></td>
+          {% else %}
+            <td>{{ proposta.status }}</td>
+          {% endif %}
+          {% if proposta.renovac == 1 %}
+            <td>Sim</td>
+          {% else %}
+            <td>Não</td>
+          {% endif %}
+          <td><a style="text-decoration: none" href="{{ url_for('cliente', cli_id=proposta.idcliente) }}" target="_self">{{ proposta.nomecliente }}</a></td>
+          <td title="{{ proposta.vendedor }}">{{ proposta.vendedor[0:10] }}</td>
+          {% if proposta.forecast >= 60 %}
+            <td><strong>{{ proposta.forecast }}</strong></td>
+          {% else %}
+            <td>{{ proposta.forecast }}</td>
+          {% endif %}
+          {% if proposta.dtprovavel %}
+            <td>{{ '{:02d}/{:02d}/{:02d}'.format(proposta.dtprovavel.day, proposta.dtprovavel.month, proposta.dtprovavel.year) }}</td>
+          {% else %}
+            <td>None</td>
+          {% endif %}
+          <td title="{{ proposta.descricao }} | {{ proposta.notas }}">{{ proposta.descricao[0:30] }}</td>
+          <!-- {% if proposta.notas %}
+            <td>{{ proposta.notas[0:16] }}...</td>
+          {% else %}
+            <td>   </td>
+          {% endif %}  -->
+        </tr>
+        {% endfor %}
+        </tbody>
+    {% endif %}
+      </table>
+      <div class="row">
+       <div class="btn-toolbar">
+        <div class="btn-group mt-2 me-1">
+        {% for page_num in propostas.iter_pages(left_edge=3, right_edge=3, left_current=3, right_current=3) %}
+            {% if page_num %}
+             {% if propostas.page == page_num %}
+              <a class = "btn btn-sm btn-info-secondary fw-bold" href="{{ url_for('propostas', orderby=orderby, page=page_num, Search=Search)  }}">{{ page_num }}</a>
+             {% else %}
+              <a class ="btn btn-sm btn-outline-secondary" href="{{ url_for('propostas', orderby=orderby, page=page_num, Search=Search)  }}">{{ page_num }}</a>
+             {% endif %}
+            {% else %}
+              ...
+            {% endif %}
+        {%endfor %}
+        </div>
+       </div>
+      </div>
+    </div>
+{% else %}
+    <p>Insuficient Access Level!</p>
+{% endif %}
+</div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="AddProp" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Adicionar proposta</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+          <form method="POST" action="" class="mt-2 p-3" >
+          {{ form_addprop.csrf_token }}
+                <fieldset>
+                    <div class="form-group row">
+                      <div class="row d-flex flex-wrap flex-md-nowrap align-items-left">
+                        <div class="col-2 mt-2 mb-2 ml-0 mr-0">
+                            {{ form_addprop.status.label(class="form-control-label") }}
+                        </div>
+                        <div class="col w-auto">
+                            {% if form_addprop.status.errors %}
+                             {{ form_addprop.status(class="form-control is-invalid") }}
+                             <div class="invalid-feedback">
+                             {% for erro in form_addprop.status.errors %}
+                                 {{ erro }}
+                             {% endfor %}
+                             </div>
+                            {% else %}
+                                {{ form_addprop.status(class="form-control") }}
+                            {% endif %}
+                        </div>
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <div class="row d-flex flex-wrap flex-md-nowrap align-items-left">
+                        <div class="col-2 mt-2 mb-2 ml-0 mr-0">
+                            {{ form_addprop.vendedor.label(class="form-control-label") }}
+                        </div>
+                        <div class="col w-auto">
+                            {% if form_addprop.vendedor.errors %}
+                             {{ form_addprop.vendedor(class="form-control is-invalid") }}
+                             <div class="invalid-feedback">
+                             {% for erro in form_addprop.vendedor.errors %}
+                                 {{ erro }}
+                             {% endfor %}
+                             </div>
+                            {% else %}
+                                {{ form_addprop.vendedor(class="form-control") }}
+                            {% endif %}
+                        </div>
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <div class="row d-flex flex-wrap flex-md-nowrap align-items-left">
+                        <div class="col-2 mt-2 mb-2 ml-0 mr-0">
+                            {{ form_addprop.nomecliente.label(class="form-control-label") }}
+                        </div>
+                        <div class="col w-auto">
+                            {% if form_addprop.nomecliente.errors %}
+                             {{ form_addprop.nomecliente(class="form-control is-invalid") }}
+                             <div class="invalid-feedback">
+                             {% for erro in form_addprop.nomecliente.errors %}
+                                 {{ erro }}
+                             {% endfor %}
+                             </div>
+                            {% else %}
+                                {{ form_addprop.nomecliente(class="form-control") }}
+                            {% endif %}
+                        </div>
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <div class="row d-flex flex-wrap flex-md-nowrap align-items-left">
+                        <div class="col-2 mt-2 mb-2 ml-0 mr-0">
+                            {{ form_addprop.descricao.label(class="form-control-label") }}
+                        </div>
+                        <div class="col w-auto">
+                            {% if form_addprop.descricao.errors %}
+                             {{ form_addprop.descricao(class="form-control is-invalid") }}
+                             <div class="invalid-feedback">
+                             {% for erro in form_addprop.descricao.errors %}
+                                 {{ erro }}
+                             {% endfor %}
+                             </div>
+                            {% else %}
+                                {{ form_addprop.descricao(class="form-control") }}
+                            {% endif %}
+                        </div>
+                      </div>
+                    </div>
+                     <div class="form-group row" style="margin-bottom:40px">
+                      <div class="row d-flex flex-wrap flex-md-nowrap align-items-left">
+                        <div class="col-2 mt-2 mb-2 ml-0 mr-0">
+                            {{ form_addprop.notas.label(class="form-control-label") }}
+                        </div>
+                        <div class="col w-auto">
+                            {% if form_addprop.notas.errors %}
+                             {{ form_addprop.notas(class="form-control is-invalid") }}
+                             <div class="invalid-feedback">
+                             {% for erro in form_addprop.notas.errors %}
+                                 {{ erro }}
+                             {% endfor %}
+                             </div>
+                            {% else %}
+                                {{ form_addprop.notas(class="form-control") }}
+                            {% endif %}
+                        </div>
+                      </div>
+                    </div>
+                    <div class="modal-footer" >
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        {{ form_addprop.botao_submit_addprop(class="row btn btn-sm btn-outline-secondary") }}
+                    </div>
+                </fieldset>
+          </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

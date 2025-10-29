@@ -1,0 +1,236 @@
+{% extends 'home.html' %}
+
+{% block body %}
+
+<div  id="header" class="pt-3 pb-2border-bottom" xmlns="http://www.w3.org/1999/html">
+ <div class="d-flex flex-wrap flex-md-nowrap align-items-center gap-3">
+      <a href="javascript:void(0)" class="closebtn" onclick="openNav()" style="text-decoration: none">
+        <span data-feather="maximize-2" class="align-text-bottom"></span></a>
+    <h1 class="h2"><a style="text-decoration: none; margin-right: 10px" href="{{ url_for('pipeline', status='Ativo', vendr='00', mrkt='t', prodt='-', orderby='C')}}">PIPELINE</a></h1>
+  {% if current_user.is_authenticated and current_user.access >= 1 %}
+  <form class="input-group w-50 mb-md-1" style="max-width: 362px">
+    <input name="Search" class="form-control form-control-dark rounded-0 border-1" type="text" placeholder="Busca em Cliente, Historico, Produto e Mercado">
+  </form>
+  {% endif %}
+    {% if current_user.is_authenticated and current_user.access >= 3 %}
+    <div style="min-width: 150px" class="btn-group me-2">
+      <form method="POST" action="{{ url_for('pipelineadd', cli_id=0) }}">
+       <button type="submit" class="btn btn-sm btn-outline-primary">Nova Oportunidade</button>
+      </form>
+    </div>
+  </div>
+   <div class="btn-toolbar mb-2 mb-md-0 d-flex flex-wrap flex-md-nowrap align-items-center ">
+    <!-- div class="btn-group me-2">
+        <a href="{{ url_for('pipeline', status='Todos', vendr='0', mrkt='t', prodt='-', orderby='C')  }}"> <button type="button" class="btn btn-sm btn-outline-secondary">ATIVOS</button></a>
+        <a href="{{ url_for('pipeline', status='Lead', vendr='0', mrkt='t', prodt='-', orderby='C')  }}"> <button type="button" class="btn btn-sm btn-outline-secondary">LEAD</button></a>
+    </div -->
+
+   <form style="width:100%; margin-left: 20px" method="POST" action="" class="p-1" >
+    {{ form_scope.csrf_token }}
+    <fieldset>
+      <div class="form-group row" style="flex-wrap:nowrap !important">
+      <div class="row">
+       <div class="row px-0 py-0 fs-6">
+          <div class="d-flex align-items-center">
+           <div class="col-1 mt-2 mb-2 ml-0 mr-0" style="width:50px; padding:0;">
+            {{ form_scope.select_stat.label(class="form-control-label") }}
+           </div>
+           <div class="col-2 w-auto mt-1 mb-1 ml-0 mr-0" style="padding: 0;" >
+             {% if form_scope.select_stat.errors %}
+              {{ form_scope.select_stat(class="form-control is-invalid") }}
+             <div class="invalid-feedback" >
+             {% for erro in form_scope.select_stat.errors %}
+                 {{ erro }}
+             {% endfor %}
+             </div>
+            {% else %}
+                {{ form_scope.select_stat(class="form-control") }}
+            {% endif %}
+           </div>
+          <!-- /div>
+          <div class="row" -->
+           <div class="col-1 mt-2 mb-2 ml-0 mr-0"  style=" width:70px;padding-right: 0; margin-left:20px">
+            {{ form_scope.select_vendr.label(class="form-control-label") }}
+           </div>
+           <div class="col-2 mt-1 mb-1 ml-0 mr-0"  style=" width:200px; padding: 0;">
+             {% if form_scope.select_vendr.errors %}
+              {{ form_scope.select_vendr(class="form-control is-invalid") }}
+             <div class="invalid-feedback">
+             {% for erro in form_scope.select_vendr.errors %}
+                 {{ erro }}
+             {% endfor %}
+             </div>
+            {% else %}
+                {{ form_scope.select_vendr(class="form-control") }}
+            {% endif %}
+           </div>
+          <!-- /div>
+          <div class="row" -->
+           <div class="col-1 mt-2 mb-2 ml-0 mr-0" style="width:65px;padding:0; margin-left:20px">
+            {{ form_scope.select_mkt.label(class="form-control-label") }}
+           </div>
+           <div class="col-3 mt-1 mb-1 ml-0 " style="padding:0; width:160px;">
+             {% if form_scope.select_mkt.errors %}
+              {{ form_scope.select_mkt(class="form-control is-invalid") }}
+             <div class="invalid-feedback">
+             {% for erro in form_scope.select_mkt.errors %}
+                 {{ erro }}
+             {% endfor %}
+             </div>
+            {% else %}
+                {{ form_scope.select_mkt(class="form-control") }}
+            {% endif %}
+           </div>
+           <div class="col-1 mt-2 mb-2 ml-0 mr-0" style="width:60px;padding:0; margin-left:20px">
+            {{ form_scope.select_prd.label(class="form-control-label") }}
+           </div>
+           <div class="col-3 mt-1 mb-1 ml-0 " style="padding:0; width:110px;">
+             {% if form_scope.select_prd.errors %}
+              {{ form_scope.select_prd(class="form-control is-invalid") }}
+             <div class="invalid-feedback">
+             {% for erro in form_scope.select_prd.errors %}
+                 {{ erro }}
+             {% endfor %}
+             </div>
+            {% else %}
+                {{ form_scope.select_prd(class="form-control") }}
+            {% endif %}
+           </div>
+           <div style="width:35px; margin-left: 20px;" class="col-1" >
+            {{ form_scope.botao_submit_pipescope(class="link-secondary") }}
+           </div>
+
+       </div>
+      </div>
+      </div>
+    </fieldset>
+  </form>
+  {% endif %}
+ </div>
+</div>
+<div id="main" class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-1 pb-1 mt-1 mb-1">
+    {% if current_user.access >= 1 %}
+    <div class="row px-0 py-0 fs-6" style="line-height:0.8 padding:25px">
+        {% if pipeline.items[0] %}
+            {% if status == 'Todos' %}
+                <h3 class="h3"> <small>Status:</small> Todos </h3>
+            {% else %}
+                <h3 class="h3"> <small>Status:</small> {{  pipeline.items[0].PipelineDB.status }} </h3>
+            {% endif %}
+        {% else %}
+            <h3 class="h3"> Nenhuma oportunidade encontrada com os critérios indicados! </h3>
+        {% endif %}
+      <table class="table table-striped">
+         <thead>
+            <tr>
+              {% if orderby == 'D' %}
+                <th scope="col">Cliente<a style="text-decoration: none" href="{{ url_for('pipeline', status=status, vendr=vendr, mrkt=mrkt, prodt=prodt, orderby='C') }}"><span data-feather="chevron-up" class="align-text-bottom"></span></a></th>
+              {% else %}
+                <th scope="col">Cliente</th>
+              {% endif %}
+              <th scope="col">Unidade</th>
+              <th scope="col">Vendedor</th>
+              <th scope="col">Produto</th>
+              <th scope="col">Oportunidade</th>
+              {% if orderby == 'C' %}
+                <th scope="col">Dt Ação<a style="text-decoration: none" href="{{ url_for('pipeline', status=status, vendr=vendr, mrkt=mrkt, prodt=prodt, orderby='D') }}"><span data-feather="chevron-down" class="align-text-bottom"></span></a></th>
+              {% else %}
+                <th scope="col">Dt Ação</th>
+              {% endif %}
+              <th scope="col">Ação</th>
+              <th scope="col">Historico</th>
+            </tr>
+         </thead>
+      {% if pipeline %}
+        <tbody>
+        {% for registro in pipeline.items %}
+        <tr>
+            <!--  INCLUIR href="" no a para destacar o cliente quando o modal estiver funcionando  -->
+          <th scope="row"><a style="text-decoration: none" data-id={{ loop.index0 }} data-bs-toggle="modal" data-bs-target="#ShowPipeline{{ loop.index0 }}"> {{ registro.ClientesDB.nomecliente }}</a>
+            <a style="text-decoration: none" href="{{ url_for('pipeedit', pipeline_id=registro.PipelineDB.idpipeline) }}"><span data-feather="edit" class="align-text-bottom"></span></a>
+            <a style="text-decoration: none" href="{{ url_for('cliente', cli_id=registro.PipelineDB.idcliente) }}" target="_blank"><span data-feather="users" class="align-text-bottom"></span></a>
+          </th>
+          {% if registro.PipelineDB.prioridade %}
+              <td><strong>{{ registro.ClientesDB.unidade }}</strong></td>
+              <td><strong>{{ registro.usuario.username }}</strong></td>
+              <td><strong>{{ registro.PipelineDB.produto }}</strong></td>
+              <td><strong>{{ registro.PipelineDB.oportunidade }}</strong></td>
+          {% else %}
+              <td>{{ registro.ClientesDB.unidade }}</td>
+              <td>{{ registro.usuario.username }}</td>
+              <td>{{ registro.PipelineDB.produto }}</td>
+              <td>{{ registro.PipelineDB.oportunidade }}</td>
+          {% endif %}
+          {% if registro.PipelineDB.dtacao <= hoje %}
+            <td style="color: #F00">{{ '{:02d}/{:02d}/{:02d}'.format(registro.PipelineDB.dtacao.day, registro.PipelineDB.dtacao.month, registro.PipelineDB.dtacao.year) }}</td>
+          {% else %}
+            <td>{{ '{:02d}/{:02d}/{:02d}'.format(registro.PipelineDB.dtacao.day, registro.PipelineDB.dtacao.month, registro.PipelineDB.dtacao.year) }}</td>
+          {% endif %}
+          <td>{{ registro.PipelineDB.acao }}</td>
+          <td>{{ registro.PipelineDB.historico[0:20] }}</td>
+        </tr>
+
+        <!-- Modal -->
+        <div class="modal fade" id="ShowPipeline{{ loop.index0 }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+         <div style="display: flex; align-items: center; justify-content: center;" class="modal-dialog modal-dialog-centered modal-dialog-scrollable"><div style="min-width: 60vw; min-height: 60vh" class="modal-content"><div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">ID:{{registro.PipelineDB.idcliente}} - {{ registro.ClientesDB.nomecliente }} - {{ registro.ClientesDB.unidade }}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <div class="col col-16">
+                <h5>{{ registro.PipelineDB.status }} <small> - [{{ registro.PipelineDB.produto }}] </small> </h5>
+                <div style="padding-left: 10px; display:flex; flex-direction: column; gap:5px">
+                    <div class="row">AÇÃO:{{ '{}/{}/{}'.format(registro.PipelineDB.dtacao.day, registro.PipelineDB.dtacao.month, registro.PipelineDB.dtacao.year) }} - {{ registro.PipelineDB.acao }}</div>
+                    <div class="row" style="font-weight: bold;">OPORTUNIDADE: {{ registro.PipelineDB.oportunidade }}</div>
+                    <!-- div class="row">HISTORICO: {{ registro.PipelineDB.historico }} </div -->
+                    <div class="row">HISTORICO:
+                        {% set historico_lines = registro.PipelineDB.historico.split('\n') %}
+                        {% for line in historico_lines %}
+                            {% if  line[2:3] == '/' and (line[19:20] == ':' or line[20:21] == ':') %}
+                                {% set formatted_line = '<span style="font-weight: bold;">' + line[:20] + '</span>' + line [20:] %}
+                            {% else %}
+                                {% set formatted_line = '<span style="font-weight: bold; text-decoration: underline;">  </span>' + line %}
+                            {% endif %}
+                            <div class="historico-line">{{ formatted_line|safe }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="row" style="color: #00F">Vendedor: {{ registro.usuario.username }}</div>
+                </div>
+                <br>
+                <div class="row"><small>Registro {{ registro.PipelineDB.idpipeline }} alterado em {{ '{}/{}/{}'.format(registro.PipelineDB.dtalter.day, registro.PipelineDB.dtalter.month, registro.PipelineDB.dtalter.year) }}</small></div>
+              </div>
+
+          </div>
+          <div class="modal-footer">
+              <a class = "btn btn-secondary" href="{{ url_for('propadd', idpipe=registro.PipelineDB.idpipeline)  }}">Criar Proposta</a>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Ok</button>
+          </div></div></div></div>
+
+        {% endfor %}
+        </tbody>
+      </table>
+      <div class="row">
+          <div class="btn-toolbar">
+              <div class="btn-group mt-2 me-1">
+              {% for page_num in pipeline.iter_pages(left_edge=3, right_edge=3, left_current=3, right_current=3) %}
+                {% if page_num %}
+                 {% if pipeline.page == page_num %}
+                  <a class = "btn btn-sm btn-info-secondary fw-bold" href="{{ url_for('pipeline', status=status, vendr=vendr, mrkt=mrkt, prodt=prodt, orderby=orderby, page=page_num)  }}">{{ page_num }}</a>
+                 {% else %}
+                  <a class ="btn btn-sm btn-outline-secondary" href="{{ url_for('pipeline', status=status, vendr=vendr, mrkt=mrkt, prodt=prodt, orderby=orderby, page=page_num)  }}">{{ page_num }}</a>
+                 {% endif %}
+                {% else %}
+                  ...
+                {% endif %}
+              {%endfor %}
+              </div>
+          </div>
+      </div>
+      {% endif %}
+    </div>
+    {% else %}
+        <p>Insuficient Access Level!</p>
+    {% endif %}
+</div>
+
+{% endblock %}

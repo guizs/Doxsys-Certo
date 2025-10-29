@@ -1,0 +1,233 @@
+/* dashboard.css */
+body {
+  font-size: .95rem;
+}
+
+td, th {
+  padding: 0px 0.5rem!important;
+  height: 30px!important;
+}
+
+tr{
+  height: 30px!important;
+}
+
+table, th, td {
+  text-align: left;
+  text-height: 14px;
+}
+
+.feather {
+  width: 16px;
+  height: 16px;
+}
+
+.feather-red {
+  width: 16px;
+  height: 16px;
+  stroke: red;
+}
+
+/*
+ * Sidebar
+ */
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  width: 0;
+  /* rtl:raw:
+  right: 0;
+  */
+  bottom: 0;
+  /* rtl:remove */
+  left: 0;
+  z-index: 1; /* Behind the navbar */
+  padding: 48px 0 0; /* Height of navbar */
+  box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+  overflow-x: auto;
+  /* transition: 0.2s; */
+}
+#main, #header {
+    /* If you want a transition effect */
+    transition: margin-left 0.5s;
+    /* padding: 20px; */
+}
+
+/* Estilização da página de login */
+.containerLogin{
+    margin-left: -224px;
+    margin-top: 30px;
+    width: 100vw;
+    padding: 0 50px;
+    position: fixed;
+    max-height: 85vh;
+    overflow-y: scroll;
+}
+
+  .formsLoginRegister{
+    display:flex;
+    gap:20px;
+    margin-bottom:30px
+  }
+ /**/
+.main{
+    margin-left:200px
+}
+
+/*Estilização Mobile*/
+@media (max-width: 767.98px) {
+  .sidebar {
+    top: 5rem;
+  }
+
+  .closebtn{
+    display:none
+  }
+ /**/
+  #main, #header{
+    margin-left:-190px;
+  }
+
+/* Estilização da página de login */
+  .containerLogin{
+    margin-left: -200px;
+    position: static;
+    max-height: none;
+    overflow: auto;
+    padding:0 10px
+  }
+
+  .formsLoginRegister{
+    flex-direction: column;
+  }
+}
+/**/
+
+.sidebar-sticky {
+  height: calc(100vh - 48px);
+  overflow-x: auto;
+  overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+}
+
+.sidebar .nav-link {
+  font-weight: 500;
+  color: #333;
+}
+
+.sidebar .nav-link .feather {
+  margin-right: 4px;
+  color: #727272;
+}
+
+.sidebar .nav-link.active {
+  color: #2470dc;
+}
+
+.sidebar .nav-link:hover .feather,
+.sidebar .nav-link.active .feather {
+  color: inherit;
+}
+
+.sidebar-heading {
+  font-size: .75rem;
+}
+
+/*
+ * Navbar
+ */
+
+.navbar-brand {
+  padding-top: .75rem;
+  padding-bottom: .75rem;
+  background-color: rgba(0, 0, 0, .25);
+  box-shadow: inset -1px 0 0 rgba(0, 0, 0, .25);
+}
+
+.navbar .navbar-toggler {
+  top: .25rem;
+  right: 1rem;
+}
+
+.navbar .form-control {
+  padding: .75rem 1rem;
+}
+
+.form-control-dark {
+  color: #fff;
+  background-color: rgba(255, 255, 255, .1);
+  border-color: rgba(255, 255, 255, .1);
+}
+
+.form-control-dark:focus {
+  border-color: transparent;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, .25);
+}
+
+.form-control-label{
+    margin-top: 7px
+}
+
+.navbar .dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: auto;
+  right: 0;
+  margin-top: 0.5rem;
+  z-index: 1000;
+}
+
+.navbar-nav {
+  position: relative;
+}
+
+.bd-placeholder-img {
+    font-size: 1.125rem;
+    text-anchor: middle;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+}
+
+@media (min-width: 1024px) {
+.bd-placeholder-img-lg {
+  font-size: 3.5rem;
+}
+}
+
+.b-example-divider {
+    height: 3rem;
+    background-color: rgba(0, 0, 0, .1);
+    border: solid rgba(0, 0, 0, .15);
+    border-width: 1px 0;
+    box-shadow: inset 0 .5em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em rgba(0, 0, 0, .15);
+}
+
+.b-example-vr {
+    flex-shrink: 0;
+    width: 1.5rem;
+    height: 100vh;
+}
+
+.bi {
+    vertical-align: -.125em;
+    fill: currentColor;
+}
+
+.nav-scroller {
+    position: relative;
+    z-index: 2;
+    height: 2.75rem;
+    overflow-y: hidden;
+}
+
+.nav-scroller .nav {
+    display: flex;
+    flex-wrap: nowrap;
+    padding-bottom: 1rem;
+    margin-top: -1px;
+    overflow-x: auto;
+    text-align: center;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+}

@@ -1,0 +1,155 @@
+{% extends 'home.html' %}
+
+{% block body %}
+<h4>Conversando com {{ telefone }} <strong>{{ nomecontato or "Desconhecido" }}</strong></h4>
+<!-- form method="POST" enctype="multipart/form-data" class="mb-4">
+    <textarea id="message" name="message" class="form-control mb-2" rows="2" placeholder="Digite sua mensagem..."></textarea>
+    <input type="file" name="media" class="form-control mb-2">
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-success"> Enviar </button>
+        <button type="button" class="btn btn-secondary" onclick="corrigirMensagem('pt-BR')">Corrigir Português</button>
+        <button type="button" class="btn btn-secondary" onclick="corrigirMensagem('en-US')">Corrigir Inglês</button>
+        <button type="button" class="btn btn-secondary" onclick="corrigirMensagem('es')">Corrigir Espanhol</button>
+        <button type="button" class="btn btn-warning" onclick="traduzirMensagem('es', 'pt-BR')">Traduzir ES→PT</button>
+        <button type="button" class="btn btn-warning" onclick="traduzirMensagem('pt-BR', 'es')">Traduzir PT→ES</button>
+    </div>
+</form -->
+<form method="POST" enctype="multipart/form-data" class="mb-4">
+    <textarea id="message" name="message" class="form-control mb-2" rows="2" placeholder="Digite sua mensagem..."></textarea>
+    <input type="file" name="media" class="form-control mb-2">
+    <div class="d-flex gap-2 flex-wrap">
+        <button type="submit" class="btn btn-success"> Enviar </button>
+        <button type="button" class="btn btn-secondary" onclick="corrigirMensagem('pt-BR')">Corrigir Português</button>
+        <button type="button" class="btn btn-secondary" onclick="corrigirMensagem('en-US')">Corrigir Inglês</button>
+        <button type="button" class="btn btn-secondary" onclick="corrigirMensagem('es')">Corrigir Espanhol</button>
+        <!-- Botão Traduzir ES→PT permanece -->
+        <button type="button" class="btn btn-warning" onclick="traduzirMensagem('pt-BR','')">Traduzir pt-BR →:</button>
+        <!-- Novo dropdown para selecionar idioma -->
+        <select id="idiomaDestino" class="form-select" style="width: auto;">
+            <option value="es" selected>Espanhol (es)</option>
+            <option value="en-US">Inglês (en-US)</option>
+            <option value="fr-FR">Francês (fr-FR)</option>
+            <option value="de-DE">Alemão (de-DE)</option>
+            <option value="zh-TW">Chinês Tradicional (zh-TW)</option>
+        </select>
+        <!-- Botão traduzir dinâmico -->
+        <button type="button" class="btn btn-warning" onclick="traduzirMensagem('','pt-BR')">Traduzir → pt-BR</button>
+    </div>
+</form>
+<!-- form method="POST" enctype="multipart/form-data" class="mb-4">
+    <textarea name="message" class="form-control mb-2" rows="2" placeholder="Digite sua mensagem..."></textarea>
+    <input type="file" name="media" class="form-control mb-2">
+    <button class="btn btn-success">Enviar</button>
+</form -->
+<ul class="list-group">
+    {% for msg, username in mensagens %}
+    <li class="list-group-item {% if msg.tipo == 'recebida' %}list-group-item-light{% else %}list-group-item-success{% endif %}">
+        <div>
+            <small class="text-muted">{{ msg.data.strftime("%d/%m/%Y %H:%M") }}</small><br>
+            <strong>{{ (username or 'System') if msg.tipo == 'enviada' else nomecontato or telefone }}:</strong>
+        </div>
+        <div>{{ msg.mensagem | safe }}</div>
+
+        {% if msg.tipo == 'enviada' %}
+        <div class="text-end mt-1">
+            {% set cor_status = {
+                'PENDING': 'bg-secondary',
+                'SENT': 'bg-info',
+                'RECEIVED': 'bg-primary',
+                'READ': 'bg-success',
+                'PLAYED': 'bg-success',
+                'DELETED': 'bg-danger',
+                'ERROR': 'bg-danger'
+            }.get(msg.status, 'bg-dark') %}
+
+            {% set texto_status = {
+                'PENDING': '⏳ Aguardando envio',
+                'SENT': '📤 Enviado',
+                'RECEIVED': '📬 Entregue',
+                'READ': '✅ Lido',
+                'PLAYED': '✅ Reproduzido',
+                'DELETED': '❌ Msg Apagada',
+                'ERROR': '❌ Erro ao enviar'
+            }.get(msg.status, msg.status) %}
+
+            <small class="badge {{ cor_status }}">{{ texto_status }}</small>
+        </div>
+        {% endif %}
+    </li>
+    {% endfor %}
+</ul>
+
+<script>
+function corrigirMensagem(idioma) {
+    const textoOriginal = document.getElementById('message').value;
+    if (!textoOriginal.trim()) {
+        alert("Digite uma mensagem antes de corrigir.");
+        return;
+    }
+
+    fetch("{{ url_for('corrigir_mensagem') }}", {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ mensagem: textoOriginal, idioma: idioma })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.correta) {
+            document.getElementById('message').value = data.correta;
+        } else {
+            alert("Erro ao corrigir mensagem.");
+        }
+    })
+    .catch(err => {
+        alert("Erro: " + err.message);
+    });
+}
+</script>
+<script>
+function traduzirMensagem(origem, destino) {
+    let origem_lang = origem;
+    let destino_lang = destino;
+
+    // Se a origem for "pt-BR" e destino estiver vazio, usar o valor do dropdown como destino
+    if (origem === 'pt-BR' && !destino) {
+        destino_lang = document.getElementById('idiomaDestino').value;
+    }
+    // Se o destino for "pt-BR" e origem estiver vazia, usar o valor do dropdown como origem
+    else if (!origem && destino === 'pt-BR') {
+        origem_lang = document.getElementById('idiomaDestino').value;
+    }
+    // Se ambos forem vazios, usar pt-BR para ambos (fallback)
+    else if (!origem && !destino) {
+        origem_lang = 'pt-BR';
+        destino_lang = 'pt-BR';
+    }
+
+    const textoOriginal = document.getElementById('message').value;
+    if (!textoOriginal.trim()) {
+        alert("Digite uma mensagem antes de traduzir.");
+        return;
+    }
+
+    fetch("{{ url_for('traduzir_mensagem') }}", {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            texto: textoOriginal,
+            origem: origem_lang,
+            destino: destino_lang
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.traduzido) {
+            document.getElementById('message').value = data.traduzido;
+        } else {
+            alert("Erro ao traduzir a mensagem.");
+        }
+    })
+    .catch(err => {
+        alert("Erro: " + err.message);
+    });
+}
+</script>
+{% endblock %}

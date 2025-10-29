@@ -1,0 +1,388 @@
+{% extends 'home.html' %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <form method="POST" action="" class="border mt-2 p-3 border-secondary" >
+                    {{ form_editarcontrato.csrf_token }}
+                    <legend>Dados do Contrato</legend>
+                    <fieldset>
+                        {% if contrato == "NEW" %}<div class="form-group">
+                        <div class="col" style="text-align: left">
+                                <h3> Novo Contrato </small></h3>
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="form-group">
+                            <div class="col" style="text-align: left">
+                                <h3> {{ contrato.nomecliente }} - <small> {{ contrato.unidade }} </small></h3>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% if current_user.access < 3 %}
+                            <HR> Você não pode editar esse contrato! <BR>
+                        {% else %}
+                            {% if contrato == "NEW" %}
+                            <div class="form-group">
+                                {{ form_editarcontrato.select_cliente.label(class="form-control-label") }}
+                                {% if form_editarcontrato.select_cliente.errors %}
+                                 {{ form_editarcontrato.select_cliente(class="form-control is-invalid") }}
+                                 <div class="invalid-feedback">
+                                 {% for erro in form_editarcontrato.select_cliente.errors %}
+                                     {{ erro }}
+                                 {% endfor %}
+                                 </div>
+                                {% else %}
+                                    {{ form_editarcontrato.select_cliente(class="form-control") }}
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div class="form-group" style="width:33.3%">
+                             {{ form_editarcontrato.select_status.label(class="form-control-label") }}
+                             {% if form_editarcontrato.select_status.errors %}
+                                 {{ form_editarcontrato.select_status(class="form-control is-invalid") }}
+                                 <div class="invalid-feedback">
+                                 {% for erro in form_editarcontrato.select_status.errors %}
+                                     {{ erro }}
+                                 {% endfor %}
+                                 </div>
+                             {% else %}
+                                 {{ form_editarcontrato.select_status(class="form-control") }}
+                             {% endif %}
+                            </div>
+                            <div class="form-group" style="width:33.3%">
+                                {{ form_editarcontrato.select_produto.label(class="form-control-label") }}
+                                {% if form_editarcontrato.select_produto.errors %}
+                                 {{ form_editarcontrato.select_produto(class="form-control is-invalid") }}
+                                 <div class="invalid-feedback">
+                                 {% for erro in form_editarcontrato.select_produto.errors %}
+                                     {{ erro }}
+                                 {% endfor %}
+                                 </div>
+                                {% else %}
+                                    {{ form_editarcontrato.select_produto(class="form-control") }}
+                                {% endif %}
+                            </div>
+                            <div class="form-group" style="width:33.3%">
+                             {{ form_editarcontrato.select_vendor.label(class="form-control-label") }}
+                             {% if form_editarcontrato.select_vendor.errors %}
+                                 {{ form_editarcontrato.select_vendor(class="form-control is-invalid") }}
+                                 <div class="invalid-feedback">
+                                 {% for erro in form_editarcontrato.select_vendor.errors %}
+                                     {{ erro }}
+                                 {% endfor %}
+                                 </div>
+                             {% else %}
+                                 {{ form_editarcontrato.select_vendor(class="form-control") }}
+                             {% endif %}
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                             <div class="form-group" style="width:25%">
+                             {{ form_editarcontrato.pedido.label(class="form-control-label") }}
+                             {% if form_editarcontrato.pedido.errors %}
+                                 {{ form_editarcontrato.pedido(class="form-control is-invalid") }}
+                                 <div class="invalid-feedback">
+                                 {% for erro in form_editarcontrato.pedido.errors %}
+                                     {{ erro }}
+                                 {% endfor %}
+                                 </div>
+                             {% else %}
+                                 {{ form_editarcontrato.pedido(class="form-control") }}
+                             {% endif %}
+                            </div>
+                            <div class="form-group" style="width:25%">
+                             {{ form_editarcontrato.dtpedido.label(class="form-control-label") }}
+                             {% if form_editarcontrato.dtpedido.errors %}
+                                 {{ form_editarcontrato.dtpedido(class="form-control is-invalid") }}
+                                 <div class="invalid-feedback">
+                                 {% for erro in form_editarcontrato.dtpedido.errors %}
+                                     {{ erro }}
+                                 {% endfor %}
+                                 </div>
+                             {% else %}
+                                 {{ form_editarcontrato.dtpedido(class="form-control") }}
+                             {% endif %}
+                            </div>
+                            <div class="form-group" style="width:25%">
+                             {{ form_editarcontrato.select_prop.label(class="form-control-label") }}
+                             {% if form_editarcontrato.select_prop.errors %}
+                                 {{ form_editarcontrato.select_prop(class="form-control is-invalid") }}
+                                 <div class="invalid-feedback">
+                                 {% for erro in form_editarcontrato.select_prop.errors %}
+                                     {{ erro }}
+                                 {% endfor %}
+                                 </div>
+                             {% else %}
+                                 {{ form_editarcontrato.select_prop(class="form-control") }}
+                             {% endif %}
+                            </div>
+                            <div class="form-group" style="width:25%">
+                             {{ form_editarcontrato.proposta.label(class="form-control-label") }}
+                             {% if form_editarcontrato.proposta.errors %}
+                                 {{ form_editarcontrato.proposta(class="form-control is-invalid") }}
+                                 <div class="invalid-feedback">
+                                 {% for erro in form_editarcontrato.proposta.errors %}
+                                     {{ erro }}
+                                 {% endfor %}
+                                 </div>
+                             {% else %}
+                                 {{ form_editarcontrato.proposta(class="form-control") }}
+                             {% endif %}
+                            </div>
+                            <div class="form-group" style="width:25%">
+                             {{ form_editarcontrato.dtproposta.label(class="form-control-label") }}
+                             {% if form_editarcontrato.dtproposta.errors %}
+                                 {{ form_editarcontrato.dtproposta(class="form-control is-invalid") }}
+                                 <div class="invalid-feedback">
+                                 {% for erro in form_editarcontrato.dtproposta.errors %}
+                                     {{ erro }}
+                                 {% endfor %}
+                                 </div>
+                             {% else %}
+                                 {{ form_editarcontrato.dtproposta(class="form-control") }}
+                             {% endif %}
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div class="form-group" style="width:33.3%">
+                             {{ form_editarcontrato.codcontrato.label(class="form-control-label") }}
+                             {% if form_editarcontrato.codcontrato.errors %}
+                                 {{ form_editarcontrato.codcontrato(class="form-control is-invalid") }}
+                                 <div class="invalid-feedback">
+                                 {% for erro in form_editarcontrato.codcontrato.errors %}
+                                     {{ erro }}
+                                 {% endfor %}
+                                 </div>
+                             {% else %}
+                                 {{ form_editarcontrato.codcontrato(class="form-control") }}
+                             {% endif %}
+                            </div>
+                            <div class="form-group" style="width:33.3%">
+                             {{ form_editarcontrato.validadecontrato.label(class="form-control-label") }}
+                             {% if form_editarcontrato.validadecontrato.errors %}
+                                 {{ form_editarcontrato.validadecontrato(class="form-control is-invalid") }}
+                                 <div class="invalid-feedback">
+                                 {% for erro in form_editarcontrato.validadecontrato.errors %}
+                                     {{ erro }}
+                                 {% endfor %}
+                                 </div>
+                             {% else %}
+                                 {{ form_editarcontrato.validadecontrato(class="form-control") }}
+                             {% endif %}
+                            </div>
+                            <div class="form-group" style="width:33.3%">
+                             {{ form_editarcontrato.duracaocontrato.label(class="form-control-label") }}
+                             {% if form_editarcontrato.duracaocontrato.errors %}
+                                 {{ form_editarcontrato.duracaocontrato(class="form-control is-invalid") }}
+                                 <div class="invalid-feedback">
+                                 {% for erro in form_editarcontrato.duracaocontrato.errors %}
+                                     {{ erro }}
+                                 {% endfor %}
+                                 </div>
+                             {% else %}
+                                 {{ form_editarcontrato.duracaocontrato(class="form-control") }}
+                             {% endif %}
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div class="form-group" style="width:20%">
+                             {{ form_editarcontrato.select_fatur.label(class="form-control-label") }}
+                             {{ form_editarcontrato.select_fatur(class="form-control") }}
+                            </div>
+                            <div class="form-group" style="width:20%">
+                             {{ form_editarcontrato.select_frequenc.label(class="form-control-label") }}
+                             {{ form_editarcontrato.select_frequenc(class="form-control") }}
+                            </div>
+                            <div class="form-group" style="width:20%">
+                             {{ form_editarcontrato.select_infra.label(class="form-control-label") }}
+                             {{ form_editarcontrato.select_infra(class="form-control") }}
+                            </div>
+                            <div class="form-group" style="width:20%">
+                             {{ form_editarcontrato.select_apptype.label(class="form-control-label") }}
+                             {{ form_editarcontrato.select_apptype(class="form-control") }}
+                            </div>
+                            <div class="form-group" style="width:20%">
+                             {{ form_editarcontrato.select_instance.label(class="form-control-label") }}
+                             {{ form_editarcontrato.select_instance(class="form-control") }}
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                              <div class="form-group" style="width:25%">
+                             {{ form_editarcontrato.usersregulares.label(class="form-control-label") }}
+                             {% if form_editarcontrato.usersregulares.errors %}
+                                 {{ form_editarcontrato.usersregulares(class="form-control is-invalid") }}
+                                 <div class="invalid-feedback">
+                                 {% for erro in form_editarcontrato.usersregulares.errors %}
+                                     {{ erro }}
+                                 {% endfor %}
+                                 </div>
+                             {% else %}
+                                 {{ form_editarcontrato.usersregulares(class="form-control") }}
+                             {% endif %}
+                            </div>
+                             <div class="form-group" style="width:25%">
+                             {{ form_editarcontrato.usersavancados.label(class="form-control-label") }}
+                             {% if form_editarcontrato.usersavancados.errors %}
+                                 {{ form_editarcontrato.usersavancados(class="form-control is-invalid") }}
+                                 <div class="invalid-feedback">
+                                 {% for erro in form_editarcontrato.usersavancados.errors %}
+                                     {{ erro }}
+                                 {% endfor %}
+                                 </div>
+                             {% else %}
+                                 {{ form_editarcontrato.usersavancados(class="form-control") }}
+                             {% endif %}
+                            </div>
+                            <div class="form-group" style="width:25%">
+                             {{ form_editarcontrato.milregistros.label(class="form-control-label") }}
+                             {% if form_editarcontrato.milregistros.errors %}
+                                 {{ form_editarcontrato.milregistros(class="form-control is-invalid") }}
+                                 <div class="invalid-feedback">
+                                 {% for erro in form_editarcontrato.milregistros.errors %}
+                                     {{ erro }}
+                                 {% endfor %}
+                                 </div>
+                             {% else %}
+                                 {{ form_editarcontrato.milregistros(class="form-control") }}
+                             {% endif %}
+                            </div>
+                            <div class="form-group" style="width:25%">
+                             {{ form_editarcontrato.gbstorage.label(class="form-control-label") }}
+                             {% if form_editarcontrato.gbstorage.errors %}
+                                 {{ form_editarcontrato.gbstorage(class="form-control is-invalid") }}
+                                 <div class="invalid-feedback">
+                                 {% for erro in form_editarcontrato.gbstorage.errors %}
+                                     {{ erro }}
+                                 {% endfor %}
+                                 </div>
+                             {% else %}
+                                 {{ form_editarcontrato.gbstorage(class="form-control") }}
+                             {% endif %}
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div class="form-group" style="width:16.6%">
+                             {{ form_editarcontrato.select_pbi.label(class="form-control-label") }}
+                             {{ form_editarcontrato.select_pbi(class="form-control") }}
+                            </div>
+                            <div class="form-group" style="width:16.6%">
+                             {{ form_editarcontrato.select_api.label(class="form-control-label") }}
+                             {{ form_editarcontrato.select_api(class="form-control") }}
+                            </div>
+                            <div class="form-group" style="width:16.6%">
+                             {{ form_editarcontrato.select_supp.label(class="form-control-label") }}
+                             {{ form_editarcontrato.select_supp(class="form-control") }}
+                            </div>
+                            <div class="form-group" style="width:16.6%">
+                             {{ form_editarcontrato.horascontratadas.label(class="form-control-label") }}
+                             {% if form_editarcontrato.horascontratadas.errors %}
+                                 {{ form_editarcontrato.horascontratadas(class="form-control is-invalid") }}
+                                 <div class="invalid-feedback">
+                                 {% for erro in form_editarcontrato.horascontratadas.errors %}
+                                     {{ erro }}
+                                 {% endfor %}
+                                 </div>
+                             {% else %}
+                                 {{ form_editarcontrato.horascontratadas(class="form-control") }}
+                             {% endif %}
+                            </div>
+                            <div class="form-group" style="width:16.6%">
+                             {{ form_editarcontrato.horasentregues.label(class="form-control-label") }}
+                             {% if form_editarcontrato.horasentregues.errors %}
+                                 {{ form_editarcontrato.horasentregues(class="form-control is-invalid") }}
+                                 <div class="invalid-feedback">
+                                 {% for erro in form_editarcontrato.horasentregues.errors %}
+                                     {{ erro }}
+                                 {% endfor %}
+                                 </div>
+                             {% else %}
+                                 {{ form_editarcontrato.horasentregues(class="form-control") }}
+                             {% endif %}
+                            </div>
+                            <div class="form-group" style="width:16.6%">
+                             {{ form_editarcontrato.select_hrs.label(class="form-control-label") }}
+                             {{ form_editarcontrato.select_hrs(class="form-control") }}
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div class="form-group" style="width:50%">
+                             {{ form_editarcontrato.bminstruc.label(class="form-control-label") }}
+                             {% if form_editarcontrato.bminstruc.errors %}
+                                 {{ form_editarcontrato.bminstruc(class="form-control is-invalid") }}
+                                 <div class="invalid-feedback">
+                                 {% for erro in form_editarcontrato.bminstruc.errors %}
+                                     {{ erro }}
+                                 {% endfor %}
+                                 </div>
+                             {% else %}
+                                 {{ form_editarcontrato.bminstruc(class="form-control") }}
+                             {% endif %}
+                            </div>
+                            <div class="form-group" style="width:50%">
+                             {{ form_editarcontrato.nfinstruc.label(class="form-control-label") }}
+                             {% if form_editarcontrato.nfinstruc.errors %}
+                                 {{ form_editarcontrato.nfinstruc(class="form-control is-invalid") }}
+                                 <div class="invalid-feedback">
+                                 {% for erro in form_editarcontrato.nfinstruc.errors %}
+                                     {{ erro }}
+                                 {% endfor %}
+                                 </div>
+                             {% else %}
+                                 {{ form_editarcontrato.nfinstruc(class="form-control") }}
+                             {% endif %}
+                            </div>
+                        </div>
+                            <div class="form-group mb-3">
+                             {{ form_editarcontrato.observacao.label(class="form-control-label") }}
+                             {% if form_editarcontrato.observacao.errors %}
+                                 {{ form_editarcontrato.observacao(class="form-control is-invalid") }}
+                                 <div class="invalid-feedback">
+                                 {% for erro in form_editarcontrato.observacao.errors %}
+                                     {{ erro }}
+                                 {% endfor %}
+                                 </div>
+                             {% else %}
+                                 {{ form_editarcontrato.observacao(class="form-control") }}
+                             {% endif %}
+                            </div>
+                        {% endif %}
+                    </fieldset>
+                    {% if current_user.is_authenticated and current_user.access >= 3 %}
+                        {{ form_editarcontrato.botao_submit_editarcontrato(class="btn btn-primary mt-2") }}
+                        {% if contrato != "NEW" %}
+                        <a href="" data-bs-toggle="modal" data-bs-target="#DelContract">
+                            <button type="button" class="btn btn-sm btn-danger">APAGAR CONTRATO</button>
+                        </a>
+                        {% endif %}
+                    {% endif %}
+                </form>
+            </div>
+        <hr>
+    </div>
+
+<!-- Modal -->
+<div class="modal fade" id="DelContract" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+        <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Apagar contrato {{ contrato.idcontrato }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Você tem certeza de que deseja excluir o contrato do cliente {{ contrato.nomecliente }} - {{ contrato.unidade }}?<br>
+        Essa operação não pode ser desfeita!
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <form method="POST" action="{{ url_for('excluir_contrato', contract_id=contrato.idcontrato) }}">
+         <button type="submit" class="btn btn-danger">Excluir Contrato</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
