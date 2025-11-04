@@ -1,7 +1,6 @@
-from flask import render_template, flash, redirect, url_for, request, session, make_response
+from flask import render_template, flash, redirect, url_for, request, session, make_response, Blueprint
 from sqlalchemy import and_, or_, desc
-#from sqlalchemy import not_, join, func
-from sqlalchemy.sql import func
+
 #from sqlalchemy.sql import literal_column
 #from sqlalchemy.orm import aliased, joinedload
 from collections import defaultdict
@@ -19,6 +18,7 @@ from credenciais import doxenv, sender_email, sender_password, send_smtp_srv, \
                         ZAPI_CLIENT, ZAPI_INSTANCE_SUPP, ZAPI_TOKEN_SUPP, ZAPI_INSTANCE_SALES, ZAPI_TOKEN_SALES
 from flask_login import login_user, logout_user, current_user, login_required
 from datetime import date, time, datetime, timedelta
+import pytz
 from dateutil.relativedelta import relativedelta
 from urllib.parse import urljoin
 from decimal import Decimal
@@ -267,6 +267,9 @@ def is_usr1():
 # HOME PAGE
 @app.route(f'{prefix}/')
 def home():
+
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
     # inicializadatas()
     hoje = date.today()
     # hoje_formatado = hoje.strftime('%d/%m/%Y')
@@ -1283,15 +1286,35 @@ def propedit(idprop):
 
     return render_template('propedit.html', form_editprop=form_editprop, idprop=idprop, proposta=proposta, cliente=cliente, pipeline=pipeline)
 
+# Em resellercontrol/routes.py
+# (Certifique-se que 'date', 'datetime', 'pytz' estão nos imports no topo do arquivo)
+
 @app.route(f'{prefix}/login', methods=['GET', 'POST'])
 def login():
     ipadr = getusrip()
     form_login = FormLogin()
     form_criarconta = FormCriarConta()
 
-    # DEBUG DO FORM LOGIN
-    # print("Form Login validado?", form_login.validate_on_submit())
-    # print("Erros no Form Login:", form_login.errors)
+    # --- INÍCIO DA CORREÇÃO ---
+    # Definindo as datas aqui no topo para valer para GET e POST
+    hoje = date.today()
+    week = "{:02d}".format(hoje.isocalendar().week)
+    localtime = datetime.now().time().strftime("%H:%M")
+    europe_tz = pytz.timezone('Europe/Paris')
+    europetime = datetime.now(europe_tz).time().strftime("%H:%M")
+    taiwan_tz = pytz.timezone('Asia/Taipei')
+    taiwantime = datetime.now(taiwan_tz).time().strftime("%H:%M")
+
+    session["HOJE"] = hoje.strftime('%d/%m/%Y')
+    session["WEEK"] = week
+    session["WYEAR"] = 'W'+(str(hoje.year))[2:] + week
+    session["LOCAL_TZ"] = 'America/Sao_Paulo'
+    session["LOCALTIME"] = localtime
+    session["EUROPE_TZ"] = 'Europe/Berlin'
+    session["EUROPETIME"] = europetime
+    session["TAIWAN_TZ"] = 'Asia/Taipei'
+    session["TAIWANTIME"] = taiwantime
+    # --- FIM DA CORREÇÃO ---
 
     if 'botao_submit_login' in request.form and form_login.validate_on_submit():
         utilizador = usuario.query.filter_by(email=form_login.email.data).first()
@@ -1300,8 +1323,11 @@ def login():
             # handle_connect()
             flash(f'Login feito com sucesso no e-mail {form_login.email.data}', 'alert-success')
             log_action('usuarios', 'login', 'Login: ' + form_login.email.data + ' (OK!). IP:' + ipadr)
+            
+            # Esta linha agora funciona, pois 'hoje' foi definido acima
             session['MESATL'] = '{:02d}-{:02d}'.format(hoje.month, hoje.year)
             session['MESFIM'] = '{:02d}-{:02d}'.format(hoje.month, hoje.year)
+            
             param_next = request.args.get('next')
             if param_next:
                 return redirect(param_next)
@@ -1312,10 +1338,6 @@ def login():
             log_action('usuarios', 'login', 'IP:' + ipadr + ' FAIL: ' + form_login.email.data + ' (não entrou).')
             return redirect(url_for('home'))
             # redirecionar para a home page
-
-    # DEBUG DO FORM CRIAR_CONTA
-    # print("Form Criar Conta validado?", form_criarconta.validate_on_submit())
-    # print("Erros no Form Criar Conta:", form_criarconta.errors)
 
     if 'botao_submit_criarconta' in request.form and form_criarconta.validate_on_submit():
         senha_crypt = bcrypt.generate_password_hash(form_criarconta.senha.data)
@@ -1331,7 +1353,6 @@ def login():
         flash(f'Conta criada para o e-mail {form_criarconta.email.data}', 'alert-success')
         log_action('usuarios', 'usradd','Conta ' + utilizador.username + '(' + utilizador.email + ') criada.')
         return redirect(url_for('home'))
-        #criou conta com sucesso
 
     return render_template('login.html', form_login=form_login, form_criarconta=form_criarconta)
 
