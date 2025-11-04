@@ -1,4 +1,4 @@
-from flask import render_template, flash, redirect, url_for, request, session, make_response, Blueprint
+from flask import render_template, flash, redirect, url_for, request, session, make_response, Blueprint, current_app
 from sqlalchemy import and_, or_, desc
 
 #from sqlalchemy.sql import literal_column
